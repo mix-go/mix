@@ -50,7 +50,7 @@ var Definitions = []Definition{
         },
         Fields: Fields{
             "Bar":    "bar",
-            "Client": Reference{Name: "httpclient2"},
+            "Client": NewReference("httpclient2"),
         },
     },
 }
@@ -65,7 +65,7 @@ func NewHttpClient(timeout time.Duration) *http.Client {
 func TestApplicationContext_Get(t *testing.T) {
     context := NewApplicationContext(Definitions)
     cli := context.Get("httpclient").(*http.Client)
-    fmt.Println(fmt.Sprintf("%+v", cli))
+    fmt.Println(fmt.Sprintf("%#v", cli))
     resp, _ := cli.Get("http://www.baidu.com/")
     body, _ := ioutil.ReadAll(resp.Body)
     fmt.Println(len(string(body)))
@@ -74,7 +74,7 @@ func TestApplicationContext_Get(t *testing.T) {
 func TestApplicationContext_Get2(t *testing.T) {
     context := NewApplicationContext(Definitions)
     cli := context.Get("httpclient2").(*http.Client)
-    fmt.Println(fmt.Sprintf("%+v", cli))
+    fmt.Println(fmt.Sprintf("%#v", cli))
     resp, _ := cli.Get("http://www.baidu.com/")
     body, _ := ioutil.ReadAll(resp.Body)
     fmt.Println(len(string(body)))
@@ -83,9 +83,9 @@ func TestApplicationContext_Get2(t *testing.T) {
 func TestApplicationContext_Get3(t *testing.T) {
     context := NewApplicationContext(Definitions)
     foo := context.Get("foo").(*Foo)
-    fmt.Println(fmt.Sprintf("%+v", foo))
+    fmt.Println(fmt.Sprintf("%#v", foo))
     cli := foo.Client
-    fmt.Println(fmt.Sprintf("%+v", cli))
+    fmt.Println(fmt.Sprintf("%#v", cli))
     resp, _ := cli.Get("http://www.baidu.com/")
     body, _ := ioutil.ReadAll(resp.Body)
     fmt.Println(len(string(body)))

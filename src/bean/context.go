@@ -13,37 +13,56 @@ type ApplicationContext struct {
 }
 
 // 创建实例
-func NewApplicationContext(definitions []Definition) ApplicationContext {
-    context := ApplicationContext{Definitions: definitions}
-    context.Tidy()
+func NewApplicationContext(definitions []Definition) *ApplicationContext {
+    context := &ApplicationContext{Definitions: definitions}
+    context.Init()
     return context
 }
 
 // 整理
-func (c *ApplicationContext) Tidy() {
-    c.tidyDefinitions = sync.Map{}
-    for _, v := range c.Definitions {
-        v.Context = c
-        c.tidyDefinitions.Store(v.Name, v)
+func (t *ApplicationContext) Init() {
+    t.tidyDefinitions = sync.Map{}
+    for _, d := range t.Definitions {
+        d.Context = t
+        t.tidyDefinitions.Store(d.Name, d)
     }
 }
 
 // 获取定义
-func (c *ApplicationContext) GetDefinition(name string) Definition {
+func (t *ApplicationContext) GetDefinition(name string) Definition {
     var (
         inf interface{}
         ok  bool
     )
-    if inf, ok = c.tidyDefinitions.Load(name); !ok {
+    if inf, ok = t.tidyDefinitions.Load(name); !ok {
         panic(fmt.Sprintf("Bean not found: %s", name))
     }
     return inf.(Definition)
 }
 
+// 获取实例
+func (t *ApplicationContext) GetBean(name string, prop Fields, args ConstructorArgs) interface{} {
+    def := merge(t.GetDefinition(name), prop, args)
+    if def.Scope == SINGLETON {
+        if ins, ok := t.instances.Load(name); ok {
+            return ins
+        }
+        ins := def.Instance()
+        t.instances.Store(name, ins)
+        return ins
+    }
+    return def.Instance()
+}
+
+// 快速获取实例
+func (c *ApplicationContext) Get(name string) interface{} {
+    return c.GetBean(name, Fields{}, ConstructorArgs{})
+}
+
 // 合并
 // args | fields 内的字段会替换之前定义的值
 // args 内的 nil 值将会忽略，不会替换处理
-func (c *ApplicationContext) merge(def Definition, fields Fields, args ConstructorArgs) Definition {
+func merge(def Definition, fields Fields, args ConstructorArgs) Definition {
     iFields := len(fields) > 0
     iArgs := len(args) > 0
     if iFields || iArgs {
@@ -92,23 +111,4 @@ func (c *ApplicationContext) merge(def Definition, fields Fields, args Construct
         return newDef
     }
     return def
-}
-
-// 获取实例
-func (c *ApplicationContext) GetBean(name string, prop Fields, args ConstructorArgs) interface{} {
-    def := c.merge(c.GetDefinition(name), prop, args)
-    if def.Scope == SINGLETON {
-        if ins, ok := c.instances.Load(name); ok {
-            return ins
-        }
-        ins := def.Instance()
-        c.instances.Store(name, ins)
-        return ins
-    }
-    return def.Instance()
-}
-
-// 快速获取实例
-func (c *ApplicationContext) Get(name string) interface{} {
-    return c.GetBean(name, Fields{}, ConstructorArgs{})
 }
