@@ -25,7 +25,7 @@ if [[ $# -eq 0 ]]; then
 fi
 
 for REPO in $REPOS ; do
-    remote $REPO https://github.com/mix-php/$REPO.git
+    remote $REPO https://github.com/mix-go/$REPO.git
 
     split "src/$REPO" $REPO
 done
