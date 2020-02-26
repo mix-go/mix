@@ -8,12 +8,24 @@ import (
     "reflect"
 )
 
+// 全局App
+var App *Application
+
+// 上下文
+func Context() *bean.ApplicationContext {
+    return App.Context
+}
+
 // 创建App
 func NewApplication(definition ApplicationDefinition) *Application {
     app := &Application{
         ApplicationDefinition: definition,
     }
     app.Init()
+
+    // 保存指针
+    App = app
+
     return app
 }
 
