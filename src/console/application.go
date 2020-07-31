@@ -4,7 +4,7 @@ import (
     "errors"
     "fmt"
     "github.com/mix-go/bean"
-    "github.com/mix-go/console/cli"
+    "github.com/mix-go/console/argv"
     "reflect"
 )
 
@@ -83,7 +83,7 @@ type OptionDefinition struct {
 // 初始化
 func (t *Application) Init() {
     t.Context = bean.NewApplicationContext(t.Beans)
-    t.BasePath = cli.Program.Dir
+    t.BasePath = argv.Program.Dir
 }
 
 // 执行
@@ -103,7 +103,7 @@ func (t *Application) Run() {
 
     // 提取命令
     var cmd *CommandDefinition
-    cmdName := cli.Command
+    cmdName := argv.Command
     if cmdName == "" {
         // 单命令
         for _, c := range t.Commands {
@@ -124,7 +124,7 @@ func (t *Application) Run() {
         }
     }
     if cmd == nil {
-        panic(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'", cmdName, cli.Program.Path)))
+        panic(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'.", cmdName, argv.Program.Path)))
     }
 
     // 执行命令
@@ -134,4 +134,23 @@ func (t *Application) Run() {
         panic(errors.New(fmt.Sprintf("'%s' Main method not found", fmt.Sprintf("%#v", v))))
     }
     m.Call([]reflect.Value{})
+}
+
+func (t *Application) help() {
+
+
+
+
+    //$script = Argument::script();
+    //println("Usage: {$script}" . ($this->isSingleCommand ? '' : ' [OPTIONS] COMMAND') . " [opt...]");
+    //$this->printOptions();
+    //if (!$this->isSingleCommand) {
+    //    $this->printCommands();
+    //} else {
+    //    $this->printCommandOptions();
+    //}
+    //println('');
+    //println("Run '{$script}" . ($this->isSingleCommand ? '' : ' COMMAND') . " --help' for more information on a command.");
+    //println('');
+    //println("Developed with Mix PHP framework. (mixphp.cn)");
 }

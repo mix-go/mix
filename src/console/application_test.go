@@ -2,7 +2,7 @@ package console
 
 import (
     "github.com/mix-go/bean"
-    "github.com/mix-go/console/cli"
+    "github.com/mix-go/console/argv"
     "github.com/mix-go/console/flag"
     "github.com/stretchr/testify/assert"
     "os"
@@ -65,7 +65,7 @@ func TestCommandRun(t *testing.T) {
     a := assert.New(t)
 
     os.Args = []string{os.Args[0], "foo"}
-    cli.Parse()
+    argv.Parse()
     flag.Parse()
 
     app := NewApplication(def1);
@@ -81,7 +81,7 @@ func TestSingletonCommandRun(t *testing.T) {
     a := assert.New(t)
 
     os.Args = []string{os.Args[0]}
-    cli.Parse()
+    argv.Parse()
     flag.Parse()
 
     app := NewApplication(def2);
@@ -97,7 +97,7 @@ func TestCommandNotFound(t *testing.T) {
     a := assert.New(t)
 
     os.Args = []string{os.Args[0], "bar"}
-    cli.Parse()
+    argv.Parse()
     flag.Parse()
     app := NewApplication(def1);
     app.Run()

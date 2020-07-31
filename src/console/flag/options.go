@@ -1,7 +1,7 @@
 package flag
 
 import (
-    "github.com/mix-go/console/cli"
+    "github.com/mix-go/console/argv"
     "os"
     "regexp"
     "strings"
@@ -18,7 +18,7 @@ func Parse() {
 func NewOptions() map[string]string {
     ops := make(map[string]string, 0)
     s := 1
-    if cli.Command == "" {
+    if argv.Command == "" {
         s = 0
     }
     for k, v := range os.Args {

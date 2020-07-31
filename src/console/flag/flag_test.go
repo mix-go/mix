@@ -1,7 +1,7 @@
 package flag
 
 import (
-    "github.com/mix-go/console/cli"
+    "github.com/mix-go/console/argv"
     "github.com/stretchr/testify/assert"
     "os"
     "testing"
@@ -11,7 +11,7 @@ func TestSingle(t *testing.T) {
     a := assert.New(t)
 
     os.Args = []string{os.Args[0], "foo", "-a=a1", "-b", "--cd", "--ab=ab1", "--de", "de1", "-c", "c1", "--sw", "false"}
-    cli.Parse()
+    argv.Parse()
     Parse()
 
     v1 := String("a", "")
@@ -40,7 +40,7 @@ func TestMatch(t *testing.T) {
     a := assert.New(t)
 
     os.Args = []string{os.Args[0], "foo", "-a=a1", "-b", "--bc", "--ab=ab1", "--de", "de1", "-c", "c1", "--sw", "false"}
-    cli.Parse()
+    argv.Parse()
     Parse()
 
     v1 := BoolMatch([]string{"b", "bc"}, false)
@@ -54,7 +54,7 @@ func TestNotFound(t *testing.T) {
     a := assert.New(t)
 
     os.Args = []string{os.Args[0]}
-    cli.Parse()
+    argv.Parse()
     Parse()
 
     v1 := Bool("cde", false)
