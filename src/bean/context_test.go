@@ -1,8 +1,7 @@
 package bean
 
 import (
-    "fmt"
-    "io/ioutil"
+    "github.com/stretchr/testify/assert"
     "net/http"
     "testing"
     "time"
@@ -15,7 +14,6 @@ type Foo struct {
 
 func (c *Foo) Init() {
     c.Bar = "bar init"
-    fmt.Println("init")
 }
 
 var Definitions = []BeanDefinition{
@@ -55,31 +53,33 @@ func NewHttpClient(timeout time.Duration) *http.Client {
     }
 }
 
-func TestApplicationContext_Get(t *testing.T) {
+func TestApplicationContextGet(t *testing.T) {
+    a := assert.New(t)
+
     context := NewApplicationContext(Definitions)
     cli := context.Get("httpclient").(*http.Client)
-    fmt.Println(fmt.Sprintf("%#v", cli))
-    resp, _ := cli.Get("http://www.baidu.com/")
-    body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println(len(string(body)))
+    _, err := cli.Get("http://www.baidu.com/")
+
+    a.Equal(err, nil)
 }
 
-func TestApplicationContext_Get2(t *testing.T) {
+func TestApplicationContextGetReflectFunc(t *testing.T) {
+    a := assert.New(t)
+
     context := NewApplicationContext(Definitions)
     cli := context.Get("httpclient2").(*http.Client)
-    fmt.Println(fmt.Sprintf("%#v", cli))
-    resp, _ := cli.Get("http://www.baidu.com/")
-    body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println(len(string(body)))
+    _, err := cli.Get("http://www.baidu.com/")
+
+    a.Equal(err, nil)
 }
 
-func TestApplicationContext_Get3(t *testing.T) {
+func TestApplicationContextGetReflectStruct(t *testing.T) {
+    a := assert.New(t)
+
     context := NewApplicationContext(Definitions)
     foo := context.Get("foo").(*Foo)
-    fmt.Println(fmt.Sprintf("%#v", foo))
     cli := foo.Client
-    fmt.Println(fmt.Sprintf("%#v", cli))
-    resp, _ := cli.Get("http://www.baidu.com/")
-    body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println(len(string(body)))
+    _, err := cli.Get("http://www.baidu.com/")
+
+    a.Equal(err, nil)
 }
