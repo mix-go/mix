@@ -27,7 +27,6 @@ func NewApplication(definition ApplicationDefinition) *Application {
     app := &Application{
         ApplicationDefinition: definition,
     }
-
     app.Init();
 
     // 保存指针
@@ -58,6 +57,8 @@ type Application struct {
     BasePath string
     // 应用上下文
     Context *bean.ApplicationContext
+    // 是否单命令
+    Singleton bool
 }
 
 // 命令定义
@@ -97,6 +98,8 @@ func (t *Application) Run() {
         }()
     }
 
+
+
     if len(t.Commands) == 0 {
         panic(errors.New("Command cannot be empty"))
     }
@@ -109,6 +112,7 @@ func (t *Application) Run() {
         for _, c := range t.Commands {
             if c.Singleton {
                 cmd = &c
+                t.Singleton = true
                 break
             }
         }
@@ -137,20 +141,37 @@ func (t *Application) Run() {
 }
 
 func (t *Application) help() {
+    program := argv.Program.Path
+    flag := ""
+    if t.Singleton {
+        flag = " [OPTIONS] COMMAND"
+    }
+    fmt.Println(fmt.Sprintf("Usage: %s%s [opt...]", program, flag))
+    t.printGlobalOptions()
+    if t.Singleton {
+        t.printCommands()
+    } else {
+        t.printCommandOptions()
+    }
+    fmt.Println("")
+    flag = ""
+    if t.Singleton {
+        flag = " COMMAND"
+    }
+    fmt.Println("")
+    fmt.Println(fmt.Sprintf("Run '%s%s  --help' for more information on a command.", program, flag))
+    fmt.Println("")
+    fmt.Println("Developed with Mix Go framework. (openmix.org/mix-go)")
+}
 
+func (t *Application) printGlobalOptions() {
 
+}
 
+func (t *Application) printCommands() {
 
-    //$script = Argument::script();
-    //println("Usage: {$script}" . ($this->isSingleCommand ? '' : ' [OPTIONS] COMMAND') . " [opt...]");
-    //$this->printOptions();
-    //if (!$this->isSingleCommand) {
-    //    $this->printCommands();
-    //} else {
-    //    $this->printCommandOptions();
-    //}
-    //println('');
-    //println("Run '{$script}" . ($this->isSingleCommand ? '' : ' COMMAND') . " --help' for more information on a command.");
-    //println('');
-    //println("Developed with Mix PHP framework. (mixphp.cn)");
+}
+
+func (t *Application) printCommandOptions() {
+
 }
