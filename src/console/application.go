@@ -91,16 +91,29 @@ func (t *Application) Run() {
     }
 
     // 提取命令
-    cmdName := cli.Command
     var cmd *CommandDefinition
-    for _, c := range t.Commands {
-        if c.Name == cmdName {
-            cmd = &c
-            break
+    cmdName := cli.Command
+    if cmdName == "" {
+        // 单命令
+        for _, c := range t.Commands {
+            if c.Singleton {
+                cmd = &c
+                break
+            }
+        }
+        if cmd == nil {
+            panic(errors.New("Singleton command not found"))
+        }
+    } else {
+        for _, c := range t.Commands {
+            if c.Name == cmdName {
+                cmd = &c
+                break
+            }
         }
     }
     if cmd == nil {
-        panic(errors.New(fmt.Sprintf("'%s' struct not found", cmdName)))
+        panic(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'.", cmdName, cli.Program.Path)))
     }
 
     // 执行命令

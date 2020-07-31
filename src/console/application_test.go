@@ -1,32 +1,20 @@
 package console
 
 import (
-    "fmt"
     "github.com/mix-go/bean"
     "github.com/mix-go/console/cli"
     "github.com/mix-go/console/flag"
     "github.com/stretchr/testify/assert"
-    "net/http"
     "os"
     "testing"
-    "time"
 )
 
 var (
-    def = ApplicationDefinition{
+    def1 = ApplicationDefinition{
         AppName:    "app-test",
         AppVersion: "1.0.0-test",
         AppDebug:   true,
-        Beans: []bean.BeanDefinition{
-            {
-                Name:    "httpclient",
-                Scope:   bean.SINGLETON,
-                Reflect: bean.NewReflect(http.Client{}),
-                Fields: bean.Fields{
-                    "Timeout": time.Duration(time.Second * 3),
-                },
-            },
-        },
+        Beans:      nil,
         Commands: []CommandDefinition{
             {
                 Name:  "foo",
@@ -42,6 +30,27 @@ var (
             },
         },
     }
+    def2 = ApplicationDefinition{
+        AppName:    "app-test",
+        AppVersion: "1.0.0-test",
+        AppDebug:   true,
+        Beans:      nil,
+        Commands: []CommandDefinition{
+            {
+                Name:  "foo",
+                Usage: "bar",
+                Options: []OptionDefinition{
+                    {
+                        Names: []string{"", ""},
+                        Usage: "",
+                    },
+                },
+                Reflect:   bean.NewReflect(Foo{}),
+                Singleton: true,
+            },
+        },
+    }
+    Run = false
 )
 
 type Foo struct {
@@ -49,18 +58,37 @@ type Foo struct {
 }
 
 func (c *Foo) Main() {
-    fmt.Printf("%#v\n", flag.Options)
+    Run = true
 }
 
-func TestApplication(t *testing.T) {
+func TestCommandRun(t *testing.T) {
     a := assert.New(t)
 
-    os.Args = []string{os.Args[0], "foo", "-a", "=", "a1", "-b", "--ab", "=", "ab1"}
-    cli.Refresh()
-    flag.Refresh()
+    os.Args = []string{os.Args[0], "foo"}
+    cli.Parse()
+    flag.Parse()
 
-    app := NewApplication(def);
+    app := NewApplication(def1);
     app.Run()
 
     a.NotEqual(app.BasePath, nil)
+    a.True(Run)
+
+    Run = false
+}
+
+func TestSingletonCommandRun(t *testing.T) {
+    a := assert.New(t)
+
+    os.Args = []string{os.Args[0]}
+    cli.Parse()
+    flag.Parse()
+
+    app := NewApplication(def2);
+    app.Run()
+
+    a.NotEqual(app.BasePath, nil)
+    a.True(Run)
+
+    Run = false
 }
