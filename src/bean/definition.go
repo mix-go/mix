@@ -93,6 +93,13 @@ func (t *BeanDefinition) Instance() interface{} {
     // 执行初始化方法
     if t.InitMethod != "" {
         m := v.MethodByName(t.InitMethod)
+        if !m.IsValid() {
+            panic(fmt.Sprintf("Bean name %s type %s init method %s not found",
+                t.Name,
+                reflect.TypeOf(v.Interface()),
+                t.InitMethod,
+            ))
+        }
         m.Call([]reflect.Value{})
     }
     return v.Interface()

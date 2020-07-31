@@ -50,7 +50,7 @@ var (
             },
         },
     }
-    Run = false
+    run = false
 )
 
 type Foo struct {
@@ -58,7 +58,7 @@ type Foo struct {
 }
 
 func (c *Foo) Main() {
-    Run = true
+    run = true
 }
 
 func TestCommandRun(t *testing.T) {
@@ -72,9 +72,9 @@ func TestCommandRun(t *testing.T) {
     app.Run()
 
     a.NotEqual(app.BasePath, nil)
-    a.True(Run)
+    a.True(run)
 
-    Run = false
+    run = false
 }
 
 func TestSingletonCommandRun(t *testing.T) {
@@ -88,7 +88,19 @@ func TestSingletonCommandRun(t *testing.T) {
     app.Run()
 
     a.NotEqual(app.BasePath, nil)
-    a.True(Run)
+    a.True(run)
 
-    Run = false
+    run = false
+}
+
+func TestCommandNotFound(t *testing.T) {
+    a := assert.New(t)
+
+    os.Args = []string{os.Args[0], "bar"}
+    cli.Parse()
+    flag.Parse()
+    app := NewApplication(def1);
+    app.Run()
+
+    a.Contains(LastError.(error).Error(), "'bar' is not command, see '")
 }

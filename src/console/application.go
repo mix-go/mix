@@ -13,6 +13,8 @@ var (
     App *Application
     // 版本号
     Version = "1.0.0-alpha";
+    // 最后的错误
+    LastError interface{}
 )
 
 // 上下文
@@ -86,6 +88,15 @@ func (t *Application) Init() {
 
 // 执行
 func (t *Application) Run() {
+    if t.AppDebug {
+        defer func() {
+            if err := recover(); err != nil {
+                LastError = err
+                fmt.Println(err)
+            }
+        }()
+    }
+
     if len(t.Commands) == 0 {
         panic(errors.New("Command cannot be empty"))
     }
@@ -113,7 +124,7 @@ func (t *Application) Run() {
         }
     }
     if cmd == nil {
-        panic(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'.", cmdName, cli.Program.Path)))
+        panic(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'", cmdName, cli.Program.Path)))
     }
 
     // 执行命令
