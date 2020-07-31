@@ -13,7 +13,6 @@ type Foo struct {
 }
 
 func (c *Foo) Init() {
-    c.Bar = "bar init"
 }
 
 var Definitions = []BeanDefinition{

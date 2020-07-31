@@ -1,7 +1,7 @@
 package flag
 
 import (
-    "mix/src/console/cli"
+    "github.com/mix-go/console/cli"
     "os"
     "regexp"
     "strings"

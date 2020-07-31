@@ -2,9 +2,9 @@ package console
 
 import (
     "fmt"
-    "mix/src/bean"
-    "mix/src/console/cli"
-    "mix/src/console/flag"
+    "github.com/mix-go/bean"
+    "github.com/mix-go/console/cli"
+    "github.com/mix-go/console/flag"
     "reflect"
 )
 
