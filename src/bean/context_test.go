@@ -13,6 +13,7 @@ type Foo struct {
 }
 
 func (c *Foo) Init() {
+    c.Bar = "test"
 }
 
 var Definitions = []BeanDefinition{
@@ -77,6 +78,9 @@ func TestApplicationContextGetReflectStruct(t *testing.T) {
 
     context := NewApplicationContext(Definitions)
     foo := context.Get("foo").(*Foo)
+
+    a.Equal(foo.Bar, "test")
+
     cli := foo.Client
     _, err := cli.Get("http://www.baidu.com/")
 

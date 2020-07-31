@@ -8,8 +8,12 @@ import (
 )
 
 var (
-    Options = NewOptions()
+    Options map[string]string = NewOptions()
 )
+
+func Refresh() {
+    Options = NewOptions()
+}
 
 func NewOptions() map[string]string {
     ops := make(map[string]string, 0)

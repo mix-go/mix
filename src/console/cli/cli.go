@@ -7,9 +7,14 @@ import (
 )
 
 var (
+    Program ProgramMeta = NewProgram()
+    Command string      = NewCommand()
+)
+
+func Refresh() {
     Program = NewProgram()
     Command = NewCommand()
-)
+}
 
 type ProgramMeta struct {
     Name string

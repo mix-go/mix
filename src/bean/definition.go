@@ -56,17 +56,16 @@ func NewReference(name string) Reference {
 
 // 实例化
 func (t *BeanDefinition) Instance() interface{} {
-    s := t.Reflect()
-    v := s
+    v := t.Reflect()
     // 构造器注入
-    if s.Kind() == reflect.Func {
+    if v.Kind() == reflect.Func {
         in := []reflect.Value{}
         for _, a := range t.ConstructorArgs {
             in = append(in, reflect.ValueOf(a))
         }
-        v = s.Call(in)[0]
+        v = v.Call(in)[0]
         if v.Kind() == reflect.Struct {
-            panic(fmt.Sprintf("Bean name %s reflect %s return value is not a pointer type", t.Name, s.Type().String()))
+            panic(fmt.Sprintf("Bean name %s reflect %s return value is not a pointer type", t.Name, v.Type().String()))
         }
     }
     // 字段注入
