@@ -36,17 +36,17 @@ func TestSingle(t *testing.T) {
     a.Equal(v7, "c1")
 }
 
-func TestMultiple(t *testing.T) {
+func TestMatch(t *testing.T) {
     a := assert.New(t)
 
     os.Args = []string{os.Args[0], "foo", "-a=a1", "-b", "--bc", "--ab=ab1", "--de", "de1", "-c", "c1", "--sw", "false"}
     cli.Parse()
     Parse()
 
-    v1 := BoolMultiple([]string{"b", "bc"}, false)
+    v1 := BoolMatch([]string{"b", "bc"}, false)
     a.Equal(v1, true)
 
-    v2 := StringMultiple([]string{"a", "ab"}, "")
+    v2 := StringMatch([]string{"a", "ab"}, "")
     a.Equal(v2, "a1")
 }
 
@@ -63,9 +63,9 @@ func TestNotFound(t *testing.T) {
     v2 := String("x", "")
     a.Equal(v2, "")
 
-    v3 := BoolMultiple([]string{"b", "bc"}, false)
+    v3 := BoolMatch([]string{"b", "bc"}, false)
     a.Equal(v3, false)
 
-    v4 := StringMultiple([]string{"a", "ab"}, "")
+    v4 := StringMatch([]string{"a", "ab"}, "")
     a.Equal(v4, "")
 }
