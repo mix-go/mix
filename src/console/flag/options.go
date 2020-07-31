@@ -11,7 +11,7 @@ var (
     Options map[string]string = NewOptions()
 )
 
-func Refresh() {
+func Parse() {
     Options = NewOptions()
 }
 

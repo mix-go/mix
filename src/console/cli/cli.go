@@ -11,7 +11,7 @@ var (
     Command string      = NewCommand()
 )
 
-func Refresh() {
+func Parse() {
     Program = NewProgram()
     Command = NewCommand()
 }

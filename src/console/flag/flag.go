@@ -29,11 +29,19 @@ func StringMultiple(names []string, value string) string {
 }
 
 func Bool(name string, value bool) bool {
-    v := String(name, "")
-    if v == "" {
-        return value
+    key := ""
+    if len(name) == 1 {
+        key = fmt.Sprintf("-%s", name)
+    } else {
+        key = fmt.Sprintf("--%s", name)
     }
-    return true
+    if v, ok := Options[key]; ok {
+        if v == "false" {
+            return false
+        }
+        return true
+    }
+    return value
 }
 
 func BoolMultiple(names []string, value bool) bool {
