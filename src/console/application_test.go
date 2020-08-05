@@ -21,8 +21,8 @@ var (
                 Usage: "bar",
                 Options: []OptionDefinition{
                     {
-                        Names: []string{"", ""},
-                        Usage: "",
+                        Names: []string{"a", "bc"},
+                        Usage: "foo",
                     },
                 },
                 Reflect:   bean.NewReflect(Foo{}),
@@ -41,8 +41,8 @@ var (
                 Usage: "bar",
                 Options: []OptionDefinition{
                     {
-                        Names: []string{"", ""},
-                        Usage: "",
+                        Names: []string{"a", "bc"},
+                        Usage: "foo",
                     },
                 },
                 Reflect:   bean.NewReflect(Foo{}),

@@ -5,7 +5,9 @@ import (
     "fmt"
     "github.com/mix-go/bean"
     "github.com/mix-go/console/argv"
+    "github.com/mix-go/console/flag"
     "reflect"
+    "strings"
 )
 
 var (
@@ -84,35 +86,83 @@ type OptionDefinition struct {
 // 初始化
 func (t *Application) Init() {
     t.Context = bean.NewApplicationContext(t.Beans)
+
     t.BasePath = argv.Program.Dir
+
+    for _, c := range t.Commands {
+        if c.Singleton {
+            t.Singleton = true
+            break
+        }
+    }
 }
 
 // 执行
 func (t *Application) Run() {
-    if t.AppDebug {
-        defer func() {
-            if err := recover(); err != nil {
-                LastError = err
+    defer func() {
+        if err := recover(); err != nil {
+            LastError = err
+
+            if t.AppDebug {
+                // 屏蔽错误堆栈
                 fmt.Println(err)
+            } else {
+                panic(err)
             }
-        }()
-    }
-
-
+        }
+    }()
 
     if len(t.Commands) == 0 {
         panic(errors.New("Command cannot be empty"))
     }
 
+    command := argv.Command
+    if command == "" {
+        if flag.BoolMatch([]string{"h", "help"}, false) {
+            t.help()
+            return
+        }
+        if flag.BoolMatch([]string{"v", "version"}, false) {
+            t.version()
+            return
+        }
+
+        options := flag.Options
+        if len(options) == 0 {
+            t.help()
+            return
+        } else if t.Singleton {
+            t.call()
+            return
+        }
+
+        f := ""
+        for k, _ := range options {
+            f = k
+            break
+        }
+        p := argv.Program.Path
+        panic(errors.New(fmt.Sprintf("flag provided but not defined: '%s', see '%s --help'.", f, p)))
+    } else if flag.Bool("help", false) {
+        t.help()
+        return
+    }
+    t.call()
+}
+
+// 执行命令
+func (t *Application) call() {
+    // 命令行选项效验
+    t.validateOptions()
+
     // 提取命令
     var cmd *CommandDefinition
-    cmdName := argv.Command
-    if cmdName == "" {
+    command := argv.Command
+    if t.Singleton {
         // 单命令
         for _, c := range t.Commands {
             if c.Singleton {
                 cmd = &c
-                t.Singleton = true
                 break
             }
         }
@@ -121,14 +171,14 @@ func (t *Application) Run() {
         }
     } else {
         for _, c := range t.Commands {
-            if c.Name == cmdName {
+            if c.Name == command {
                 cmd = &c
                 break
             }
         }
     }
     if cmd == nil {
-        panic(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'.", cmdName, argv.Program.Path)))
+        panic(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'.", command, argv.Program.Path)))
     }
 
     // 执行命令
@@ -140,13 +190,19 @@ func (t *Application) Run() {
     m.Call([]reflect.Value{})
 }
 
+// 命令行选项效验
+func (t *Application) validateOptions() {
+
+}
+
+// 帮助
 func (t *Application) help() {
     program := argv.Program.Path
-    flag := ""
+    fg := ""
     if t.Singleton {
-        flag = " [OPTIONS] COMMAND"
+        fg = " [OPTIONS] COMMAND"
     }
-    fmt.Println(fmt.Sprintf("Usage: %s%s [opt...]", program, flag))
+    fmt.Println(fmt.Sprintf("Usage: %s%s [opt...]", program, fg))
     t.printGlobalOptions()
     if t.Singleton {
         t.printCommands()
@@ -154,24 +210,80 @@ func (t *Application) help() {
         t.printCommandOptions()
     }
     fmt.Println("")
-    flag = ""
+    fg = ""
     if t.Singleton {
-        flag = " COMMAND"
+        fg = " COMMAND"
     }
     fmt.Println("")
-    fmt.Println(fmt.Sprintf("Run '%s%s  --help' for more information on a command.", program, flag))
+    fmt.Println(fmt.Sprintf("Run '%s%s  --help' for more information on a command.", program, fg))
     fmt.Println("")
-    fmt.Println("Developed with Mix Go framework. (openmix.org/mix-go)")
+    fmt.Println("Developed with Mix Go framework. (http://openmix.org/mix-go)")
 }
 
+// 打印全局选项
 func (t *Application) printGlobalOptions() {
-
+    tabs := "\t";
+    fmt.Println("");
+    fmt.Println("Global Options:");
+    fmt.Println(fmt.Sprintf("  -h, --help%sPrint usage", tabs));
+    fmt.Println(fmt.Sprintf("  -v, --version%sPrint version information", tabs));
 }
 
+// 打印命令
 func (t *Application) printCommands() {
-
+    fmt.Println("");
+    fmt.Println("Commands:");
+    for k, v := range t.Commands {
+        command := k;
+        usage := v.Usage
+        fmt.Println(fmt.Sprintf("  %s\t%s", command, usage))
+    }
 }
 
+// 打印命令选项
 func (t *Application) printCommandOptions() {
+    command := argv.Command
+    options := []OptionDefinition{}
+    if !t.Singleton {
+        for _, v := range t.Commands {
+            if v.Name == command {
+                options = v.Options
+                break
+            }
+        }
+    } else {
+        for _, v := range t.Commands {
+            if v.Singleton {
+                options = v.Options
+                break
+            }
+        }
+    }
+    if len(options) == 0 {
+        return
+    }
 
+    fmt.Println("");
+    fmt.Println("Command Options:");
+    for _, o := range options {
+        flags := []string{}
+        for _, v := range o.Names {
+            if len(v) == 1 {
+                flags = append(names, fmt.Sprintf("-%s", v))
+            } else {
+                flags = append(names, fmt.Sprintf("--%s", v))
+            }
+        }
+        flag := strings.Join(flags, ",")
+        usage := o.Usage
+        fmt.Println(fmt.Sprintf("  %s\t%s", flag, usage));
+    }
+}
+
+// 版本号
+func (t *Application) version() {
+    appName := t.AppName;
+    appVersion := t.AppVersion;
+    frameworkVersion := Version;
+    fmt.Println(fmt.Sprintf("%s version %s, framework version %s", appName, appVersion, frameworkVersion));
 }
