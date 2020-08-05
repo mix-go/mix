@@ -264,7 +264,7 @@ func (t *Application) help() {
     fmt.Println("")
     fmt.Println(fmt.Sprintf("Run '%s%s  --help' for more information on a command.", program, fg))
     fmt.Println("")
-    fmt.Println("Developed with Mix Go framework. (http://openmix.org/mix-go)")
+    fmt.Println("Developed with Mix Go framework. (openmix.org/mix-go)")
 }
 
 // 打印全局选项
@@ -280,8 +280,8 @@ func (t *Application) printGlobalOptions() {
 func (t *Application) printCommands() {
     fmt.Println("");
     fmt.Println("Commands:");
-    for k, v := range t.Commands {
-        command := k;
+    for _, v := range t.Commands {
+        command := v.Name;
         usage := v.Usage
         fmt.Println(fmt.Sprintf("  %s\t%s", command, usage))
     }

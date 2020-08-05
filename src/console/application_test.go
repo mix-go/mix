@@ -1,6 +1,7 @@
 package console
 
 import (
+    "fmt"
     "github.com/mix-go/bean"
     "github.com/mix-go/console/argv"
     "github.com/mix-go/console/flag"
@@ -99,8 +100,42 @@ func TestCommandNotFound(t *testing.T) {
     os.Args = []string{os.Args[0], "bar"}
     argv.Parse()
     flag.Parse()
-    app := NewApplication(def1);
+    app := NewApplication(def1)
     app.Run()
 
     a.Contains(LastError.(error).Error(), "'bar' is not command, see '")
+}
+
+func TestCommandPrint(t *testing.T) {
+    var app *Application
+
+    os.Args = []string{os.Args[0]}
+    argv.Parse()
+    flag.Parse()
+    app = NewApplication(def1)
+    app.Run()
+
+    fmt.Println("-----------------------")
+
+    os.Args = []string{os.Args[0], "-h"}
+    argv.Parse()
+    flag.Parse()
+    app = NewApplication(def1)
+    app.Run()
+
+    fmt.Println("-----------------------")
+
+    os.Args = []string{os.Args[0], "-v"}
+    argv.Parse()
+    flag.Parse()
+    app = NewApplication(def1)
+    app.Run()
+
+    fmt.Println("-----------------------")
+
+    os.Args = []string{os.Args[0], "foo", "--help"}
+    argv.Parse()
+    flag.Parse()
+    app = NewApplication(def1)
+    app.Run()
 }
