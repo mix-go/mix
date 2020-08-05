@@ -192,7 +192,54 @@ func (t *Application) call() {
 
 // 命令行选项效验
 func (t *Application) validateOptions() {
+    options := []OptionDefinition{}
+    if !t.Singleton {
+        for _, v := range t.Commands {
+            if v.Name == argv.Command {
+                options = v.Options
+                break
+            }
+        }
+    } else {
+        for _, v := range t.Commands {
+            if v.Singleton {
+                options = v.Options
+                break
+            }
+        }
+    }
+    if len(options) == 0 {
+        return
+    }
 
+    flags := []string{}
+    for _, o := range options {
+        for _, v := range o.Names {
+            if len(v) == 1 {
+                flags = append(flags, fmt.Sprintf("-%s", v))
+            } else {
+                flags = append(flags, fmt.Sprintf("--%s", v))
+            }
+        }
+    }
+    inArray := func(value string, values []string) bool {
+        for _, v := range values {
+            if v == value {
+                return true
+            }
+        }
+        return false
+    }
+    for f, _ := range flag.Options {
+        if !inArray(f, flags) {
+            p := argv.Program.Path
+            c := argv.Command
+            if c != "" {
+                c = fmt.Sprintf(" %s", c)
+            }
+            panic(errors.New(fmt.Sprintf("flag provided but not defined: '%s', see '%s%s --help'.", f, p, c)))
+        }
+    }
 }
 
 // 帮助
@@ -242,11 +289,10 @@ func (t *Application) printCommands() {
 
 // 打印命令选项
 func (t *Application) printCommandOptions() {
-    command := argv.Command
     options := []OptionDefinition{}
     if !t.Singleton {
         for _, v := range t.Commands {
-            if v.Name == command {
+            if v.Name == argv.Command {
                 options = v.Options
                 break
             }
@@ -269,14 +315,14 @@ func (t *Application) printCommandOptions() {
         flags := []string{}
         for _, v := range o.Names {
             if len(v) == 1 {
-                flags = append(names, fmt.Sprintf("-%s", v))
+                flags = append(flags, fmt.Sprintf("-%s", v))
             } else {
-                flags = append(names, fmt.Sprintf("--%s", v))
+                flags = append(flags, fmt.Sprintf("--%s", v))
             }
         }
-        flag := strings.Join(flags, ",")
+        fg := strings.Join(flags, ",")
         usage := o.Usage
-        fmt.Println(fmt.Sprintf("  %s\t%s", flag, usage));
+        fmt.Println(fmt.Sprintf("  %s\t%s", fg, usage));
     }
 }
 
