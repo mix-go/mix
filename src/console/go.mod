@@ -5,6 +5,6 @@ go 1.13
 replace github.com/mix-go/bean => ../bean
 
 require (
-	github.com/mix-go/bean v0.0.0-00010101000000-000000000000
+	github.com/mix-go/bean v1.0.0-beta1
 	github.com/stretchr/testify v1.6.1
 )
