@@ -17,17 +17,23 @@ func Parse() {
 }
 
 type ProgramMeta struct {
-    Name string
-    Dir  string
-    Path string
+    Path    string
+    AbsPath string
+    Dir     string
+    File    string
 }
 
 func NewProgram() ProgramMeta {
-    dir, file := filepath.Split(os.Args[0])
+    abspath, err := filepath.Abs(os.Args[0])
+    if err != nil {
+        panic(err)
+    }
+    dir, file := filepath.Split(abspath)
     return ProgramMeta{
-        Name: file,
-        Dir:  dir[:len(dir)-1],
-        Path: os.Args[0],
+        Path:    os.Args[0],
+        AbsPath: abspath,
+        Dir:     dir[:len(dir)-1],
+        File:    file,
     }
 }
 

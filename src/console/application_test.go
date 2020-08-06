@@ -81,7 +81,7 @@ func TestCommandRun(t *testing.T) {
 func TestSingletonCommandRun(t *testing.T) {
     a := assert.New(t)
 
-    os.Args = []string{os.Args[0]}
+    os.Args = []string{os.Args[0], "-a"}
     argv.Parse()
     flag.Parse()
 
@@ -110,6 +110,7 @@ func TestCommandPrint(t *testing.T) {
     var app *Application
 
     os.Args = []string{os.Args[0]}
+    fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
     app = NewApplication(def1)
@@ -118,6 +119,7 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println("-----------------------")
 
     os.Args = []string{os.Args[0], "-h"}
+    fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
     app = NewApplication(def1)
@@ -126,6 +128,7 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println("-----------------------")
 
     os.Args = []string{os.Args[0], "-v"}
+    fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
     app = NewApplication(def1)
@@ -134,8 +137,18 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println("-----------------------")
 
     os.Args = []string{os.Args[0], "foo", "--help"}
+    fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
     app = NewApplication(def1)
+    app.Run()
+
+    fmt.Println("-----------------------")
+
+    os.Args = []string{os.Args[0]}
+    fmt.Println(os.Args)
+    argv.Parse()
+    flag.Parse()
+    app = NewApplication(def2)
     app.Run()
 }

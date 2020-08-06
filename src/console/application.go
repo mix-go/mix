@@ -119,7 +119,7 @@ func (t *Application) Run() {
     command := argv.Command
     if command == "" {
         if flag.BoolMatch([]string{"h", "help"}, false) {
-            t.help()
+            t.globalHelp()
             return
         }
         if flag.BoolMatch([]string{"v", "version"}, false) {
@@ -129,7 +129,7 @@ func (t *Application) Run() {
 
         options := flag.Options
         if len(options) == 0 {
-            t.help()
+            t.globalHelp()
             return
         } else if t.Singleton {
             t.call()
@@ -144,7 +144,7 @@ func (t *Application) Run() {
         p := argv.Program.Path
         panic(errors.New(fmt.Sprintf("flag provided but not defined: '%s', see '%s --help'.", f, p)))
     } else if flag.Bool("help", false) {
-        t.help()
+        t.commandHelp()
         return
     }
     t.call()
@@ -242,27 +242,37 @@ func (t *Application) validateOptions() {
     }
 }
 
-// 帮助
-func (t *Application) help() {
+// 全局帮助
+func (t *Application) globalHelp() {
     program := argv.Program.Path
     fg := ""
-    if t.Singleton {
+    if !t.Singleton {
         fg = " [OPTIONS] COMMAND"
     }
     fmt.Println(fmt.Sprintf("Usage: %s%s [opt...]", program, fg))
     t.printGlobalOptions()
-    if t.Singleton {
+    if !t.Singleton {
         t.printCommands()
     } else {
         t.printCommandOptions()
     }
     fmt.Println("")
     fg = ""
-    if t.Singleton {
+    if !t.Singleton {
         fg = " COMMAND"
     }
     fmt.Println("")
-    fmt.Println(fmt.Sprintf("Run '%s%s  --help' for more information on a command.", program, fg))
+    fmt.Println(fmt.Sprintf("Run '%s%s --help' for more information on a command.", program, fg))
+    fmt.Println("")
+    fmt.Println("Developed with Mix Go framework. (openmix.org/mix-go)")
+}
+
+// 命令帮助
+func (t *Application) commandHelp() {
+    program := argv.Program.Path
+    command := argv.Command
+    fmt.Println(fmt.Sprintf("Usage: %s %s [opt...]", program, command))
+    t.printCommandOptions()
     fmt.Println("")
     fmt.Println("Developed with Mix Go framework. (openmix.org/mix-go)")
 }
