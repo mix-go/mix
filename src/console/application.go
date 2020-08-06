@@ -330,7 +330,7 @@ func (t *Application) printCommandOptions() {
                 flags = append(flags, fmt.Sprintf("--%s", v))
             }
         }
-        fg := strings.Join(flags, ",")
+        fg := strings.Join(flags, ", ")
         usage := o.Usage
         fmt.Println(fmt.Sprintf("  %s\t%s", fg, usage));
     }
