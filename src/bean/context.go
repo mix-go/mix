@@ -59,6 +59,18 @@ func (c *ApplicationContext) Get(name string) interface{} {
     return c.GetBean(name, Fields{}, ConstructorArgs{})
 }
 
+// 判断组件是否存在
+func (c *ApplicationContext) Has(name string) (ok bool) {
+    ok = true
+    defer func() {
+        if err := recover(); err != nil {
+            ok = false
+        }
+    }()
+    c.GetBeanDefinition(name)
+    return ok
+}
+
 // 合并
 // args | fields 内的字段会替换之前定义的值
 // args 内的 nil 值将会忽略，不会替换处理

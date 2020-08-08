@@ -69,7 +69,7 @@ func TestCommandRun(t *testing.T) {
     argv.Parse()
     flag.Parse()
 
-    app := NewApplication(def1);
+    app := NewApplication(def1, "event", "error");
     app.Run()
 
     a.NotEqual(app.BasePath, nil)
@@ -85,7 +85,7 @@ func TestSingletonCommandRun(t *testing.T) {
     argv.Parse()
     flag.Parse()
 
-    app := NewApplication(def2);
+    app := NewApplication(def2, "event", "error");
     app.Run()
 
     a.NotEqual(app.BasePath, nil)
@@ -100,7 +100,7 @@ func TestCommandNotFound(t *testing.T) {
     os.Args = []string{os.Args[0], "bar"}
     argv.Parse()
     flag.Parse()
-    app := NewApplication(def1)
+    app := NewApplication(def1, "event", "error")
     app.Run()
 
     a.Contains(LastError.(error).Error(), "'bar' is not command, see '")
@@ -113,7 +113,7 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
-    app = NewApplication(def1)
+    app = NewApplication(def1, "event", "error")
     app.Run()
 
     fmt.Println("-----------------------")
@@ -122,7 +122,7 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
-    app = NewApplication(def1)
+    app = NewApplication(def1, "event", "error")
     app.Run()
 
     fmt.Println("-----------------------")
@@ -131,7 +131,7 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
-    app = NewApplication(def1)
+    app = NewApplication(def1, "event", "error")
     app.Run()
 
     fmt.Println("-----------------------")
@@ -140,7 +140,7 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
-    app = NewApplication(def1)
+    app = NewApplication(def1, "event", "error")
     app.Run()
 
     fmt.Println("-----------------------")
@@ -149,6 +149,6 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
-    app = NewApplication(def2)
+    app = NewApplication(def2, "event", "error")
     app.Run()
 }

@@ -12,28 +12,31 @@ import (
 
 var (
     // 全局APP
-    App *Application
+    app *Application
     // 版本号
     Version = "1.0.0-alpha";
     // 最后的错误
     LastError interface{}
 )
 
+// App
+func App() *Application {
+    return app
+}
+
 // 上下文
 func Context() *bean.ApplicationContext {
-    return App.Context
+    return App().Context
 }
 
 // 创建App
-func NewApplication(definition ApplicationDefinition) *Application {
-    app := &Application{
+func NewApplication(definition ApplicationDefinition, dispatcherName, errorName string) *Application {
+    app = &Application{
         ApplicationDefinition: definition,
+        DispatcherName:        dispatcherName,
+        ErrorName:             errorName,
     }
     app.Init();
-
-    // 保存指针
-    App = app
-
     return app
 }
 
@@ -55,6 +58,9 @@ type ApplicationDefinition struct {
 type Application struct {
     // App 定义
     ApplicationDefinition
+    // 核心依赖组件名称
+    DispatcherName string
+    ErrorName      string
     // 基础路径
     BasePath string
     // 应用上下文
@@ -95,6 +101,16 @@ func (t *Application) Init() {
             break
         }
     }
+}
+
+// 获取错误处理组件
+func (t *Application) Error() Error {
+    return t.Context.Get(t.ErrorName).(Error)
+}
+
+// 获取错误事件调度器组件
+func (t *Application) Dispatcher() interface{} {
+    return t.Context.Get(t.DispatcherName)
 }
 
 // 执行
