@@ -6,12 +6,12 @@ type ListenerProvider struct {
     EventListeners map[string][]Listener
 }
 
-func (t *ListenerProvider) getListenersForEvent(event interface{}) []func(event interface{}) {
+func (t *ListenerProvider) getListenersForEvent(event Event) []func(event Event) {
     typ := fmt.Sprintf("%T", event)
-    iterable := []func(i interface{}){}
+    iterable := []func(event Event){}
     if listeners, ok := t.EventListeners[typ]; ok {
         for _, listener := range listeners {
-            iterable = append(iterable, func(event interface{}) {
+            iterable = append(iterable, func(event Event) {
                 listener.Process(event)
             })
         }
@@ -22,8 +22,8 @@ func (t *ListenerProvider) getListenersForEvent(event interface{}) []func(event 
 func newListenerProvider(listeners ...Listener) ListenerProvider {
     eventListeners := map[string][]Listener{}
     for _, listener := range listeners {
-        for _, e := range listener.Events() {
-            typ := fmt.Sprintf("%T", e)
+        for _, event := range listener.Events() {
+            typ := fmt.Sprintf("%T", event)
             if _, ok := eventListeners[typ]; ok {
                 eventListeners[typ] = append(eventListeners[typ], listener)
             } else {
@@ -37,10 +37,10 @@ func newListenerProvider(listeners ...Listener) ListenerProvider {
 }
 
 type Listener interface {
-    Events() []interface{}
-    Process(i interface{})
+    Events() []Event
+    Process(Event)
 }
 
-type StoppableEvent interface {
+type Event interface {
     isPropagationStopped() bool
 }

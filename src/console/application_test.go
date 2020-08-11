@@ -5,6 +5,7 @@ import (
     "github.com/mix-go/bean"
     "github.com/mix-go/console/argv"
     "github.com/mix-go/console/flag"
+    "github.com/sirupsen/logrus"
     "github.com/stretchr/testify/assert"
     "os"
     "testing"
@@ -15,7 +16,17 @@ var (
         AppName:    "app-test",
         AppVersion: "1.0.0-test",
         AppDebug:   true,
-        Beans:      nil,
+        Beans: []bean.BeanDefinition{
+            {
+                Name:            "error",
+                Reflect:         bean.NewReflect(NewError),
+                Scope:           "",
+                InitMethod:      "",
+                ConstructorArgs: bean.ConstructorArgs{logrus.TraceLevel, bean.NewReference("")},
+                Fields:          nil,
+                Context:         nil,
+            },
+        },
         Commands: []CommandDefinition{
             {
                 Name:  "foo",
@@ -31,6 +42,7 @@ var (
             },
         },
     }
+
     def2 = ApplicationDefinition{
         AppName:    "app-test",
         AppVersion: "1.0.0-test",
@@ -51,6 +63,7 @@ var (
             },
         },
     }
+
     run = false
 )
 
@@ -69,7 +82,7 @@ func TestCommandRun(t *testing.T) {
     argv.Parse()
     flag.Parse()
 
-    app := NewApplication(def1, "event", "error");
+    app := NewApplication(def1, "eventDispatcher", "error");
     app.Run()
 
     a.NotEqual(app.BasePath, nil)
@@ -85,7 +98,7 @@ func TestSingletonCommandRun(t *testing.T) {
     argv.Parse()
     flag.Parse()
 
-    app := NewApplication(def2, "event", "error");
+    app := NewApplication(def2, "eventDispatcher", "error");
     app.Run()
 
     a.NotEqual(app.BasePath, nil)
@@ -100,7 +113,7 @@ func TestCommandNotFound(t *testing.T) {
     os.Args = []string{os.Args[0], "bar"}
     argv.Parse()
     flag.Parse()
-    app := NewApplication(def1, "event", "error")
+    app := NewApplication(def1, "eventDispatcher", "error")
     app.Run()
 
     a.Contains(LastError.(error).Error(), "'bar' is not command, see '")
@@ -113,7 +126,7 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
-    app = NewApplication(def1, "event", "error")
+    app = NewApplication(def1, "eventDispatcher", "error")
     app.Run()
 
     fmt.Println("-----------------------")
@@ -122,7 +135,7 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
-    app = NewApplication(def1, "event", "error")
+    app = NewApplication(def1, "eventDispatcher", "error")
     app.Run()
 
     fmt.Println("-----------------------")
@@ -131,7 +144,7 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
-    app = NewApplication(def1, "event", "error")
+    app = NewApplication(def1, "eventDispatcher", "error")
     app.Run()
 
     fmt.Println("-----------------------")
@@ -140,7 +153,7 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
-    app = NewApplication(def1, "event", "error")
+    app = NewApplication(def1, "eventDispatcher", "error")
     app.Run()
 
     fmt.Println("-----------------------")
@@ -149,6 +162,6 @@ func TestCommandPrint(t *testing.T) {
     fmt.Println(os.Args)
     argv.Parse()
     flag.Parse()
-    app = NewApplication(def2, "event", "error")
+    app = NewApplication(def2, "eventDispatcher", "error")
     app.Run()
 }
