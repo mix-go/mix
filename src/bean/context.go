@@ -23,7 +23,7 @@ type ApplicationContext struct {
 func (t *ApplicationContext) Init() {
     t.tidyDefinitions = sync.Map{}
     for _, d := range t.Definitions {
-        d.Context = t
+        d.context = t
         t.tidyDefinitions.Store(d.Name, d)
     }
 }
@@ -87,7 +87,7 @@ func merge(def BeanDefinition, fields Fields, args ConstructorArgs) BeanDefiniti
         InitMethod:      def.InitMethod,
         ConstructorArgs: nil,
         Fields:          nil,
-        Context:         def.Context,
+        context:         def.context,
     }
     if hf {
         // 合并替换字段

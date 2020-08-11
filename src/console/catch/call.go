@@ -16,7 +16,7 @@ func Call(f interface{}, args ...interface{}) {
             if console.App() == nil {
                 panic(err)
             }
-            console.App().Error().Handle(err)
+            console.App().Error.Handle(err)
         }
     }()
 

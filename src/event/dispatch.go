@@ -4,7 +4,7 @@ type EventDispatcher struct {
     provider ListenerProvider
 }
 
-func (t *EventDispatcher) dispatch(event Event) interface{} {
+func (t *EventDispatcher) Dispatch(event Event) Event {
     for _, callback := range t.provider.getListenersForEvent(event) {
         callback(event)
         if event.isPropagationStopped() {

@@ -10,17 +10,6 @@ const (
     SINGLETON = "singleton"
 )
 
-// 定义
-type BeanDefinition struct {
-    Name            string
-    Reflect         func() reflect.Value
-    Scope           string
-    InitMethod      string
-    ConstructorArgs ConstructorArgs
-    Fields          Fields
-    Context         *ApplicationContext
-}
-
 // 创建反射
 func NewReflect(i interface{}) func() reflect.Value {
     switch reflect.TypeOf(i).Kind() {
@@ -54,6 +43,17 @@ func NewReference(name string) Reference {
     return Reference{Name: name}
 }
 
+// 定义
+type BeanDefinition struct {
+    Name            string
+    Reflect         func() reflect.Value
+    Scope           string
+    InitMethod      string
+    ConstructorArgs ConstructorArgs
+    Fields          Fields
+    context         *ApplicationContext
+}
+
 // 实例化
 func (t *BeanDefinition) Instance() interface{} {
     v := t.Reflect()
@@ -61,6 +61,10 @@ func (t *BeanDefinition) Instance() interface{} {
     if v.Kind() == reflect.Func {
         in := []reflect.Value{}
         for _, a := range t.ConstructorArgs {
+            // 引用字段处理
+            if _, ok := a.(Reference); ok {
+                a = t.context.GetBean(a.(Reference).Name, Fields{}, ConstructorArgs{})
+            }
             in = append(in, reflect.ValueOf(a))
         }
         v = v.Call(in)[0]
@@ -76,7 +80,7 @@ func (t *BeanDefinition) Instance() interface{} {
         }
         // 引用字段处理
         if _, ok := p.(Reference); ok {
-            p = t.Context.GetBean(p.(Reference).Name, Fields{}, ConstructorArgs{})
+            p = t.context.GetBean(p.(Reference).Name, Fields{}, ConstructorArgs{})
         }
         // 类型检测
         if v.Elem().FieldByName(k).Type().String() != reflect.TypeOf(p).String() {

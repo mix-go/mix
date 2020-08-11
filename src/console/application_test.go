@@ -5,6 +5,7 @@ import (
     "github.com/mix-go/bean"
     "github.com/mix-go/console/argv"
     "github.com/mix-go/console/flag"
+    "github.com/mix-go/event"
     "github.com/sirupsen/logrus"
     "github.com/stretchr/testify/assert"
     "os"
@@ -18,13 +19,20 @@ var (
         AppDebug:   true,
         Beans: []bean.BeanDefinition{
             {
+                Name:    "eventDispatcher",
+                Reflect: bean.NewReflect(event.NewEventDispatcher),
+                Scope:   bean.SINGLETON,
+            },
+            {
                 Name:            "error",
                 Reflect:         bean.NewReflect(NewError),
-                Scope:           "",
-                InitMethod:      "",
-                ConstructorArgs: bean.ConstructorArgs{logrus.TraceLevel, bean.NewReference("")},
-                Fields:          nil,
-                Context:         nil,
+                Scope:           bean.SINGLETON,
+                ConstructorArgs: bean.ConstructorArgs{bean.NewReference("logger")},
+            },
+            {
+                Name:    "logger",
+                Reflect: bean.NewReflect(logrus.New),
+                Scope:   bean.SINGLETON,
             },
         },
         Commands: []CommandDefinition{
@@ -47,7 +55,24 @@ var (
         AppName:    "app-test",
         AppVersion: "1.0.0-test",
         AppDebug:   true,
-        Beans:      nil,
+        Beans: []bean.BeanDefinition{
+            {
+                Name:    "eventDispatcher",
+                Reflect: bean.NewReflect(event.NewEventDispatcher),
+                Scope:   bean.SINGLETON,
+            },
+            {
+                Name:            "error",
+                Reflect:         bean.NewReflect(NewError),
+                Scope:           bean.SINGLETON,
+                ConstructorArgs: bean.ConstructorArgs{bean.NewReference("logger")},
+            },
+            {
+                Name:    "logger",
+                Reflect: bean.NewReflect(logrus.New),
+                Scope:   bean.SINGLETON,
+            },
+        },
         Commands: []CommandDefinition{
             {
                 Name:  "foo",
@@ -72,6 +97,9 @@ type Foo struct {
 }
 
 func (c *Foo) Main() {
+
+    panic("ddddd")
+
     run = true
 }
 

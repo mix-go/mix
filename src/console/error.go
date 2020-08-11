@@ -4,6 +4,7 @@ import (
     "errors"
     "github.com/astaxie/beego/logs"
     "github.com/sirupsen/logrus"
+    "runtime/debug"
 )
 
 const (
@@ -14,40 +15,36 @@ const (
 )
 
 // Error
-type errorHandler struct {
-    Level      int
-    Logger     LoggerManager
-    Dispatcher string
+type Error struct {
+    LoggerManager loggerManager
+    Dispatcher    string
 }
 
-// Handle Exception
-func (t *errorHandler) Handle(err interface{}) {
-    t.Logger.logf("%s", err)
+// Handle
+func (t *Error) Handle(err interface{}) {
+    t.LoggerManager.Logf("%s", err)
 }
 
-type Error interface {
-    Handle(err interface{})
-}
-
-// LoggerManager
-type LoggerManager struct {
+type loggerManager struct {
     UseType      int
     LogrusLogger *logrus.Logger
     BeegoLogger  *logs.BeeLogger
 }
 
-func (t *LoggerManager) AddLogrus(logger *logrus.Logger) {
+func (t *loggerManager) AddLogrus(logger *logrus.Logger) {
     t.UseType = LogrusType
     t.LogrusLogger = logger
 }
 
-func (t *LoggerManager) AddBeego(logger *logs.BeeLogger) {
+func (t *loggerManager) AddBeego(logger *logs.BeeLogger) {
     t.UseType = BeegoType
     t.BeegoLogger = logger
 }
 
 // 打印日志
-func (t *LoggerManager) logf(format string, args ...interface{}) {
+func (t *loggerManager) Logf(format string, args ...interface{}) {
+    format = format + "\n%s"
+    args = append(args, string(debug.Stack()))
     switch t.UseType {
     case LogrusType:
         t.LogrusLogger.Errorf(format, args...)
@@ -59,8 +56,8 @@ func (t *LoggerManager) logf(format string, args ...interface{}) {
 }
 
 // 创建 Error
-func NewError(level int, logger interface{}) Error {
-    loggerManager := LoggerManager{}
+func NewError(logger interface{}) *Error {
+    loggerManager := loggerManager{}
 
     switch logger.(type) {
     case *logrus.Logger:
@@ -73,8 +70,7 @@ func NewError(level int, logger interface{}) Error {
         panic(errors.New("Unsupported logger type"))
     }
 
-    return &errorHandler{
-        Level:  level,
-        Logger: loggerManager,
+    return &Error{
+        LoggerManager: loggerManager,
     }
 }

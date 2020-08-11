@@ -2,6 +2,15 @@ package event
 
 import "fmt"
 
+type Listener interface {
+    Events() []Event
+    Process(Event)
+}
+
+type Event interface {
+    isPropagationStopped() bool
+}
+
 type ListenerProvider struct {
     EventListeners map[string][]Listener
 }
@@ -34,13 +43,4 @@ func newListenerProvider(listeners ...Listener) ListenerProvider {
     return ListenerProvider{
         EventListeners: eventListeners,
     }
-}
-
-type Listener interface {
-    Events() []Event
-    Process(Event)
-}
-
-type Event interface {
-    isPropagationStopped() bool
 }

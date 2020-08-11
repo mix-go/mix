@@ -6,6 +6,7 @@ import (
     "github.com/mix-go/bean"
     "github.com/mix-go/console/argv"
     "github.com/mix-go/console/flag"
+    "github.com/mix-go/event"
     "reflect"
     "strings"
 )
@@ -58,9 +59,12 @@ type ApplicationDefinition struct {
 type Application struct {
     // App 定义
     ApplicationDefinition
-    // 核心依赖组件名称
+    // Event Dispatcher
     DispatcherName string
-    ErrorName      string
+    Dispatcher     *event.EventDispatcher
+    // Error
+    ErrorName string
+    Error     *Error
     // 基础路径
     BasePath string
     // 应用上下文
@@ -93,6 +97,11 @@ type OptionDefinition struct {
 func (t *Application) Init() {
     t.Context = bean.NewApplicationContext(t.Beans)
 
+    // 断言无法使用接口，由于没有泛型，导致这里 Dispatcher Error 无法实现 IoC
+    // 等 go 推出泛型时再修改为接口
+    t.Dispatcher = t.Context.Get(t.DispatcherName).(*event.EventDispatcher)
+    t.Error = t.Context.Get(t.ErrorName).(*Error)
+
     t.BasePath = argv.Program.Dir
 
     for _, c := range t.Commands {
@@ -103,28 +112,13 @@ func (t *Application) Init() {
     }
 }
 
-// 获取错误处理组件
-func (t *Application) Error() Error {
-    return t.Context.Get(t.ErrorName).(Error)
-}
-
-// 获取错误事件调度器组件
-func (t *Application) Dispatcher() interface{} {
-    return t.Context.Get(t.DispatcherName)
-}
-
 // 执行
 func (t *Application) Run() {
     defer func() {
         if err := recover(); err != nil {
             LastError = err
 
-            if t.AppDebug {
-                // 屏蔽错误堆栈
-                fmt.Println(err)
-            } else {
-                panic(err)
-            }
+            t.Error.Handle(err)
         }
     }()
 
