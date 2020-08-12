@@ -4,6 +4,7 @@ import (
     "errors"
     "github.com/mix-go/console"
     "reflect"
+    "runtime/debug"
 )
 
 // 执行方法并捕获 panic
@@ -16,7 +17,7 @@ func Call(f interface{}, args ...interface{}) {
             if console.App() == nil {
                 panic(err)
             }
-            console.App().Error.Handle(err)
+            console.App().Error.Handle(err, debug.Stack())
         }
     }()
 

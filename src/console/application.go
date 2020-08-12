@@ -8,6 +8,7 @@ import (
     "github.com/mix-go/console/flag"
     "github.com/mix-go/event"
     "reflect"
+    "runtime/debug"
     "strings"
 )
 
@@ -118,7 +119,7 @@ func (t *Application) Run() {
         if err := recover(); err != nil {
             LastError = err
 
-            t.Error.Handle(err)
+            t.Error.Handle(err, debug.Stack())
         }
     }()
 

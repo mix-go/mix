@@ -7,10 +7,6 @@ type Listener interface {
     Process(Event)
 }
 
-type Event interface {
-    isPropagationStopped() bool
-}
-
 type ListenerProvider struct {
     EventListeners map[string][]Listener
 }

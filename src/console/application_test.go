@@ -2,11 +2,11 @@ package console
 
 import (
     "fmt"
+    "github.com/astaxie/beego/logs"
     "github.com/mix-go/bean"
     "github.com/mix-go/console/argv"
     "github.com/mix-go/console/flag"
     "github.com/mix-go/event"
-    "github.com/sirupsen/logrus"
     "github.com/stretchr/testify/assert"
     "os"
     "testing"
@@ -27,11 +27,11 @@ var (
                 Name:            "error",
                 Reflect:         bean.NewReflect(NewError),
                 Scope:           bean.SINGLETON,
-                ConstructorArgs: bean.ConstructorArgs{bean.NewReference("logger")},
+                ConstructorArgs: bean.ConstructorArgs{},
             },
             {
                 Name:    "logger",
-                Reflect: bean.NewReflect(logrus.New),
+                Reflect: bean.NewReflect(logs.NewLogger),
                 Scope:   bean.SINGLETON,
             },
         },
@@ -69,7 +69,7 @@ var (
             },
             {
                 Name:    "logger",
-                Reflect: bean.NewReflect(logrus.New),
+                Reflect: bean.NewReflect(logs.NewLogger),
                 Scope:   bean.SINGLETON,
             },
         },
@@ -97,9 +97,6 @@ type Foo struct {
 }
 
 func (c *Foo) Main() {
-
-    panic("ddddd")
-
     run = true
 }
 
