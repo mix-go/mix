@@ -94,6 +94,8 @@ type OptionDefinition struct {
     Usage string
 }
 
+type NotFoundError error
+
 // 初始化
 func (t *Application) Init() {
     t.Context = bean.NewApplicationContext(t.Beans)
@@ -118,6 +120,11 @@ func (t *Application) Run() {
     defer func() {
         if err := recover(); err != nil {
             LastError = err
+
+            if _, ok := err.(NotFoundError); ok {
+                fmt.Println(err)
+                return
+            }
 
             t.Error.Handle(err, debug.Stack())
         }
@@ -153,7 +160,7 @@ func (t *Application) Run() {
             break
         }
         p := argv.Program.Path
-        panic(errors.New(fmt.Sprintf("flag provided but not defined: '%s', see '%s --help'.", f, p)))
+        panic(NotFoundError(errors.New(fmt.Sprintf("flag provided but not defined: '%s', see '%s --help'.", f, p))))
     } else if flag.Bool("help", false) {
         t.commandHelp()
         return
@@ -189,7 +196,7 @@ func (t *Application) call() {
         }
     }
     if cmd == nil {
-        panic(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'.", command, argv.Program.Path)))
+        panic(NotFoundError(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'.", command, argv.Program.Path))))
     }
 
     // 执行命令
@@ -248,7 +255,7 @@ func (t *Application) validateOptions() {
             if c != "" {
                 c = fmt.Sprintf(" %s", c)
             }
-            panic(errors.New(fmt.Sprintf("flag provided but not defined: '%s', see '%s%s --help'.", f, p, c)))
+            panic(NotFoundError(errors.New(fmt.Sprintf("flag provided but not defined: '%s', see '%s%s --help'.", f, p, c))))
         }
     }
 }
