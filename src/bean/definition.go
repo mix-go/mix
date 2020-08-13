@@ -57,6 +57,7 @@ type BeanDefinition struct {
 // 实例化
 func (t *BeanDefinition) Instance() interface{} {
     v := t.Reflect()
+
     // 构造器注入
     if v.Kind() == reflect.Func {
         in := []reflect.Value{}
@@ -67,16 +68,24 @@ func (t *BeanDefinition) Instance() interface{} {
             }
             in = append(in, reflect.ValueOf(a))
         }
-        v = v.Call(in)[0]
+        func() {
+            defer func() {
+                if err := recover(); err != nil {
+                    panic(fmt.Sprintf("Bean name '%s' reflect %s construct failed", t.Name, v.Type().String()))
+                }
+            }()
+            v = v.Call(in)[0]
+        }()
         if v.Kind() == reflect.Struct {
-            panic(fmt.Sprintf("Bean name %s reflect %s return value is not a pointer type", t.Name, v.Type().String()))
+            panic(fmt.Sprintf("Bean name '%s' reflect %s return value is not a pointer type", t.Name, v.Type().String()))
         }
     }
+
     // 字段注入
     for k, p := range t.Fields {
         // 字段检测
         if !v.Elem().FieldByName(k).CanSet() {
-            panic(fmt.Sprintf("Bean name %s type %s field %s cannot be found or cannot be set", t.Name, reflect.TypeOf(v.Interface()), k))
+            panic(fmt.Sprintf("Bean name '%s' type %s field %s cannot be found or cannot be set", t.Name, reflect.TypeOf(v.Interface()), k))
         }
         // 引用字段处理
         if _, ok := p.(Reference); ok {
@@ -84,7 +93,7 @@ func (t *BeanDefinition) Instance() interface{} {
         }
         // 类型检测
         if v.Elem().FieldByName(k).Type().String() != reflect.TypeOf(p).String() {
-            panic(fmt.Sprintf("Bean name %s type %s field %s value of type %s is not assignable to type %s",
+            panic(fmt.Sprintf("Bean name '%s' type %s field %s value of type %s is not assignable to type %s",
                 t.Name,
                 reflect.TypeOf(v.Interface()),
                 k,
@@ -94,11 +103,12 @@ func (t *BeanDefinition) Instance() interface{} {
         // 常规字段处理
         v.Elem().FieldByName(k).Set(reflect.ValueOf(p))
     }
+
     // 执行初始化方法
     if t.InitMethod != "" {
         m := v.MethodByName(t.InitMethod)
         if !m.IsValid() {
-            panic(fmt.Sprintf("Bean name %s type %s init method %s not found",
+            panic(fmt.Sprintf("Bean name '%s' type %s init method %s not found",
                 t.Name,
                 reflect.TypeOf(v.Interface()),
                 t.InitMethod,
@@ -106,5 +116,6 @@ func (t *BeanDefinition) Instance() interface{} {
         }
         m.Call([]reflect.Value{})
     }
+
     return v.Interface()
 }
