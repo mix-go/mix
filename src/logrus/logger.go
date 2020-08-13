@@ -2,9 +2,9 @@ package logrus
 
 import (
     "fmt"
-    rotatelogs "github.com/lestrrat-go/file-rotatelogs"
     l "github.com/sirupsen/logrus"
-    "io"
+    "path/filepath"
+    "runtime"
 )
 
 type Logger struct {
@@ -17,23 +17,15 @@ func (t *Logger) ErrorStack(err interface{}, stack string) {
 
 func NewLogger() *Logger {
     logger := l.New()
+    logger.ReportCaller = true // 显示调用信息
 
     formatter := new(l.TextFormatter)
     formatter.TimestampFormat = "2006-01-02 15:04:05"
     formatter.DisableQuote = true // 不转义换行符，为了保存错误堆栈到日志文件
+    formatter.CallerPrettyfier = func(frame *runtime.Frame) (function string, file string) {
+        return "", fmt.Sprintf("%s:%d", filepath.Base(frame.File), frame.Line)
+    }
     logger.Formatter = formatter
 
     return &Logger{logger}
-}
-
-func NewFileWriter(filename string, maxFiles int) io.Writer {
-    writer, err := rotatelogs.New(
-        filename+".%Y%m%d",
-        rotatelogs.WithMaxAge(-1),
-        rotatelogs.WithRotationCount(uint(maxFiles)),
-    )
-    if err != nil {
-        panic(err)
-    }
-    return writer
 }
