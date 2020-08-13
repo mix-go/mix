@@ -2,11 +2,11 @@ package console
 
 import (
     "fmt"
-    "github.com/astaxie/beego/logs"
     "github.com/mix-go/bean"
     "github.com/mix-go/console/argv"
     "github.com/mix-go/console/flag"
     "github.com/mix-go/event"
+    "github.com/sirupsen/logrus"
     "github.com/stretchr/testify/assert"
     "os"
     "testing"
@@ -31,7 +31,7 @@ var (
             },
             {
                 Name:    "logger",
-                Reflect: bean.NewReflect(logs.NewLogger),
+                Reflect: bean.NewReflect(logrus.New),
                 Scope:   bean.SINGLETON,
             },
         },
@@ -69,7 +69,7 @@ var (
             },
             {
                 Name:    "logger",
-                Reflect: bean.NewReflect(logs.NewLogger),
+                Reflect: bean.NewReflect(logrus.New),
                 Scope:   bean.SINGLETON,
             },
         },
