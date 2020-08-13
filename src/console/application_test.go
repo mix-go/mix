@@ -6,7 +6,7 @@ import (
     "github.com/mix-go/console/argv"
     "github.com/mix-go/console/flag"
     "github.com/mix-go/event"
-    "github.com/sirupsen/logrus"
+    "github.com/mix-go/logrus"
     "github.com/stretchr/testify/assert"
     "os"
     "testing"
@@ -27,11 +27,11 @@ var (
                 Name:            "error",
                 Reflect:         bean.NewReflect(NewError),
                 Scope:           bean.SINGLETON,
-                ConstructorArgs: bean.ConstructorArgs{},
+                ConstructorArgs: bean.ConstructorArgs{bean.NewReference("logger")},
             },
             {
                 Name:    "logger",
-                Reflect: bean.NewReflect(logrus.New),
+                Reflect: bean.NewReflect(logrus.NewLogger),
                 Scope:   bean.SINGLETON,
             },
         },
@@ -69,7 +69,7 @@ var (
             },
             {
                 Name:    "logger",
-                Reflect: bean.NewReflect(logrus.New),
+                Reflect: bean.NewReflect(logrus.NewLogger),
                 Scope:   bean.SINGLETON,
             },
         },
