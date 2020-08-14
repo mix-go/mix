@@ -5,6 +5,7 @@ import (
     "fmt"
     "github.com/mix-go/bean"
     "github.com/mix-go/console/argv"
+    event2 "github.com/mix-go/console/event"
     "github.com/mix-go/console/flag"
     "github.com/mix-go/event"
     "reflect"
@@ -62,7 +63,7 @@ type Application struct {
     ApplicationDefinition
     // Event Dispatcher
     DispatcherName string
-    Dispatcher     *event.EventDispatcher
+    Dispatcher     *event.Dispatcher
     // Error
     ErrorName string
     Error     *Error
@@ -100,7 +101,7 @@ func (t *Application) Init() {
 
     // 断言无法使用接口，由于没有泛型，导致这里 Dispatcher Error 无法实现 IoC
     // 等 go 推出泛型时再修改为接口
-    t.Dispatcher = t.Context.Get(t.DispatcherName).(*event.EventDispatcher)
+    t.Dispatcher = t.Context.Get(t.DispatcherName).(*event.Dispatcher)
     t.Error = t.Context.Get(t.ErrorName).(*Error)
 
     t.BasePath = argv.Program.Dir
@@ -198,8 +199,16 @@ func (t *Application) call() {
         panic(NotFoundError(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'.", command, argv.Program.Path))))
     }
 
-    // 执行命令
+    // 获取命令
     v := cmd.Reflect()
+
+    // 触发执行命令前置事件
+    e := &event2.CommandBeforeExecuteEvent{
+        Command: v.Interface(),
+    }
+    t.Dispatcher.Dispatch(e)
+
+    // 执行命令
     m := v.MethodByName("Main")
     if !m.IsValid() {
         panic(errors.New(fmt.Sprintf("'%s' Main method not found", fmt.Sprintf("%#v", v))))

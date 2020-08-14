@@ -20,7 +20,7 @@ var (
         Beans: []bean.BeanDefinition{
             {
                 Name:    "eventDispatcher",
-                Reflect: bean.NewReflect(event.NewEventDispatcher),
+                Reflect: bean.NewReflect(event.NewDispatcher),
                 Scope:   bean.SINGLETON,
             },
             {
@@ -58,7 +58,7 @@ var (
         Beans: []bean.BeanDefinition{
             {
                 Name:    "eventDispatcher",
-                Reflect: bean.NewReflect(event.NewEventDispatcher),
+                Reflect: bean.NewReflect(event.NewDispatcher),
                 Scope:   bean.SINGLETON,
             },
             {

@@ -1,26 +1,22 @@
 package console
 
-import "github.com/mix-go/event"
+import (
+    event2 "github.com/mix-go/console/event"
+    "github.com/mix-go/event"
+)
 
 type NotFoundError error
 type UnsupportError error
 
-// Error
 type Error struct {
     Logger     Logger
-    Dispatcher *event.EventDispatcher
+    Dispatcher *event.Dispatcher
 }
 
 type Logger interface {
     ErrorStack(err interface{}, stack string)
 }
 
-type HandleErrorEvent struct {
-    event.EventTrait
-    Error interface{}
-}
-
-// Handle
 func (t *Error) Handle(err interface{}, stack []byte) {
     // dispatch
     t.dispatch(err)
@@ -33,13 +29,12 @@ func (t *Error) dispatch(err interface{}) {
     if t.Dispatcher == nil {
         return
     }
-    eve := &HandleErrorEvent{
+    e := &event2.HandleErrorEvent{
         Error: err,
     }
-    t.Dispatcher.Dispatch(eve)
+    t.Dispatcher.Dispatch(e)
 }
 
-// 创建 Error
 func NewError(logger Logger) *Error {
     return &Error{
         Logger: logger,
