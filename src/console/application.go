@@ -94,8 +94,6 @@ type OptionDefinition struct {
     Usage string
 }
 
-type NotFoundError error
-
 // 初始化
 func (t *Application) Init() {
     t.Context = bean.NewApplicationContext(t.Beans)
@@ -121,7 +119,8 @@ func (t *Application) Run() {
         if err := recover(); err != nil {
             LastError = err
 
-            if _, ok := err.(NotFoundError); ok {
+            switch err.(type) {
+            case NotFoundError, UnsupportError:
                 fmt.Println(err)
                 return
             }

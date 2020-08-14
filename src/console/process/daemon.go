@@ -2,6 +2,7 @@ package process
 
 import (
     "errors"
+    "github.com/mix-go/console"
     "os"
     "os/exec"
     "runtime"
@@ -20,7 +21,7 @@ func Daemon() {
     }
 
     if !ok {
-        panic(errors.New("The current OS does not support background execution"))
+        panic(console.UnsupportError(errors.New("The current OS does not support background execution")))
     }
 
     if os.Getppid() != 1 {

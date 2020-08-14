@@ -2,6 +2,9 @@ package console
 
 import "github.com/mix-go/event"
 
+type NotFoundError error
+type UnsupportError error
+
 // Error
 type Error struct {
     Logger     Logger
