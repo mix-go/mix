@@ -1,8 +1,8 @@
 ## Mix Bean
 
-DI、ICO 容器，参考 spring bean 设计
+DI、IoC 容器，参考 spring bean 设计
 
-DI, ICO container, reference spring bean
+DI, IoC container, reference spring bean
 
 > 该库还有 php 版本：https://github.com/mix-php/bean
 
