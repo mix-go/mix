@@ -18,7 +18,7 @@ func String(name string, value string) string {
     return value
 }
 
-func StringMatch(value string, names ...string) string {
+func StringMatch(names []string, value string) string {
     for _, name := range names {
         v := String(name, value)
         if v != value {
@@ -44,7 +44,7 @@ func Bool(name string, value bool) bool {
     return value
 }
 
-func BoolMatch(value bool, names ...string) bool {
+func BoolMatch(names []string, value bool) bool {
     for _, name := range names {
         v := Bool(name, value)
         if v != value {
@@ -66,7 +66,7 @@ func Int64(name string, value int64) int64 {
     return i
 }
 
-func Int64Match(value int64, names ...string) int64 {
+func Int64Match(names []string, value int64) int64 {
     for _, name := range names {
         v := Int64(name, value)
         if v != value {
@@ -88,7 +88,7 @@ func Float64(name string, value float64) float64 {
     return f
 }
 
-func Float64Match(value float64, names ...string) float64 {
+func Float64Match(names []string, value float64) float64 {
     for _, name := range names {
         v := Float64(name, value)
         if v != value {
