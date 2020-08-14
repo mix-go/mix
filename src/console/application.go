@@ -135,11 +135,11 @@ func (t *Application) Run() {
 
     command := argv.Command
     if command == "" {
-        if flag.BoolMatch([]string{"h", "help"}, false) {
+        if flag.BoolMatch(false, "h", "help") {
             t.globalHelp()
             return
         }
-        if flag.BoolMatch([]string{"v", "version"}, false) {
+        if flag.BoolMatch(false, "v", "version") {
             t.version()
             return
         }
