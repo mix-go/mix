@@ -1,10 +1,10 @@
 package event
 
-type EventDispatcher struct {
+type Dispatcher struct {
     provider ListenerProvider
 }
 
-func (t *EventDispatcher) Dispatch(event Event) Event {
+func (t *Dispatcher) Dispatch(event Event) Event {
     for _, callback := range t.provider.getListenersForEvent(event) {
         callback(event)
         if event.isPropagationStopped() {
@@ -14,8 +14,8 @@ func (t *EventDispatcher) Dispatch(event Event) Event {
     return event;
 }
 
-func NewEventDispatcher(listeners ...Listener) *EventDispatcher {
-    return &EventDispatcher{
+func NewDispatcher(listeners ...Listener) *Dispatcher {
+    return &Dispatcher{
         provider: newListenerProvider(listeners...),
     }
 }
