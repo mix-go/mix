@@ -367,5 +367,5 @@ func (t *Application) version() {
     appName := t.AppName;
     appVersion := t.AppVersion;
     frameworkVersion := Version;
-    fmt.Println(fmt.Sprintf("%s version %s, framework version %s", appName, appVersion, frameworkVersion));
+    fmt.Println(fmt.Sprintf("%s %s, framework %s", appName, appVersion, frameworkVersion));
 }
