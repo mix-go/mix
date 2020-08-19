@@ -2,7 +2,7 @@
 
 通用的工作池类库
 
-A common workpool class library
+A common workerpool class library
 
 > 该库还有 php 版本：https://github.com/mix-php/worker-pool
 
