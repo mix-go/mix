@@ -1,21 +1,19 @@
 package workerpool
 
 import (
-    "fmt"
     "github.com/stretchr/testify/assert"
+    "sync/atomic"
     "testing"
 )
 
-var (
-    count = 0
-)
+var count int64
 
 type worker struct {
     WorkerTrait
 }
 
 func (t *worker) Handle(data interface{}) {
-    count++
+    atomic.AddInt64(&count, 1)
 }
 
 func newWorker() Worker {
@@ -26,7 +24,7 @@ func TestOnce(t *testing.T) {
     a := assert.New(t)
 
     jobQ := make(chan interface{}, 200)
-    d := NewDispatcher(jobQ, 5)
+    d := NewDispatcher(jobQ, 15)
 
     go func() {
         for i := 0; i < 10000; i++ {
@@ -38,6 +36,5 @@ func TestOnce(t *testing.T) {
     d.Start(newWorker)
     d.Wait()
 
-    fmt.Println("Equal")
-    a.Equal(count, 10000)
+    a.Equal(count, int64(10000))
 }
