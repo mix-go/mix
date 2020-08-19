@@ -7,17 +7,18 @@ import (
 type JobQueue chan interface{}
 
 type Dispatcher struct {
-    JobQueue   JobQueue
+    WorkerFunc func() Worker
     MaxWorkers int
+    JobQueue   JobQueue
     workers    []Worker
     workerPool chan JobQueue
     wg         *sync.WaitGroup
     quit       chan bool
 }
 
-func (t *Dispatcher) Start(fn func() Worker) {
+func (t *Dispatcher) Start() {
     for i := 0; i < t.MaxWorkers; i++ {
-        w := fn()
+        w := t.WorkerFunc()
         w.Init(t.workerPool, t.wg, w.Handle)
         w.Start()
 
@@ -56,10 +57,11 @@ func (t *Dispatcher) Wait() {
     t.wg.Wait()
 }
 
-func NewDispatcher(jobQueue chan interface{}, maxWorkers int) *Dispatcher {
+func NewDispatcher(workerFunc func() Worker, maxWorkers int, jobQueue chan interface{}) *Dispatcher {
     return &Dispatcher{
-        JobQueue:   jobQueue,
+        WorkerFunc: workerFunc,
         MaxWorkers: maxWorkers,
+        JobQueue:   jobQueue,
         workerPool: make(chan JobQueue, maxWorkers),
         wg:         &sync.WaitGroup{},
         quit:       make(chan bool),

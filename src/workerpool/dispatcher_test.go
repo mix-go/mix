@@ -23,17 +23,17 @@ func newWorker() Worker {
 func TestOnce(t *testing.T) {
     a := assert.New(t)
 
-    jobQ := make(chan interface{}, 200)
-    d := NewDispatcher(jobQ, 15)
+    jobQueue := make(chan interface{}, 200)
+    d := NewDispatcher(newWorker, 15, jobQueue)
 
     go func() {
         for i := 0; i < 10000; i++ {
-            jobQ <- i
+            jobQueue <- i
         }
         d.Stop()
     }()
 
-    d.Start(newWorker)
+    d.Start()
     d.Wait()
 
     a.Equal(count, int64(10000))

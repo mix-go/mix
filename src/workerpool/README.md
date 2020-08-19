@@ -36,7 +36,7 @@ func NewFooWorker() workerpool.Worker {
 
 ~~~
 jobQueue := make(chan interface{}, 200)
-d := NewDispatcher(jobQueue, 15)
+d := workerpool.NewDispatcher(NewFooWorker, 15, jobQueue)
 
 go func() {
     // 投放任务
@@ -48,7 +48,7 @@ go func() {
     d.Stop()
 }()
 
-d.Start(NewFooWorker)
+d.Start()
 d.Wait() // 等待任务全部执行完成并停止全部 Worker
 ~~~
 
