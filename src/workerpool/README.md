@@ -49,7 +49,7 @@ go func() {
 }()
 
 d.Start(NewWorker)
-d.Wait() // 等待任务全部执行完成并停止全部 Worker 协程后
+d.Wait() // 等待任务全部执行完成并停止全部 Worker 协程
 ~~~
 
 ## License
