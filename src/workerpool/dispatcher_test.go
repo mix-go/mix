@@ -7,7 +7,7 @@ import (
 )
 
 var (
-    num = 0
+    count = 0
 )
 
 type worker struct {
@@ -15,29 +15,29 @@ type worker struct {
 }
 
 func (t *worker) Handle(data interface{}) {
-    fmt.Println(data)
-    num++
+    count++
 }
 
 func newWorker() Worker {
     return &worker{}
 }
 
-func Test(t *testing.T) {
+func TestOnce(t *testing.T) {
     a := assert.New(t)
 
-    jobQ := make(chan interface{}, 10)
+    jobQ := make(chan interface{}, 200)
     d := NewDispatcher(jobQ, 5)
 
     go func() {
-        for i := 0; i < 10; i++ {
+        for i := 0; i < 10000; i++ {
             jobQ <- i
         }
-        fmt.Println("stop")
         d.Stop()
     }()
 
     d.Start(newWorker)
     d.Wait()
-    a.Equal(num, 10)
+
+    fmt.Println("Equal")
+    a.Equal(count, 10000)
 }

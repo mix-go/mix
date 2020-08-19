@@ -11,7 +11,7 @@ type Dispatcher struct {
     MaxWorkers int
     workers    []Worker
     workerPool chan JobQueue
-    wg         sync.WaitGroup
+    wg         *sync.WaitGroup
     quit       chan bool
 }
 
@@ -32,16 +32,15 @@ func (t *Dispatcher) dispatch() {
             select {
             case data := <-t.JobQueue:
                 if data == nil {
+                    for _, w := range t.workers {
+                        w.Stop()
+                    }
                     return
                 }
                 ch := <-t.workerPool
                 ch <- data
             case <-t.quit:
-                for _, w := range t.workers {
-                    w.Stop()
-                }
                 close(t.JobQueue)
-                return
             }
         }
     }()
@@ -62,7 +61,7 @@ func NewDispatcher(jobQueue chan interface{}, maxWorkers int) *Dispatcher {
         JobQueue:   jobQueue,
         MaxWorkers: maxWorkers,
         workerPool: make(chan JobQueue, maxWorkers),
-        wg:         sync.WaitGroup{},
+        wg:         &sync.WaitGroup{},
         quit:       make(chan bool),
     }
 }

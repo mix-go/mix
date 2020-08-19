@@ -1,14 +1,13 @@
 package workerpool
 
 import (
-    "fmt"
     "sync"
 )
 
 type Handler func(data interface{})
 
 type Worker interface {
-    Init(workerPool chan JobQueue, wg sync.WaitGroup, handler Handler)
+    Init(workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler)
     Start()
     Stop()
     Handle(data interface{})
@@ -16,39 +15,35 @@ type Worker interface {
 
 type WorkerTrait struct {
     workerPool chan JobQueue
-    wg         sync.WaitGroup
+    wg         *sync.WaitGroup
     handler    Handler
-    jobQueue   JobQueue
+    jobChan    JobQueue
     quit       chan bool
 }
 
-func (t *WorkerTrait) Init(workerPool chan JobQueue, wg sync.WaitGroup, handler Handler) {
+func (t *WorkerTrait) Init(workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler) {
     t.workerPool = workerPool
     t.wg = wg
     t.handler = handler
-    t.jobQueue = make(chan interface{})
+    t.jobChan = make(chan interface{})
     t.quit = make(chan bool)
 }
 
 func (t *WorkerTrait) Start() {
+    t.wg.Add(1)
     go func() {
-        fmt.Println("add 1")
-        t.wg.Add(1)
-        defer func() {
-            fmt.Println("done 1")
-            t.wg.Done()
-        }()
+        defer t.wg.Done()
         for {
             select {
-            case t.workerPool <- t.jobQueue:
+            case t.workerPool <- t.jobChan:
                 // none
-            case data := <-t.jobQueue:
+            case data := <-t.jobChan:
                 if data == nil {
                     return
                 }
                 t.handler(data)
             case <-t.quit:
-                close(t.jobQueue)
+                close(t.jobChan)
             }
         }
     }()
