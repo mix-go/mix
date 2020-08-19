@@ -19,16 +19,16 @@ go get -u github.com/mix-go/workerpool
 先创建一个 Worker 对象
 
 ~~~
-type Worker struct {
+type FooWorker struct {
     WorkerTrait
 }
 
-func (t *Worker) Handle(data interface{}) {
+func (t *FooWorker) Handle(data interface{}) {
     // do something
 }
 
-func NewWorker() workerpool.Worker {
-    return &worker{}
+func NewFooWorker() workerpool.Worker {
+    return &FooWorker{}
 }
 ~~~
 
@@ -48,8 +48,8 @@ go func() {
     d.Stop()
 }()
 
-d.Start(NewWorker)
-d.Wait() // 等待任务全部执行完成并停止全部 Worker 协程
+d.Start(NewFooWorker)
+d.Wait() // 等待任务全部执行完成并停止全部 Worker
 ~~~
 
 ## License
