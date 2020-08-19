@@ -20,7 +20,7 @@ go get -u github.com/mix-go/workerpool
 
 ~~~
 type FooWorker struct {
-    WorkerTrait
+    workerpool.WorkerTrait
 }
 
 func (t *FooWorker) Handle(data interface{}) {
