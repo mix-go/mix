@@ -48,7 +48,7 @@ go func() {
     d.Stop()
 }()
 
-d.Start()
+d.Run()
 d.Wait() // 等待任务全部执行完成并停止全部 Worker
 ~~~
 

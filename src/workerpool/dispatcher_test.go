@@ -33,7 +33,7 @@ func TestOnce(t *testing.T) {
         d.Stop()
     }()
 
-    d.Start()
+    d.Run()
     d.Wait()
 
     a.Equal(count, int64(10000))

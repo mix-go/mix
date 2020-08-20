@@ -16,7 +16,7 @@ type Dispatcher struct {
     quit       chan bool
 }
 
-func (t *Dispatcher) Start() {
+func (t *Dispatcher) Run() {
     for i := 0; i < t.MaxWorkers; i++ {
         w := t.WorkerFunc()
         w.Init(t.workerPool, t.wg, w.Handle)
