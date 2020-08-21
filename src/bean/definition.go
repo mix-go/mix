@@ -43,7 +43,13 @@ func NewReference(name string) Reference {
     return Reference{Name: name}
 }
 
-type ReturnError error
+type ReturnError struct {
+    error
+}
+
+func NewReturnError(err error) *ReturnError {
+    return &ReturnError{err}
+}
 
 // 定义
 type BeanDefinition struct {
@@ -73,8 +79,8 @@ func (t *BeanDefinition) Instance() interface{} {
         func() {
             defer func() {
                 if err := recover(); err != nil {
-                    if err, ok := err.(ReturnError); ok {
-                        panic(err.Error())
+                    if err, ok := err.(*ReturnError); ok {
+                        panic(err)
                     }
                     panic(fmt.Sprintf("Bean name '%s' reflect %s construct failed, arguments type or number is incorrect", t.Name, v.Type().String()))
                 }
@@ -82,7 +88,7 @@ func (t *BeanDefinition) Instance() interface{} {
             res := v.Call(in)
             if len(res) >= 2 {
                 if err, ok := res[1].Interface().(error); ok {
-                    panic(ReturnError(err))
+                    panic(NewReturnError(err))
                 }
             }
             v = res[0]

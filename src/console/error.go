@@ -5,8 +5,21 @@ import (
     "github.com/mix-go/event"
 )
 
-type NotFoundError error
-type UnsupportError error
+type NotFoundError struct {
+    error
+}
+
+func NewNotFoundError(err error) *NotFoundError {
+    return &NotFoundError{err}
+}
+
+type UnsupportError struct {
+    error
+}
+
+func NewUnsupportError(err error) *UnsupportError {
+    return &UnsupportError{err}
+}
 
 type Error struct {
     Logger     Logger
