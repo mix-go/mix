@@ -104,7 +104,7 @@ func (t *Application) Init() {
     t.Dispatcher = t.Context.Get(t.DispatcherName).(*event.Dispatcher)
     t.Error = t.Context.Get(t.ErrorName).(*Error)
 
-    t.BasePath = argv.Program.Dir
+    t.BasePath = argv.Program().Dir
 
     for _, c := range t.Commands {
         if c.Singleton {
@@ -134,7 +134,7 @@ func (t *Application) Run() {
         panic(errors.New("Command cannot be empty"))
     }
 
-    command := argv.Command
+    command := argv.Command()
     if command == "" {
         if flag.BoolMatch([]string{"h", "help"}, false) {
             t.globalHelp()
@@ -145,7 +145,7 @@ func (t *Application) Run() {
             return
         }
 
-        options := flag.Options
+        options := flag.Options()
         if len(options) == 0 {
             t.globalHelp()
             return
@@ -159,7 +159,7 @@ func (t *Application) Run() {
             f = k
             break
         }
-        p := argv.Program.Path
+        p := argv.Program().Path
         panic(NotFoundError(errors.New(fmt.Sprintf("flag provided but not defined: '%s', see '%s --help'.", f, p))))
     } else if flag.Bool("help", false) {
         t.commandHelp()
@@ -175,7 +175,7 @@ func (t *Application) call() {
 
     // 提取命令
     var cmd *CommandDefinition
-    command := argv.Command
+    command := argv.Command()
     if t.Singleton {
         // 单命令
         for _, c := range t.Commands {
@@ -196,7 +196,7 @@ func (t *Application) call() {
         }
     }
     if cmd == nil {
-        panic(NotFoundError(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'.", command, argv.Program.Path))))
+        panic(NotFoundError(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'.", command, argv.Program().Path))))
     }
 
     // 获取命令
@@ -221,7 +221,7 @@ func (t *Application) validateOptions() {
     options := []OptionDefinition{}
     if !t.Singleton {
         for _, v := range t.Commands {
-            if v.Name == argv.Command {
+            if v.Name == argv.Command() {
                 options = v.Options
                 break
             }
@@ -256,10 +256,10 @@ func (t *Application) validateOptions() {
         }
         return false
     }
-    for f, _ := range flag.Options {
+    for f, _ := range flag.Options() {
         if !inArray(f, flags) {
-            p := argv.Program.Path
-            c := argv.Command
+            p := argv.Program().Path
+            c := argv.Command()
             if c != "" {
                 c = fmt.Sprintf(" %s", c)
             }
@@ -270,7 +270,7 @@ func (t *Application) validateOptions() {
 
 // 全局帮助
 func (t *Application) globalHelp() {
-    program := argv.Program.Path
+    program := argv.Program().Path
     fg := ""
     if !t.Singleton {
         fg = " [OPTIONS] COMMAND"
@@ -295,8 +295,8 @@ func (t *Application) globalHelp() {
 
 // 命令帮助
 func (t *Application) commandHelp() {
-    program := argv.Program.Path
-    command := argv.Command
+    program := argv.Program().Path
+    command := argv.Command()
     fmt.Println(fmt.Sprintf("Usage: %s %s [opt...]", program, command))
     t.printCommandOptions()
     fmt.Println("")
@@ -328,7 +328,7 @@ func (t *Application) printCommandOptions() {
     options := []OptionDefinition{}
     if !t.Singleton {
         for _, v := range t.Commands {
-            if v.Name == argv.Command {
+            if v.Name == argv.Command() {
                 options = v.Options
                 break
             }

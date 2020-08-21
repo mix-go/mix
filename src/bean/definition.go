@@ -43,6 +43,8 @@ func NewReference(name string) Reference {
     return Reference{Name: name}
 }
 
+type ReturnError error
+
 // 定义
 type BeanDefinition struct {
     Name            string
@@ -71,10 +73,19 @@ func (t *BeanDefinition) Instance() interface{} {
         func() {
             defer func() {
                 if err := recover(); err != nil {
+                    if err, ok := err.(ReturnError); ok {
+                        panic(err.Error())
+                    }
                     panic(fmt.Sprintf("Bean name '%s' reflect %s construct failed, arguments type or number is incorrect", t.Name, v.Type().String()))
                 }
             }()
-            v = v.Call(in)[0]
+            res := v.Call(in)
+            if len(res) >= 2 {
+                if err, ok := res[1].Interface().(error); ok {
+                    panic(ReturnError(err))
+                }
+            }
+            v = res[0]
         }()
         if v.Kind() == reflect.Struct {
             panic(fmt.Sprintf("Bean name '%s' reflect %s return value is not a pointer type", t.Name, v.Type().String()))

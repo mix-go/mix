@@ -8,17 +8,25 @@ import (
 )
 
 var (
-    Options map[string]string = NewOptions()
+    options map[string]string
 )
 
-func Parse() {
-    Options = NewOptions()
+func init() {
+    Parse()
 }
 
-func NewOptions() map[string]string {
+func Parse() {
+    options = newOptions()
+}
+
+func Options() map[string]string {
+    return options
+}
+
+func newOptions() map[string]string {
     ops := make(map[string]string, 0)
     s := 1
-    if argv.Command == "" {
+    if argv.Command() == "" {
         s = 0
     }
     for k, v := range os.Args {

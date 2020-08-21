@@ -12,7 +12,7 @@ func String(name string, value string) string {
     } else {
         key = fmt.Sprintf("--%s", name)
     }
-    if v, ok := Options[key]; ok {
+    if v, ok := Options()[key]; ok {
         return v
     }
     return value
@@ -35,7 +35,7 @@ func Bool(name string, value bool) bool {
     } else {
         key = fmt.Sprintf("--%s", name)
     }
-    if v, ok := Options[key]; ok {
+    if v, ok := Options()[key]; ok {
         if v == "false" {
             return false
         }

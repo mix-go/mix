@@ -7,13 +7,25 @@ import (
 )
 
 var (
-    Program ProgramMeta = NewProgram()
-    Command string      = NewCommand()
+    program ProgramMeta
+    command string
 )
 
+func init() {
+    Parse()
+}
+
 func Parse() {
-    Program = NewProgram()
-    Command = NewCommand()
+    program = newProgram()
+    command = newCommand()
+}
+
+func Program() ProgramMeta {
+    return program
+}
+
+func Command() string {
+    return command
 }
 
 type ProgramMeta struct {
@@ -23,7 +35,7 @@ type ProgramMeta struct {
     File    string
 }
 
-func NewProgram() ProgramMeta {
+func newProgram() ProgramMeta {
     abspath, err := filepath.Abs(os.Args[0])
     if err != nil {
         panic(err)
@@ -37,7 +49,7 @@ func NewProgram() ProgramMeta {
     }
 }
 
-func NewCommand() string {
+func newCommand() string {
     cmd := ""
     if len(os.Args) <= 1 {
         return cmd
