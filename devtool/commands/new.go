@@ -9,7 +9,7 @@ import (
     "os/exec"
 )
 
-var ver = "v0.0.0-20200822062735-5a8f11851ea9"
+var ver = "v0.0.0-20200822120924-3cb721b6d16f"
 
 type NewCommand struct {
 }
