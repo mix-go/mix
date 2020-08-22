@@ -12,7 +12,7 @@ NOW=$(date +%s)
 CURRENT_BRANCH="master"
 VERSION=$1
 BASEPATH=$(cd `dirname $0`; cd ../src/; pwd)
-ROOTPATH=$(cd `dirname $0`; cd ../; pwd)
+ROOTPATH=$(cd `dirname $0`; cd ../../; pwd)
 
 # Always prepend with "v"
 if [[ $VERSION != v*  ]]
