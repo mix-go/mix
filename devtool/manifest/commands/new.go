@@ -3,7 +3,7 @@ package commands
 import (
     "github.com/mix-go/bean"
     "github.com/mix-go/console"
-    "github.com/mix-go/mix/commands"
+    "github.com/mix-go/mix/devtool/commands"
 )
 
 func init() {

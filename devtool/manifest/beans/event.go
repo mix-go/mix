@@ -5,7 +5,7 @@ import (
     "github.com/mix-go/event"
 )
 
-func eventInit() {
+func Event() {
     Beans = append(Beans,
         bean.BeanDefinition{
             Name:            "eventDispatcher",

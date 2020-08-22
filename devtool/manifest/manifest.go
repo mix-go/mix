@@ -3,8 +3,8 @@ package manifest
 import (
     "github.com/mix-go/console"
     "github.com/mix-go/dotenv"
-    "github.com/mix-go/mix/manifest/beans"
-    "github.com/mix-go/mix/manifest/commands"
+    "github.com/mix-go/mix/devtool/manifest/beans"
+    "github.com/mix-go/mix/devtool/manifest/commands"
 )
 
 var (

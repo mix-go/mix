@@ -5,7 +5,7 @@ import (
     "github.com/mix-go/logrus"
 )
 
-func logInit() {
+func Log() {
     Beans = append(Beans,
         bean.BeanDefinition{
             Name:    "logger",
