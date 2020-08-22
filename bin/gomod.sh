@@ -39,9 +39,12 @@ do
         git checkout "$CURRENT_BRANCH";
 
         if [[ $(git log --pretty="%d" -n 1 | grep tag --count) -eq 0 ]]; then
-            echo "Releasing $REMOTE"
-            git tag $VERSION
-            git push origin --tags
+            echo "github.com/mix-go/$REMOTE $VERSION"
+
+        else
+            LAST_TAG=`git tag -n10 | head -n 1 | awk '{print $1}'`
+            echo "github.com/mix-go/$REMOTE $LAST_TAG"
+            sed -i "s/github.com/mix-go/${REMOTE} v\b/github.com/mix-go/$REMOTE $LAST_TAG/g" | find ./ -name go.mod
         fi
     )
 done
