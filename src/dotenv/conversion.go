@@ -9,25 +9,60 @@ type Value struct {
     v string
 }
 
-func (t *Value) String() string {
+func (t *Value) String(val ...string) string {
+    d := ""
+    if len(val) >= 1 {
+        d = val[0]
+    }
+
+    if t.v == "" {
+        return d
+    }
+
     return t.v
 }
 
-func (t *Value) Bool() bool {
+func (t *Value) Bool(val ...bool) bool {
+    d := false
+    if len(val) >= 1 {
+        d = val[0]
+    }
+
     switch t.v {
-    case "", "0", "false":
+    case "":
+        return d
+    case "0", "false":
         return false
     default:
         return true
     }
 }
 
-func (t *Value) Int64() int64 {
+func (t *Value) Int64(val ...int64) int64 {
+    d := int64(0)
+    if len(val) >= 1 {
+        d = val[0]
+    }
+
+    if t.v == "" {
+        return d
+    }
+
     v, _ := strconv.ParseInt(t.v, 10, 64)
     return v
 }
 
-func (t *Value) Float64() float64 {
+func (t *Value) Float64(val ...float64) float64 {
+
+    d := float64(0)
+    if len(val) >= 1 {
+        d = val[0]
+    }
+
+    if t.v == "" {
+        return d
+    }
+
     v, _ := strconv.ParseFloat(t.v, 64)
     return v
 }
