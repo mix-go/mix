@@ -20,6 +20,7 @@ func NewLogger() *Logger {
     logger.ReportCaller = true // 显示调用信息
 
     formatter := new(l.TextFormatter)
+    formatter.FullTimestamp = true
     formatter.TimestampFormat = "2006-01-02 15:04:05"
     formatter.DisableQuote = true // 不转义换行符，为了保存错误堆栈到日志文件
     formatter.CallerPrettyfier = func(frame *runtime.Frame) (function string, file string) {
