@@ -5,11 +5,11 @@ import (
     "strconv"
 )
 
-type Value struct {
+type envValue struct {
     v string
 }
 
-func (t *Value) String(val ...string) string {
+func (t *envValue) String(val ...string) string {
     d := ""
     if len(val) >= 1 {
         d = val[0]
@@ -22,7 +22,7 @@ func (t *Value) String(val ...string) string {
     return t.v
 }
 
-func (t *Value) Bool(val ...bool) bool {
+func (t *envValue) Bool(val ...bool) bool {
     d := false
     if len(val) >= 1 {
         d = val[0]
@@ -38,7 +38,7 @@ func (t *Value) Bool(val ...bool) bool {
     }
 }
 
-func (t *Value) Int64(val ...int64) int64 {
+func (t *envValue) Int64(val ...int64) int64 {
     d := int64(0)
     if len(val) >= 1 {
         d = val[0]
@@ -52,7 +52,7 @@ func (t *Value) Int64(val ...int64) int64 {
     return v
 }
 
-func (t *Value) Float64(val ...float64) float64 {
+func (t *envValue) Float64(val ...float64) float64 {
 
     d := float64(0)
     if len(val) >= 1 {
@@ -67,6 +67,6 @@ func (t *Value) Float64(val ...float64) float64 {
     return v
 }
 
-func Getenv(key string) *Value {
-    return &Value{os.Getenv(key)}
+func Getenv(key string) *envValue {
+    return &envValue{os.Getenv(key)}
 }
