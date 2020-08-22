@@ -53,5 +53,5 @@ func (t *NewCommand) Main() {
        panic(errors.New("Replace go.mod failed"))
     }
 
-    fmt.Println(fmt.Sprintf("Skeleton '%s' generate complete", name))
+    fmt.Println(fmt.Sprintf("Skeleton '%s' is generated", name))
 }
