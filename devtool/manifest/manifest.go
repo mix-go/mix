@@ -17,7 +17,7 @@ func Init() {
     ApplicationDefinition = console.ApplicationDefinition{
         AppName:    "app",
         AppVersion: "1.0.0-alpha",
-        AppDebug:   dotenv.Getenv("APP_DEBUG").Bool(),
+        AppDebug:   dotenv.Getenv("APP_DEBUG").Bool(true),
         Beans:      beans.Beans,
         Commands:   commands.Commands,
     }
