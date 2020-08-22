@@ -40,11 +40,11 @@ do
 
         if [[ $(git log --pretty="%d" -n 1 | grep tag --count) -eq 0 ]]; then
             echo "github.com/mix-go/$REMOTE $VERSION"
-
+            sed -i "s/github.com/mix-go/${REMOTE} v\b/github.com/mix-go/$REMOTE $VERSION/g" | find ./ -name go.mod
         else
-            LAST_TAG=`git tag -n10 | head -n 1 | awk '{print $1}'`
-            echo "github.com/mix-go/$REMOTE $LAST_TAG"
-            sed -i "s/github.com/mix-go/${REMOTE} v\b/github.com/mix-go/$REMOTE $LAST_TAG/g" | find ./ -name go.mod
+            LAST_VERSION=`git tag -n10 | head -n 1 | awk '{print $1}'`
+            echo "github.com/mix-go/$REMOTE $LAST_VERSION"
+            sed -i "s/github.com/mix-go/${REMOTE} v\b/github.com/mix-go/$REMOTE $LAST_VERSION/g" | find ./ -name go.mod
         fi
     )
 done
