@@ -136,11 +136,11 @@ func (t *Application) Run() {
 
     command := argv.Command()
     if command == "" {
-        if flag.BoolMatch([]string{"h", "help"}, false) {
+        if flag.Match("h", "help").Bool(false) {
             t.globalHelp()
             return
         }
-        if flag.BoolMatch([]string{"v", "version"}, false) {
+        if flag.Match("v", "version").Bool(false) {
             t.version()
             return
         }
@@ -161,7 +161,7 @@ func (t *Application) Run() {
         }
         p := argv.Program().Path
         panic(NewNotFoundError(errors.New(fmt.Sprintf("flag provided but not defined: '%s', see '%s --help'.", f, p))))
-    } else if flag.Bool("help", false) {
+    } else if flag.Match("help").Bool(false) {
         t.commandHelp()
         return
     }

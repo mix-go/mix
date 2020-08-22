@@ -7,8 +7,8 @@ import (
 )
 
 var (
-    program ProgramMeta
-    command string
+    prog program
+    cmd  string
 )
 
 func init() {
@@ -16,32 +16,32 @@ func init() {
 }
 
 func Parse() {
-    program = newProgram()
-    command = newCommand()
+    prog = newProgram()
+    cmd = newCommand()
 }
 
-func Program() ProgramMeta {
-    return program
+func Program() *program {
+    return &prog
 }
 
 func Command() string {
-    return command
+    return cmd
 }
 
-type ProgramMeta struct {
+type program struct {
     Path    string
     AbsPath string
     Dir     string
     File    string
 }
 
-func newProgram() ProgramMeta {
+func newProgram() program {
     abspath, err := filepath.Abs(os.Args[0])
     if err != nil {
         panic(err)
     }
     dir, file := filepath.Split(abspath)
-    return ProgramMeta{
+    return program{
         Path:    os.Args[0],
         AbsPath: abspath,
         Dir:     dir[:len(dir)-1],
