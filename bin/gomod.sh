@@ -12,6 +12,7 @@ NOW=$(date +%s)
 CURRENT_BRANCH="master"
 VERSION=$1
 BASEPATH=$(cd `dirname $0`; cd ../src/; pwd)
+ROOTPATH=$(cd `dirname $0`; cd ../; pwd)
 
 # Always prepend with "v"
 if [[ $VERSION != v*  ]]
@@ -40,11 +41,11 @@ do
 
         if [[ $(git log --pretty="%d" -n 1 | grep tag --count) -eq 0 ]]; then
             echo "github.com/mix-go/$REMOTE $VERSION"
-            sed -i "s/github.com/mix-go/${REMOTE} v\b/github.com/mix-go/$REMOTE $VERSION/g" | find ./ -name go.mod
+            sed -i "" "s/github.com\/mix-go\/${REMOTE} v.*/github.com\/mix-go\/$REMOTE $VERSION/g" `find $ROOTPATH -name go.mod`
         else
             LAST_VERSION=`git tag -n10 | head -n 1 | awk '{print $1}'`
             echo "github.com/mix-go/$REMOTE $LAST_VERSION"
-            sed -i "s/github.com/mix-go/${REMOTE} v\b/github.com/mix-go/$REMOTE $LAST_VERSION/g" | find ./ -name go.mod
+            sed -i "" "s/github.com\/mix-go\/${REMOTE} v.*/github.com\/mix-go\/$REMOTE $LAST_VERSION/g" `find $ROOTPATH -name go.mod`
         fi
     )
 done
