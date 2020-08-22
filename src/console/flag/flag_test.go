@@ -14,25 +14,25 @@ func TestSingle(t *testing.T) {
     argv.Parse()
     Parse()
 
-    v1 := String("a", "")
+    v1 := Match("a").String()
     a.Equal(v1, "a1")
 
-    v2 := Bool("b", false)
+    v2 := Match("b").Bool()
     a.Equal(v2, true)
 
-    v3 := Bool("cd", false)
+    v3 := Match("cd").Bool()
     a.Equal(v3, true)
 
-    v4 := Bool("sw", false)
+    v4 := Match("sw").Bool()
     a.Equal(v4, false)
 
-    v5 := String("ab", "")
+    v5 := Match("ab", "").String()
     a.Equal(v5, "ab1")
 
-    v6 := String("de", "")
+    v6 := Match("de", "").String()
     a.Equal(v6, "de1")
 
-    v7 := String("c", "")
+    v7 := Match("c", "").String()
     a.Equal(v7, "c1")
 }
 
@@ -43,10 +43,10 @@ func TestMatch(t *testing.T) {
     argv.Parse()
     Parse()
 
-    v1 := BoolMatch([]string{"b", "bc"}, false)
+    v1 := Match("b", "bc").Bool()
     a.Equal(v1, true)
 
-    v2 := StringMatch([]string{"a", "ab"}, "")
+    v2 := Match("a", "ab").String()
     a.Equal(v2, "a1")
 }
 
@@ -57,15 +57,15 @@ func TestNotFound(t *testing.T) {
     argv.Parse()
     Parse()
 
-    v1 := Bool("cde", false)
+    v1 := Match("cde").Bool()
     a.Equal(v1, false)
 
-    v2 := String("x", "")
+    v2 := Match("x").String()
     a.Equal(v2, "")
 
-    v3 := BoolMatch([]string{"b", "bc"}, false)
+    v3 := Match("b", "bc").Bool()
     a.Equal(v3, false)
 
-    v4 := StringMatch([]string{"a", "ab"}, "")
+    v4 := Match("a", "ab").String()
     a.Equal(v4, "")
 }

@@ -6,7 +6,8 @@ import (
 )
 
 type flagValue struct {
-    v string
+    v     string
+    exist bool
 }
 
 func (t *flagValue) String(val ...string) string {
@@ -28,10 +29,12 @@ func (t *flagValue) Bool(val ...bool) bool {
         d = val[0]
     }
 
-    switch t.v {
-    case "":
+    if !t.exist {
         return d
-    case "0", "false":
+    }
+
+    switch t.v {
+    case "false":
         return false
     default:
         return true
@@ -69,15 +72,15 @@ func (t *flagValue) Float64(val ...float64) float64 {
 
 func Match(names ...string) *flagValue {
     for _, name := range names {
-        v := value(name)
-        if v != "" {
-            return &flagValue{v}
+        v, exist := value(name)
+        if exist {
+            return &flagValue{v, exist}
         }
     }
     return &flagValue{}
 }
 
-func value(name string) string {
+func value(name string) (string, bool) {
     key := ""
     if len(name) == 1 {
         key = fmt.Sprintf("-%s", name)
@@ -85,7 +88,7 @@ func value(name string) string {
         key = fmt.Sprintf("--%s", name)
     }
     if v, ok := Options()[key]; ok {
-        return v
+        return v, true
     }
-    return key
+    return "", false
 }
