@@ -43,12 +43,17 @@ do
             echo "github.com/mix-go/$REMOTE $VERSION"
             sed -i "" "s/github.com\/mix-go\/${REMOTE} v.*/github.com\/mix-go\/$REMOTE $VERSION/g" `find $ROOTPATH -name go.mod`
         else
-            LAST_VERSION=`git tag -n10 | head -n 1 | awk '{print $1}'`
-            echo "github.com/mix-go/$REMOTE $LAST_VERSION"
-            sed -i "" "s/github.com\/mix-go\/${REMOTE} v.*/github.com\/mix-go\/$REMOTE $LAST_VERSION/g" `find $ROOTPATH -name go.mod`
+            LASTAGID=`git rev-list --tags --max-count=1`
+            LASTVERSION=`git describe --tags $LASTAGID`
+            echo "github.com/mix-go/$REMOTE $LASTVERSION"
+            sed -i "" "s/github.com\/mix-go\/${REMOTE} v.*/github.com\/mix-go\/$REMOTE $LASTVERSION/g" `find $ROOTPATH -name go.mod`
         fi
     )
 done
+
+# Update app ver
+
+sed -i "" "s/Version = \".*/Version = \"${VERSION##*v}\";/g" ${BASEPATH}/console/application.go
 
 TIME=$(echo "$(date +%s) - $NOW" | bc)
 
