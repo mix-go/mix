@@ -23,7 +23,7 @@ func NewUnsupportError(err error) *UnsupportError {
 
 type ErrorHandler struct {
     Logger     Logger
-    Dispatcher *event.Dispatcher
+    Dispatcher event.Dispatcher
 }
 
 func (t *ErrorHandler) Handle(err interface{}, stack []byte) {

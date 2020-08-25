@@ -9,17 +9,32 @@ import (
     "os/exec"
 )
 
-var ver = "v0.0.0-20200822120924-3cb721b6d16f"
+var (
+    Console = "console"
+    API     = "api"
+    Web     = "web"
+)
 
 type NewCommand struct {
 }
 
 func (t *NewCommand) Main() {
     name := flag.Match("n", "name").String("hello")
-    typ := flag.Match("t", "type").String("console")
+    t.NewProject(name, Console)
+}
 
+func (t *NewCommand) NewProject(name, typ string) {
+    ver := ""
     switch typ {
-    case "console", "api", "web":
+    case "console":
+        ver = ConsoleVersion
+        break
+    case "api":
+        ver = APIVersion
+        break
+    case "web":
+        ver = WebVersion
+        break
     default:
         fmt.Println("Type error, only be console, api, web")
         return
@@ -50,8 +65,26 @@ func (t *NewCommand) Main() {
     }
 
     if err := logic.ReplaceMod(dest); err != nil {
-       panic(errors.New("Replace go.mod failed"))
+        panic(errors.New("Replace go.mod failed"))
     }
 
     fmt.Println(fmt.Sprintf("Skeleton '%s' is generated", name))
+}
+
+type APICommand struct {
+    NewCommand
+}
+
+func (t *APICommand) Main() {
+    name := flag.Match("n", "name").String("hello")
+    t.NewProject(name, API)
+}
+
+type WebCommand struct {
+    NewCommand
+}
+
+func (t *WebCommand) Main() {
+    name := flag.Match("n", "name").String("hello")
+    t.NewProject(name, Web)
 }
