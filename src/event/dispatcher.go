@@ -7,7 +7,7 @@ type EventDispatcher struct {
 func (t *EventDispatcher) Dispatch(event Event) Event {
     for _, callback := range t.provider.getListenersForEvent(event) {
         callback(event)
-        if event.isPropagationStopped() {
+        if event.IsPropagationStopped() {
             break
         }
     }

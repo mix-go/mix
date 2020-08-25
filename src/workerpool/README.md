@@ -16,7 +16,7 @@ go get -u github.com/mix-go/workerpool
 
 - 使用
 
-先创建一个 Worker 对象
+先创建一个 Worker 结构体
 
 ~~~
 type FooWorker struct {

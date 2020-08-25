@@ -20,9 +20,7 @@ go get -u github.com/mix-go/bean
 var Definitions = []Definition{
     {
         Name: "foo",
-        Reflect: func() reflect.Value {
-            return reflect.ValueOf(NewHttpClient)
-        },
+        Reflect: NewReflect(NewHttpClient),
         ConstructorArgs: ConstructorArgs{
             time.Duration(time.Second * 3),
         },
@@ -47,9 +45,7 @@ fmt.Println(fmt.Sprintf("%+v", foo))
 var Definitions = []Definition{
     {
         Name: "foo",
-        Reflect: func() reflect.Value {
-            return reflect.New(reflect.TypeOf(http.Client{}))
-        },
+        Reflect: NewReflect(http.Client{}),
         Fields: Fields{
             "Timeout": time.Duration(time.Second * 3),
         },
@@ -67,9 +63,7 @@ fmt.Println(fmt.Sprintf("%+v", foo))
 var Definitions = []Definition{
     {
         Name: "foo",
-        Reflect: func() reflect.Value {
-            return reflect.ValueOf(NewHttpClient)
-        },
+        Reflect: NewReflect(NewHttpClient),
         ConstructorArgs: ConstructorArgs{
             time.Duration(time.Second * 3),
         },
@@ -101,8 +95,7 @@ type Foo struct {
 var Definitions = []Definition{
     {
         Name: "foo",
-        Reflect: func() reflect.Value {
-            return reflect.New(reflect.TypeOf(Foo{}))
+        Reflect: NewReflect(Foo{}),
         },
         Fields: Fields{
             "Client": Reference{Name: "bar"},
@@ -110,9 +103,7 @@ var Definitions = []Definition{
     },
     {
         Name: "bar",
-        Reflect: func() reflect.Value {
-            return reflect.New(reflect.TypeOf(http.Client{}))
-        },
+        Reflect: NewReflect(http.Client{}),
         Fields: Fields{
             "Timeout": time.Duration(time.Second * 3),
         },
@@ -132,9 +123,7 @@ var Definitions = []Definition{
     {
         Name: "foo",
         Scope: SINGLETON,
-        Reflect: func() reflect.Value {
-            return reflect.New(reflect.TypeOf(http.Client{}))
-        },
+        Reflect: NewReflect(http.Client{}),
         Fields: Fields{
             "Timeout": time.Duration(time.Second * 3),
         },
@@ -162,9 +151,7 @@ var Definitions = []Definition{
     {
         Name:       "foo",
         InitMethod: "Init",
-        Reflect: func() reflect.Value {
-            return reflect.New(reflect.TypeOf(Foo{}))
-        },
+        Reflect: NewReflect(Foo{}),
         Fields: Fields{
             "Bar":    "bar",
         },
