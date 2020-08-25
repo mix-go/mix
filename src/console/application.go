@@ -63,7 +63,7 @@ type Application struct {
     ApplicationDefinition
     // Event Dispatcher
     DispatcherName string
-    Dispatcher     *event.Dispatcher
+    Dispatcher     event.Dispatcher
     // Error
     ErrorName string
     Error     Error
@@ -101,7 +101,7 @@ func (t *Application) Init() {
 
     // 断言无法使用接口，由于没有泛型，导致这里 Dispatcher Error 无法实现 IoC
     // 等 go 推出泛型时再修改为接口
-    t.Dispatcher = t.Context.Get(t.DispatcherName).(*event.Dispatcher)
+    t.Dispatcher = t.Context.Get(t.DispatcherName).(event.Dispatcher)
     t.Error = t.Context.Get(t.ErrorName).(Error)
 
     t.BasePath = argv.Program().Dir
