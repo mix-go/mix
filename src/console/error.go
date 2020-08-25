@@ -31,7 +31,7 @@ func (t *ErrorHandler) Handle(err interface{}, stack []byte) {
     t.dispatch(err)
 
     // log
-    t.Logger.ErrorStack(err, string(stack))
+    t.Logger.ErrorStack(err, stack)
 }
 
 func (t *ErrorHandler) dispatch(err interface{}) {
@@ -55,5 +55,5 @@ type Error interface {
 }
 
 type Logger interface {
-    ErrorStack(err interface{}, stack string)
+    ErrorStack(err interface{}, stack []byte)
 }

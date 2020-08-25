@@ -99,8 +99,6 @@ type OptionDefinition struct {
 func (t *Application) Init() {
     t.Context = bean.NewApplicationContext(t.Beans)
 
-    // 断言无法使用接口，由于没有泛型，导致这里 Dispatcher Error 无法实现 IoC
-    // 等 go 推出泛型时再修改为接口
     t.Dispatcher = t.Context.Get(t.DispatcherName).(event.Dispatcher)
     t.Error = t.Context.Get(t.ErrorName).(Error)
 
@@ -126,7 +124,11 @@ func (t *Application) Run() {
                 return
             }
 
-            t.Error.Handle(err, debug.Stack())
+            if t.AppDebug {
+                t.Error.Handle(err, debug.Stack())
+            } else {
+                t.Error.Handle(err, []byte(""))
+            }
         }
     }()
 

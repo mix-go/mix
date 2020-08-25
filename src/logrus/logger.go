@@ -11,8 +11,12 @@ type Logger struct {
     *l.Logger
 }
 
-func (t *Logger) ErrorStack(err interface{}, stack string) {
-    t.Logger.Errorf(fmt.Sprintf("%s\n%s", err, stack))
+func (t *Logger) ErrorStack(err interface{}, stack []byte) {
+    if len(stack) > 0 {
+        t.Logger.Errorf(fmt.Sprintf("%s\n%s", err, string(stack)))
+    } else {
+        t.Logger.Errorf(fmt.Sprintf("%s", err))
+    }
 }
 
 func NewLogger() *Logger {
