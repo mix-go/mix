@@ -21,16 +21,12 @@ func NewUnsupportError(err error) *UnsupportError {
     return &UnsupportError{err}
 }
 
-type Error struct {
+type ErrorHandler struct {
     Logger     Logger
     Dispatcher *event.Dispatcher
 }
 
-type Logger interface {
-    ErrorStack(err interface{}, stack string)
-}
-
-func (t *Error) Handle(err interface{}, stack []byte) {
+func (t *ErrorHandler) Handle(err interface{}, stack []byte) {
     // dispatch
     t.dispatch(err)
 
@@ -38,7 +34,7 @@ func (t *Error) Handle(err interface{}, stack []byte) {
     t.Logger.ErrorStack(err, string(stack))
 }
 
-func (t *Error) dispatch(err interface{}) {
+func (t *ErrorHandler) dispatch(err interface{}) {
     if t.Dispatcher == nil {
         return
     }
@@ -48,8 +44,16 @@ func (t *Error) dispatch(err interface{}) {
     t.Dispatcher.Dispatch(e)
 }
 
-func NewError(logger Logger) *Error {
-    return &Error{
+func NewError(logger Logger) Error {
+    return &ErrorHandler{
         Logger: logger,
     }
+}
+
+type Error interface {
+    Handle(err interface{}, stack []byte)
+}
+
+type Logger interface {
+    ErrorStack(err interface{}, stack string)
 }
