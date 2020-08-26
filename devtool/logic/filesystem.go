@@ -17,10 +17,14 @@ func CopyPath(src, dst string) bool {
     }
     err := filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
         if err != nil {
+            fmt.Println(1, err)
             return err
         }
         relationPath := strings.Replace(path, src, "", -1)
         dstPath := strings.TrimRight(strings.TrimRight(dst, "/"), "\\") + relationPath
+
+        fmt.Println(path, dstPath)
+
         if !info.IsDir() {
             if CopyFile(path, dstPath) {
                 return nil
@@ -31,11 +35,13 @@ func CopyPath(src, dst string) bool {
             if _, err := os.Stat(dstPath); err != nil {
                 if os.IsNotExist(err) {
                     if err := os.MkdirAll(dstPath, os.ModePerm); err != nil {
+                        fmt.Println(2, err)
                         return err
                     } else {
                         return nil
                     }
                 } else {
+                    fmt.Println(4, err)
                     return err
                 }
             } else {
@@ -45,6 +51,7 @@ func CopyPath(src, dst string) bool {
     })
 
     if err != nil {
+        fmt.Println(3, err)
         return false
     }
     return true
@@ -57,6 +64,7 @@ func CopyFile(src, dst string) bool {
     src = strings.Replace(src, "\\", "/", -1)
     srcFile, e := os.OpenFile(src, os.O_RDONLY, os.ModePerm)
     if e != nil {
+        fmt.Println(5, e)
         return false
     }
     defer srcFile.Close()
@@ -69,6 +77,7 @@ func CopyFile(src, dst string) bool {
     dstFileInfo := GetFileInfo(dstPath)
     if dstFileInfo == nil {
         if e := os.MkdirAll(dstPath, os.ModePerm); e != nil {
+            fmt.Println(6, e)
             return false
         }
     }
@@ -76,11 +85,13 @@ func CopyFile(src, dst string) bool {
     //这里要把O_TRUNC 加上，否则会出现新旧文件内容出现重叠现象
     dstFile, e := os.OpenFile(dst, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
     if e != nil {
+        fmt.Println(7, e)
         return false
     }
     defer dstFile.Close()
 
     if _, e := io.Copy(dstFile, srcFile); e != nil {
+        fmt.Println(8, e)
         return false
     } else {
         return true
