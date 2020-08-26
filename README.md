@@ -14,7 +14,7 @@ hybrid high performance Go framework
 
 ## 与 Mix PHP 的关系
 
-该框架与 Mix PHP 设计哲学几乎完全一致，Mix PHP 的用户可以非常容易的切换到 Mix Go 进行开发，达到学一会二的效果，OpenMix 可能是现在唯一一个打造夸语言框架的开源机构。
+该框架与 [Mix PHP](https://github.com/mix-php/mix) 设计哲学几乎完全一致，Mix PHP 的用户可以非常容易的切换到 Mix Go 进行开发，达到学一会二的效果，OpenMix 可能是现在唯一一个打造夸语言框架的开源机构。
 
 ## 与 Beego, Gin 等其他 Go 框架的差别
 
