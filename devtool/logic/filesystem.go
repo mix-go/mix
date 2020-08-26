@@ -13,14 +13,15 @@ import (
 
 func CopyPath(src, dst string) bool {
     debug := console.App().AppDebug
+    if debug {
+        fmt.Println("")
+    }
+
     src = strings.Replace(src, "\\", "/", -1)
     srcFileInfo := GetFileInfo(src)
     if srcFileInfo == nil || !srcFileInfo.IsDir() {
+        fmt.Println(src, srcFileInfo)
         return false
-    }
-
-    if debug {
-        fmt.Println("")
     }
 
     err := filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
