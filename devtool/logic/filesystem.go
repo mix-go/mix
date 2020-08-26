@@ -18,13 +18,12 @@ func CopyPath(src, dst string) bool {
     }
     err := filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
         if err != nil {
-            fmt.Println(1, err)
             return err
         }
 
         path = strings.Replace(path, "\\", "/", -1)
-        relationPath := strings.Replace(path, src, "/", -1)
-        dstPath := strings.TrimRight(strings.TrimRight(dst, "/"), "\\") + relationPath
+        relationPath := strings.Replace(path, src, "", -1)
+        dstPath := strings.TrimRight(strings.TrimRight(strings.Replace(dst, "\\", "/", -1), "/"), "\\") + relationPath
 
         fmt.Println(path, dstPath)
 
@@ -38,13 +37,11 @@ func CopyPath(src, dst string) bool {
             if _, err := os.Stat(dstPath); err != nil {
                 if os.IsNotExist(err) {
                     if err := os.MkdirAll(dstPath, os.ModePerm); err != nil {
-                        fmt.Println(2, err)
                         return err
                     } else {
                         return nil
                     }
                 } else {
-                    fmt.Println(4, err)
                     return err
                 }
             } else {
@@ -54,7 +51,6 @@ func CopyPath(src, dst string) bool {
     })
 
     if err != nil {
-        fmt.Println(3, err)
         return false
     }
     return true
@@ -65,9 +61,8 @@ func CopyFile(src, dst string) bool {
         return false
     }
     src = strings.Replace(src, "\\", "/", -1)
-    srcFile, e := os.OpenFile(src, os.O_RDONLY, os.ModePerm)
-    if e != nil {
-        fmt.Println(5, e)
+    srcFile, err := os.OpenFile(src, os.O_RDONLY, os.ModePerm)
+    if err != nil {
         return false
     }
     defer srcFile.Close()
@@ -79,22 +74,19 @@ func CopyFile(src, dst string) bool {
 
     dstFileInfo := GetFileInfo(dstPath)
     if dstFileInfo == nil {
-        if e := os.MkdirAll(dstPath, os.ModePerm); e != nil {
-            fmt.Println(6, e)
+        if err := os.MkdirAll(dstPath, os.ModePerm); err != nil {
             return false
         }
     }
 
     //这里要把O_TRUNC 加上，否则会出现新旧文件内容出现重叠现象
-    dstFile, e := os.OpenFile(dst, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
-    if e != nil {
-        fmt.Println(7, e)
+    dstFile, err := os.OpenFile(dst, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
+    if err != nil {
         return false
     }
     defer dstFile.Close()
 
-    if _, e := io.Copy(dstFile, srcFile); e != nil {
-        fmt.Println(8, e)
+    if _, err := io.Copy(dstFile, srcFile); err != nil {
         return false
     } else {
         return true
@@ -124,7 +116,7 @@ func ReadAll(filePth string) ([]byte, error) {
 func WriteToFile(fileName string, content string) error {
     f, err := os.OpenFile(fileName, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
     if err != nil {
-        fmt.Println("file create failed. err: " + err.Error())
+        return err
     } else {
         // offset
         //os.Truncate(filename, 0) //clear
