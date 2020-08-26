@@ -65,7 +65,7 @@ func (t *NewCommand) NewProject(name, typ string) {
     }
     fmt.Println(" > ok")
 
-    fmt.Print(" - Rewrite content")
+    fmt.Print(" - Rewrite package name")
     if err := logic.ReplaceName(dest, fmt.Sprintf("github.com/mix-go/mix-%s-skeleton", typ), name); err != nil {
         panic(errors.New("Replace name failed"))
     }
