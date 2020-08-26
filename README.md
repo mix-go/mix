@@ -54,6 +54,20 @@ go install
 mix new --name=hello
 ~~~
 
+- 编译到骨架的 `bin` 目录
+
+~~~
+cd hello
+go build -o bin/go_build_main_go main.go
+~~~
+
+- 执行
+
+~~~
+cd bin
+./go_build_main_go
+~~~
+
 ## 技术交流
 
 知乎：https://www.zhihu.com/people/onanying   

@@ -46,12 +46,15 @@ func (t *NewCommand) NewProject(name, typ string) {
         cmd := exec.Command("go", "get", "-u", fmt.Sprintf("github.com/mix-go/mix-%s-skeleton@%s", typ, ver))
         err = cmd.Run()
         if err != nil {
-            fmt.Println(fmt.Sprintf("Exec failure: %s", err.Error()))
+            fmt.Println(fmt.Sprintf("Exec failed: %s", err.Error()))
             fmt.Println("Please try again, or manually execute 'go get -u ***'")
             return
         }
+    } else {
+        fmt.Println(fmt.Sprintf("Skeleton '%s' local found", typ))
     }
 
+    fmt.Print(" - Create code")
     pwd, err := os.Getwd()
     if err != nil {
         panic(err)
@@ -60,16 +63,18 @@ func (t *NewCommand) NewProject(name, typ string) {
     if !logic.CopyPath(sdir, dest) {
         panic(errors.New("Copy dir failed"))
     }
+    fmt.Println(" > ok")
 
+    fmt.Print(" - Rewrite content")
     if err := logic.ReplaceName(dest, fmt.Sprintf("github.com/mix-go/mix-%s-skeleton", typ), name); err != nil {
         panic(errors.New("Replace name failed"))
     }
-
     if err := logic.ReplaceMod(dest); err != nil {
         panic(errors.New("Replace go.mod failed"))
     }
+    fmt.Println(" > ok")
 
-    fmt.Println(fmt.Sprintf("Skeleton '%s' is generated", name))
+    fmt.Println(fmt.Sprintf("Application '%s' is generated", name))
 }
 
 type APICommand struct {

@@ -2,7 +2,6 @@ package logic
 
 import (
     "errors"
-    "fmt"
     "io"
     "io/ioutil"
     "os"
@@ -24,9 +23,6 @@ func CopyPath(src, dst string) bool {
         path = strings.Replace(path, "\\", "/", -1)
         relationPath := strings.Replace(path, src, "", -1)
         dstPath := strings.TrimRight(strings.TrimRight(strings.Replace(dst, "\\", "/", -1), "/"), "\\") + relationPath
-
-        fmt.Println(path, dstPath)
-
         if !info.IsDir() {
             if CopyFile(path, dstPath) {
                 return nil
