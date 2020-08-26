@@ -19,7 +19,7 @@ func CopyPath(src, dst string) bool {
         if err != nil {
             return err
         }
-        relationPath := strings.Replace(path, src, "/", -1)
+        relationPath := strings.Replace(path, src, "", -1)
         dstPath := strings.TrimRight(strings.TrimRight(dst, "/"), "\\") + relationPath
         if !info.IsDir() {
             if CopyFile(path, dstPath) {
@@ -54,6 +54,7 @@ func CopyFile(src, dst string) bool {
     if len(src) == 0 || len(dst) == 0 {
         return false
     }
+    src = strings.Replace(src, "\\", "/", -1)
     srcFile, e := os.OpenFile(src, os.O_RDONLY, os.ModePerm)
     if e != nil {
         return false
@@ -71,12 +72,14 @@ func CopyFile(src, dst string) bool {
             return false
         }
     }
+
     //这里要把O_TRUNC 加上，否则会出现新旧文件内容出现重叠现象
     dstFile, e := os.OpenFile(dst, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
     if e != nil {
         return false
     }
     defer dstFile.Close()
+
     if _, e := io.Copy(dstFile, srcFile); e != nil {
         return false
     } else {
