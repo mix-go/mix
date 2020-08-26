@@ -2,7 +2,6 @@ package manifest
 
 import (
     "github.com/mix-go/console"
-    "github.com/mix-go/dotenv"
     "github.com/mix-go/mix/devtool/manifest/beans"
     "github.com/mix-go/mix/devtool/manifest/commands"
 )
@@ -17,7 +16,7 @@ func Init() {
     ApplicationDefinition = console.ApplicationDefinition{
         AppName:    "app",
         AppVersion: "1.0.0-alpha",
-        AppDebug:   dotenv.Getenv("APP_DEBUG").Bool(true),
+        AppDebug:   false,
         Beans:      beans.Beans,
         Commands:   commands.Commands,
     }
