@@ -54,7 +54,7 @@ func (t *NewCommand) NewProject(name, typ string) {
         fmt.Println(fmt.Sprintf("Skeleton '%s' local found", typ))
     }
 
-    fmt.Print(" - Create code")
+    fmt.Print(" - Generate code")
     pwd, err := os.Getwd()
     if err != nil {
         panic(err)
