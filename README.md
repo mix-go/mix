@@ -16,7 +16,7 @@ hybrid high performance Go framework
 
 该框架与 [Mix PHP](https://github.com/mix-php/mix) 设计哲学几乎完全一致，Mix PHP 的用户可以非常容易的切换到 Mix Go 进行开发，达到学一会二的效果，OpenMix 可能是现在唯一一个打造夸语言框架的开源机构。
 
-## 与等其他 Go 框架的差别
+## 与其他 Go 框架的差别
 
 骨架代码全部基于 bean, event 依赖注入、控制反转、事件驱动库构建，同时内置了 Go 生态各个领域最流行的库，包括 gin, gorm, logrus 等。
 
