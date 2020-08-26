@@ -14,8 +14,8 @@ func Init() {
     beans.Init()
 
     ApplicationDefinition = console.ApplicationDefinition{
-        AppName:    "app",
-        AppVersion: "1.0.2",
+        AppName:    "mix",
+        AppVersion: "1.0.3",
         AppDebug:   false,
         Beans:      beans.Beans,
         Commands:   commands.Commands,
