@@ -6,7 +6,7 @@ import (
 )
 
 var (
-    ConsoleSkeletonVersion = "v1.0.1"
+    ConsoleSkeletonVersion = "v1.0.2"
     APISkeletonVersion     = "none"
     WebSkeletonVersion     = "none"
     FrameworkVersion       = "v1.0.1"

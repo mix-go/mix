@@ -15,7 +15,7 @@ func Init() {
 
     ApplicationDefinition = console.ApplicationDefinition{
         AppName:    "app",
-        AppVersion: "1.0.1",
+        AppVersion: "1.0.2",
         AppDebug:   false,
         Beans:      beans.Beans,
         Commands:   commands.Commands,
