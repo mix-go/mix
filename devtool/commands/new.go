@@ -41,7 +41,7 @@ func (t *NewCommand) NewProject(name, typ string) {
     }
 
     if os.Getenv("GOPATH") == "" {
-        fmt.Println("$GOPATH or $PATH is not configured")
+        fmt.Println("$GOPATH is not configured, see 'echo $GOPATH'")
         return
     }
 
