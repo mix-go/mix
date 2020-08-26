@@ -40,8 +40,8 @@ func (t *NewCommand) NewProject(name, typ string) {
         return
     }
 
-    sDir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/mix-%s-skeleton@%s", os.Getenv("GOPATH"), typ, ver)
-    if _, err := os.Stat(sDir); err != nil {
+    sdir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/mix-%s-skeleton@%s", os.Getenv("GOPATH"), typ, ver)
+    if _, err := os.Stat(sdir); err != nil {
         fmt.Println(fmt.Sprintf("Skeleton '%s' local not found, exec 'go get -u github.com/mix-go/mix-%s-skeleton@%s', please wait ...", typ, typ, ver))
         cmd := exec.Command("go", "get", "-u", fmt.Sprintf("github.com/mix-go/mix-%s-skeleton@%s", typ, ver))
         err = cmd.Run()
@@ -57,11 +57,11 @@ func (t *NewCommand) NewProject(name, typ string) {
         panic(err)
     }
     dest := fmt.Sprintf("%s/%s", pwd, name)
-    if !logic.CopyPath(sDir, dest) {
+    if !logic.CopyPath(sdir, dest) {
         panic(errors.New("Copy dir failed"))
     }
 
-    if err := logic.ReplaceName(dest, name); err != nil {
+    if err := logic.ReplaceName(dest, fmt.Sprintf("github.com/mix-go/mix-%s-skeleton", typ), name); err != nil {
         panic(errors.New("Replace name failed"))
     }
 

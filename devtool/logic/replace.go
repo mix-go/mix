@@ -7,7 +7,7 @@ import (
     "regexp"
 )
 
-func ReplaceName(root, name string) error {
+func ReplaceName(root, old, new string) error {
     err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
         if err != nil {
             return err
@@ -20,8 +20,8 @@ func ReplaceName(root, name string) error {
                 return err
             }
             str := string(text)
-            reg := regexp.MustCompile(`github.com/mix-go/mix-skeleton/console`)
-            str = reg.ReplaceAllString(str, name)
+            reg := regexp.MustCompile(old)
+            str = reg.ReplaceAllString(str, new)
             if err := WriteToFile(path, str); err != nil {
                 return err
             }
