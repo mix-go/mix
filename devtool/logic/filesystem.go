@@ -114,7 +114,7 @@ func WriteToFile(fileName string, content string) error {
     } else {
         // offset
         //os.Truncate(filename, 0) //clear
-        n, _ := f.Seek(0, os.SEEK_END)
+        n, _ := f.Seek(0, io.SeekEnd)
         _, err = f.WriteAt([]byte(content), n)
         defer f.Close()
     }
