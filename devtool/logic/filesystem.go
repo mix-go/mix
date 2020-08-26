@@ -20,7 +20,6 @@ func CopyPath(src, dst string) bool {
     src = strings.Replace(src, "\\", "/", -1)
     srcFileInfo := GetFileInfo(src)
     if srcFileInfo == nil || !srcFileInfo.IsDir() {
-        fmt.Println(src, srcFileInfo)
         return false
     }
 

@@ -40,6 +40,11 @@ func (t *NewCommand) NewProject(name, typ string) {
         return
     }
 
+    if os.Getenv("GOPATH") == "" {
+        fmt.Println("$GOPATH or $PATH is not configured")
+        return
+    }
+
     sdir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/mix-%s-skeleton@%s", os.Getenv("GOPATH"), typ, ver)
     if _, err := os.Stat(sdir); err != nil {
         fmt.Println(fmt.Sprintf("Skeleton '%s' local not found, exec 'go get -u github.com/mix-go/mix-%s-skeleton@%s', please wait ...", typ, typ, ver))
