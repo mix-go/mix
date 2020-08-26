@@ -11,6 +11,7 @@ import (
 )
 
 func CopyPath(src, dst string) bool {
+    src = strings.Replace(src, "\\", "/", -1)
     srcFileInfo := GetFileInfo(src)
     if srcFileInfo == nil || !srcFileInfo.IsDir() {
         return false
@@ -20,7 +21,9 @@ func CopyPath(src, dst string) bool {
             fmt.Println(1, err)
             return err
         }
-        relationPath := strings.Replace(path, src, "", -1)
+
+        path = strings.Replace(path, "\\", "/", -1)
+        relationPath := strings.Replace(path, src, "/", -1)
         dstPath := strings.TrimRight(strings.TrimRight(dst, "/"), "\\") + relationPath
 
         fmt.Println(path, dstPath)
