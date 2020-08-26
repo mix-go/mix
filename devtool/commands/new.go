@@ -55,7 +55,7 @@ func (t *NewCommand) NewProject(name, typ string) {
             fmt.Println("Please try again, or manually execute 'go get -u ***'")
             return
         }
-        exec.Command("rm", "-f", fmt.Sprintf("%s/mix-%s-skeleton", os.Getenv("GOPATH"), typ))
+        _ = os.Remove(fmt.Sprintf("%s/bin/mix-%s-skeleton", os.Getenv("GOPATH"), typ))
     } else {
         fmt.Println(fmt.Sprintf("Skeleton '%s' local found", typ))
     }
