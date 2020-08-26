@@ -2,6 +2,8 @@ package logic
 
 import (
     "errors"
+    "fmt"
+    "github.com/mix-go/console"
     "io"
     "io/ioutil"
     "os"
@@ -10,11 +12,17 @@ import (
 )
 
 func CopyPath(src, dst string) bool {
+    debug := console.App().AppDebug
     src = strings.Replace(src, "\\", "/", -1)
     srcFileInfo := GetFileInfo(src)
     if srcFileInfo == nil || !srcFileInfo.IsDir() {
         return false
     }
+
+    if debug {
+        fmt.Println("")
+    }
+
     err := filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
         if err != nil {
             return err
@@ -23,6 +31,11 @@ func CopyPath(src, dst string) bool {
         path = strings.Replace(path, "\\", "/", -1)
         relationPath := strings.Replace(path, src, "", -1)
         dstPath := strings.TrimRight(strings.TrimRight(strings.Replace(dst, "\\", "/", -1), "/"), "\\") + relationPath
+
+        if debug {
+            fmt.Println(fmt.Sprintf(" Copy %s to %s", path, dstPath))
+        }
+
         if !info.IsDir() {
             if CopyFile(path, dstPath) {
                 return nil
