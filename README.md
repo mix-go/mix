@@ -6,11 +6,11 @@
 <img src="http://mixphp.cn/static/image/logo_go.png" width="120" alt="MixPHP">
 </p>
 
-## Mix Go
-
-hybrid high performance Go framework
+## Mix Go 是什么
 
 混合型高性能 Go 框架
+
+hybrid high performance Go framework
 
 ## 与 Mix PHP 的关系
 
