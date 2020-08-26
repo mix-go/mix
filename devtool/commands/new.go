@@ -27,26 +27,27 @@ func (t *NewCommand) NewProject(name, typ string) {
     ver := ""
     switch typ {
     case "console":
-        ver = ConsoleVersion
+        ver = ConsoleSkeletonVersion
         break
     case "api":
-        ver = APIVersion
+        ver = APISkeletonVersion
         break
     case "web":
-        ver = WebVersion
+        ver = WebSkeletonVersion
         break
     default:
         fmt.Println("Type error, only be console, api, web")
         return
     }
 
-    sDir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/mix-skeleton/%s@%s", os.Getenv("GOPATH"), typ, ver)
+    sDir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/mix-%s-skeleton@%s", os.Getenv("GOPATH"), typ, ver)
     if _, err := os.Stat(sDir); err != nil {
-        fmt.Println(fmt.Sprintf("Skeleton '%s' not found, exec 'go get -u github.com/mix-go/mix-skeleton/%s@%s'", typ, typ, ver))
-        cmd := exec.Command("go", "get", "-u", fmt.Sprintf("github.com/mix-go/mix-skeleton/%s@%s", typ, ver))
+        fmt.Println(fmt.Sprintf("Skeleton '%s' not found, exec 'go get -u github.com/mix-go/mix-%s-skeleton@%s'", typ, typ, ver))
+        cmd := exec.Command("go", "get", "-u", fmt.Sprintf("github.com/mix-go/mix-%s-skeleton@%s", typ, ver))
         err = cmd.Run()
         if err != nil {
-            fmt.Println("Failed to execute the command, please handle it manually")
+            fmt.Println(fmt.Sprintf("Exec failure: %s", err.Error()))
+            fmt.Println("Please try again, or manually execute 'go get -u ***'")
             return
         }
     }

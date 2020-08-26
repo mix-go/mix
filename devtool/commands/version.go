@@ -6,11 +6,10 @@ import (
 )
 
 var (
-    SkeletonVersion  = "v1.0.0"
-    FrameworkVersion = "v1.0.0"
-    ConsoleVersion   = "v0.0.0-20200822120924-3cb721b6d16f"
-    APIVersion       = ""
-    WebVersion       = ""
+    ConsoleSkeletonVersion = "v1.0.1"
+    APISkeletonVersion     = "none"
+    WebSkeletonVersion     = "none"
+    FrameworkVersion       = "v1.0.1"
 )
 
 const logo = `             ___         
@@ -27,6 +26,8 @@ type VersionCommand struct {
 func (t *VersionCommand) Main() {
     fmt.Println(strings.Replace(logo, "*", "`", -1))
     fmt.Println("")
-    fmt.Println(fmt.Sprintf("Skeleton     Version: %s", SkeletonVersion))
+    fmt.Println(fmt.Sprintf("Console      Version: %s", ConsoleSkeletonVersion))
+    fmt.Println(fmt.Sprintf("API          Version: %s", APISkeletonVersion))
+    fmt.Println(fmt.Sprintf("Web          Version: %s", WebSkeletonVersion))
     fmt.Println(fmt.Sprintf("Framework    Version: %s", FrameworkVersion))
 }
