@@ -6,15 +6,18 @@ import (
     "time"
 )
 
+type LogFormatter func(params LogFormatterParams) string
+type LogFormatterParams gin.LogFormatterParams
+
 // LogrusWithFormatter instance a Logger middleware with the specified log format function.
-func LogrusWithFormatter(logger *logrus.Logger, f gin.LogFormatter) gin.HandlerFunc {
+func LogrusWithFormatter(logger *logrus.Logger, f LogFormatter) gin.HandlerFunc {
     return func(c *gin.Context) {
         logger.Info(format(c, f))
     }
 }
 
 // LoggerWithConfig instance a Logger middleware with config.
-func format(c *gin.Context, f gin.LogFormatter) string {
+func format(c *gin.Context, f LogFormatter) string {
     // Start timer
     start := time.Now()
     path := c.Request.URL.Path
@@ -23,7 +26,7 @@ func format(c *gin.Context, f gin.LogFormatter) string {
     // Process request
     c.Next()
 
-    param := gin.LogFormatterParams{
+    param := LogFormatterParams{
         Request: c.Request,
         Keys:    c.Keys,
     }
