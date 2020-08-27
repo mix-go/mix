@@ -3,14 +3,11 @@
 <br>
 
 <p align="center">
-<img src="http://mixphp.cn/static/image/logo_go.png" width="120" alt="MixPHP">
+    <img src="http://mixphp.cn/static/image/logo_go.png" width="120" alt="MixPHP">
+    <h2 align="center">Mix Go</h2>
+    <p align="center">混合型高性能 Go 框架</p>
+    <p align="center">hybrid high performance Go framework</p>
 </p>
-
-## Mix Go 是什么
-
-混合型高性能 Go 框架
-
-hybrid high performance Go framework
 
 ## 与 Mix PHP 的关系
 
@@ -18,17 +15,17 @@ hybrid high performance Go framework
 
 ## 与其他 Go 框架的差别
 
-骨架代码全部基于 bean, event 依赖注入、控制反转、事件驱动库构建，同时内置了 Go 生态各个领域最流行的库，包括 gin, gorm, logrus 等。
+- 骨架代码全部基于 bean, event 依赖注入、控制反转、事件驱动库构建，同时内置了 Go 生态各个领域最流行的库，包括 gin, gorm, logrus 等。
 
-框架内置了 gin 作为服务器，gin 严格来讲并不是框架，而是一个 server 库，只提供了服务器相关的功能，请求处理，中间件，视图渲染等。
+- 框架内置了 gin 作为服务器，gin 严格来讲并不是框架，而是一个 server 库，只提供了服务器相关的功能，请求处理，中间件，视图渲染等。
 
-提供了多种 console, api, web 三种骨架的生成工具，同时骨架代码中包含非常丰富的范例，开箱即用。
+- 提供了多种 console, api, web 三种骨架的生成工具，同时骨架代码中包含非常丰富的范例，开箱即用。
 
-框架非常轻量灵活，均可独立使用，严格来讲 Mix 其实只封装了 `mix-go/console` 命令行开发组件，其他全部为选装。
+- 框架非常轻量灵活，均可独立使用，严格来讲 Mix 其实只封装了 `mix-go/console` 命令行开发组件，其他全部为选装。
 
-采用高度灵活的开发方式，框架只提供底层库，而与具体功能相关的代码都在骨架代码中实现，用户能更加细粒度的修改每一处细节。
+- 采用高度灵活的开发方式，框架只提供底层库，而与具体功能相关的代码都在骨架代码中实现，用户能更加细粒度的修改每一处细节。
 
-由于骨架和核心类库都由 Mix 自己打造，拥有和 Mix PHP 同样的设计哲学，PHP 的用户可以很容易上手开发。
+- 由于骨架和核心类库都由 Mix 自己打造，拥有和 Mix PHP 同样的设计哲学，PHP 的用户可以很容易上手开发。
 
 ## 微服务
 
