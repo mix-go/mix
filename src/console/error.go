@@ -1,7 +1,6 @@
 package console
 
 import (
-    event2 "github.com/mix-go/console/event"
     "github.com/mix-go/event"
 )
 
@@ -38,7 +37,7 @@ func (t *ErrorHandler) dispatch(err interface{}) {
     if t.Dispatcher == nil {
         return
     }
-    e := &event2.HandleErrorEvent{
+    e := &HandleErrorEvent{
         Error: err,
     }
     t.Dispatcher.Dispatch(e)

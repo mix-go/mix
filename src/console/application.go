@@ -5,10 +5,8 @@ import (
     "fmt"
     "github.com/mix-go/bean"
     "github.com/mix-go/console/argv"
-    event2 "github.com/mix-go/console/event"
     "github.com/mix-go/console/flag"
     "github.com/mix-go/event"
-    "reflect"
     "runtime/debug"
     "strings"
 )
@@ -75,6 +73,11 @@ type Application struct {
     Singleton bool
 }
 
+// 命令
+type Command interface {
+    Main()
+}
+
 // 命令定义
 type CommandDefinition struct {
     // 命令名称
@@ -83,8 +86,8 @@ type CommandDefinition struct {
     Usage string
     // 选项
     Options []OptionDefinition
-    // 反射
-    Reflect func() reflect.Value
+    // 命令
+    Command Command
     // 是否单命令
     Singleton bool
 }
@@ -176,46 +179,42 @@ func (t *Application) call() {
     t.validateOptions()
 
     // 提取命令
-    var cmd *CommandDefinition
+    var d *CommandDefinition
     command := argv.Command()
     if t.Singleton {
         // 单命令
         for _, c := range t.Commands {
             if c.Singleton {
-                cmd = &c
+                d = &c
                 break
             }
         }
-        if cmd == nil {
+        if d == nil {
             panic(errors.New("Singleton command not found"))
         }
     } else {
         for _, c := range t.Commands {
             if c.Name == command {
-                cmd = &c
+                d = &c
                 break
             }
         }
     }
-    if cmd == nil {
+    if d == nil {
         panic(NewNotFoundError(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'.", command, argv.Program().Path))))
     }
 
     // 获取命令
-    v := cmd.Reflect()
+    c := d.Command
 
     // 触发执行命令前置事件
-    e := &event2.CommandBeforeExecuteEvent{
-        Command: v.Interface(),
+    e := &CommandBeforeExecuteEvent{
+        Command: c,
     }
     t.Dispatcher.Dispatch(e)
 
     // 执行命令
-    m := v.MethodByName("Main")
-    if !m.IsValid() {
-        panic(errors.New(fmt.Sprintf("'%s' Main method not found", fmt.Sprintf("%#v", v))))
-    }
-    m.Call([]reflect.Value{})
+    c.Main()
 }
 
 // 命令行选项效验

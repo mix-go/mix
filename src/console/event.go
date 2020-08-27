@@ -1,6 +1,8 @@
-package event
+package console
 
-import "github.com/mix-go/event"
+import (
+    "github.com/mix-go/event"
+)
 
 type HandleErrorEvent struct {
     event.EventTrait
@@ -9,5 +11,5 @@ type HandleErrorEvent struct {
 
 type CommandBeforeExecuteEvent struct {
     event.EventTrait
-    Command interface{}
+    Command Command
 }

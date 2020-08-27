@@ -1,7 +1,6 @@
 package commands
 
 import (
-    "github.com/mix-go/bean"
     "github.com/mix-go/console"
     "github.com/mix-go/mix/devtool/commands"
 )
@@ -15,7 +14,7 @@ func init() {
         console.CommandDefinition{
             Name:    "version",
             Usage:   "Prints the current Mix Go version",
-            Reflect: bean.NewReflect(commands.VersionCommand{}),
+            Command: &commands.VersionCommand{},
         },
         console.CommandDefinition{
             Name:  "new",
@@ -26,7 +25,7 @@ func init() {
                     Usage: "Project name",
                 },
             },
-            Reflect: bean.NewReflect(commands.NewCommand{}),
+            Command: &commands.NewCommand{},
         },
         console.CommandDefinition{
             Name:  "api",
@@ -37,7 +36,7 @@ func init() {
                     Usage: "Project name",
                 },
             },
-            Reflect: bean.NewReflect(commands.APICommand{}),
+            Command: &commands.APICommand{},
         },
         console.CommandDefinition{
             Name:  "web",
@@ -48,7 +47,7 @@ func init() {
                     Usage: "Project name",
                 },
             },
-            Reflect: bean.NewReflect(commands.WebCommand{}),
+            Command: &commands.WebCommand{},
         },
     )
 }
