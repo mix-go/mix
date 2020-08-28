@@ -1,6 +1,7 @@
 package bean
 
 import (
+    "fmt"
     "github.com/stretchr/testify/assert"
     "net/http"
     "testing"
@@ -19,7 +20,6 @@ func (c *foo) Init() {
 var definitions = []BeanDefinition{
     {
         Name:    "httpclient",
-        Scope:   SINGLETON,
         Reflect: NewReflect(http.Client{}),
         Fields: Fields{
             "Timeout": time.Duration(time.Second * 3),
@@ -27,6 +27,13 @@ var definitions = []BeanDefinition{
     },
     {
         Name:    "httpclient2",
+        Reflect: NewReflect(NewHttpClient),
+        ConstructorArgs: ConstructorArgs{
+            time.Duration(time.Second * 3),
+        },
+    },
+    {
+        Name:    "httpclient3",
         Reflect: NewReflect(NewHttpClient),
         ConstructorArgs: ConstructorArgs{
             time.Duration(time.Second * 3),
@@ -53,7 +60,7 @@ func NewHttpClient(timeout time.Duration) *http.Client {
     }
 }
 
-func TestGet(t *testing.T) {
+func TestGetReflectStruct(t *testing.T) {
     a := assert.New(t)
 
     context := NewApplicationContext(definitions)
@@ -67,13 +74,13 @@ func TestGetReflectFunc(t *testing.T) {
     a := assert.New(t)
 
     context := NewApplicationContext(definitions)
-    cli := context.Get("httpclient2").(*http.Client)
+    cli := context.Get("httpclient3").(*http.Client)
     _, err := cli.Get("http://www.baidu.com/")
 
     a.Equal(err, nil)
 }
 
-func TestGetReflectStruct(t *testing.T) {
+func TestGetReference(t *testing.T) {
     a := assert.New(t)
 
     context := NewApplicationContext(definitions)
@@ -87,6 +94,30 @@ func TestGetReflectStruct(t *testing.T) {
     a.Equal(err, nil)
 }
 
+func TestCoverConstructorArgs(t *testing.T) {
+    a := assert.New(t)
 
+    context := NewApplicationContext(definitions)
+    cli := context.Get("httpclient2").(*http.Client)
+    cli1 := context.GetBean("httpclient2", nil, nil).(*http.Client)
 
+    a.Equal(fmt.Sprintf("%v", cli), fmt.Sprintf("%v", cli1))
 
+    cli2 := context.GetBean("httpclient2", nil, ConstructorArgs{time.Duration(time.Second * 4)}).(*http.Client)
+
+    a.NotEqual(fmt.Sprintf("%v", cli), fmt.Sprintf("%v", cli2))
+}
+
+func TestCoverFields(t *testing.T) {
+    a := assert.New(t)
+
+    context := NewApplicationContext(definitions)
+    cli := context.Get("httpclient").(*http.Client)
+    cli1 := context.GetBean("httpclient", nil, nil).(*http.Client)
+
+    a.Equal(fmt.Sprintf("%v", cli), fmt.Sprintf("%v", cli1))
+
+    cli2 := context.GetBean("httpclient", Fields{"Timeout": time.Duration(time.Second * 4)}, nil).(*http.Client)
+
+    a.NotEqual(fmt.Sprintf("%v", cli), fmt.Sprintf("%v", cli2))
+}

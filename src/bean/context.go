@@ -93,20 +93,9 @@ func merge(bd *BeanDefinition, fields Fields, args ConstructorArgs) *BeanDefinit
         Scope:           bd.Scope,
         Reflect:         bd.Reflect,
         InitMethod:      bd.InitMethod,
-        ConstructorArgs: nil,
-        Fields:          nil,
+        ConstructorArgs: bd.ConstructorArgs,
+        Fields:          bd.Fields,
         context:         bd.context,
-    }
-    if f {
-        // 合并替换字段
-        tmp := Fields{}
-        for k, v := range bd.Fields {
-            tmp[k] = v
-        }
-        for k, v := range fields {
-            tmp[k] = v
-        }
-        nbd.Fields = tmp
     }
     if a {
         // 合并替换参数，nil 忽略
@@ -129,6 +118,16 @@ func merge(bd *BeanDefinition, fields Fields, args ConstructorArgs) *BeanDefinit
             }
         }
         nbd.ConstructorArgs = tmp
+    }
+    if f {
+        tmp := Fields{}
+        for k, v := range bd.Fields {
+            tmp[k] = v
+        }
+        for k, v := range fields {
+            tmp[k] = v
+        }
+        nbd.Fields = tmp
     }
     return nbd
 }
