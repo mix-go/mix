@@ -8,6 +8,8 @@
 
 <p align="center">高性能 • 轻量级 • 命令行</p>
 
+<br>
+
 ## Mix Go 是什么
 
 Mix Go 是混合型高性能 Go 框架，该框架可以开发 console, api, web 等各种项目，引入了依赖注入、控制反转、事件驱动等高级特征，得益于 go 生态更好的跨平台、静态执行的优势，该框架更适合系统核心模块、对稳定性要求高、计算量比较大的项目。
@@ -83,6 +85,25 @@ go build -o bin/go_build_main_go main.go
 cd bin
 ./go_build_main_go
 ~~~
+
+~~~
+./go_build_main_go api
+             ___         
+ ______ ___  _ /__ ___ _____ ______ 
+  / __ `__ \/ /\ \/ /__  __ `/  __ \
+ / / / / / / / /\ \/ _  /_/ // /_/ /
+/_/ /_/ /_/_/ /_/\_\  \__, / \____/ 
+                     /____/
+
+
+Server      Name:     mix-api
+System      Name:     darwin
+Go          Version:  1.13.4
+Framework   Version:  1.0.5
+Listen      Addr:     :8080
+time=2020-08-28 18:54:31 level=info msg=Server start file=api.go:58
+~~~
+
 
 ## 技术交流
 
