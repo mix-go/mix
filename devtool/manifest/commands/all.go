@@ -38,16 +38,5 @@ func init() {
             },
             Command: &commands.APICommand{},
         },
-        console.CommandDefinition{
-            Name:  "web",
-            Usage: "\tCreate a web application",
-            Options: []console.OptionDefinition{
-                {
-                    Names: []string{"n", "name"},
-                    Usage: "Project name",
-                },
-            },
-            Command: &commands.WebCommand{},
-        },
     )
 }

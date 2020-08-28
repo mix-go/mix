@@ -6,10 +6,9 @@ import (
 )
 
 var (
-    ConsoleSkeletonVersion = "v1.0.2"
-    APISkeletonVersion     = "none"
-    WebSkeletonVersion     = "none"
-    FrameworkVersion       = "v1.0.1"
+    ConsoleSkeletonVersion = "v1.0.4"
+    APISkeletonVersion     = "v1.0.4"
+    FrameworkVersion       = "v1.0.4"
 )
 
 const logo = `             ___         
@@ -28,6 +27,5 @@ func (t *VersionCommand) Main() {
     fmt.Println("")
     fmt.Println(fmt.Sprintf("Console      Version: %s", ConsoleSkeletonVersion))
     fmt.Println(fmt.Sprintf("API          Version: %s", APISkeletonVersion))
-    fmt.Println(fmt.Sprintf("Web          Version: %s", WebSkeletonVersion))
     fmt.Println(fmt.Sprintf("Framework    Version: %s", FrameworkVersion))
 }

@@ -12,7 +12,6 @@ import (
 var (
     Console = "console"
     API     = "api"
-    Web     = "web"
 )
 
 type NewCommand struct {
@@ -31,9 +30,6 @@ func (t *NewCommand) NewProject(name, typ string) {
         break
     case "api":
         ver = APISkeletonVersion
-        break
-    case "web":
-        ver = WebSkeletonVersion
         break
     default:
         fmt.Println("Type error, only be console, api, web")
@@ -90,13 +86,4 @@ type APICommand struct {
 func (t *APICommand) Main() {
     name := flag.Match("n", "name").String("hello")
     t.NewProject(name, API)
-}
-
-type WebCommand struct {
-    NewCommand
-}
-
-func (t *WebCommand) Main() {
-    name := flag.Match("n", "name").String("hello")
-    t.NewProject(name, Web)
 }

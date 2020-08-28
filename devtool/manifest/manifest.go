@@ -16,7 +16,7 @@ func Init() {
 
     ApplicationDefinition = console.ApplicationDefinition{
         AppName:    "mix",
-        AppVersion: "1.0.3",
+        AppVersion: "1.0.4",
         AppDebug:   dotenv.Getenv("APP_DEBUG").Bool(false),
         Beans:      beans.Beans,
         Commands:   commands.Commands,
