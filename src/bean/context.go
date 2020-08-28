@@ -24,12 +24,12 @@ func (t *ApplicationContext) Init() {
     t.tidyDefinitions = sync.Map{}
     for _, d := range t.Definitions {
         d.context = t
-        t.tidyDefinitions.Store(d.Name, &d)
+        t.tidyDefinitions.Store(d.Name, d)
     }
 }
 
 // 获取定义
-func (t *ApplicationContext) GetBeanDefinition(name string) *BeanDefinition {
+func (t *ApplicationContext) GetBeanDefinition(name string) BeanDefinition {
     var (
         inf interface{}
         ok  bool
@@ -37,7 +37,7 @@ func (t *ApplicationContext) GetBeanDefinition(name string) *BeanDefinition {
     if inf, ok = t.tidyDefinitions.Load(name); !ok {
         panic(fmt.Sprintf("Bean not found: %s", name))
     }
-    return inf.(*BeanDefinition)
+    return inf.(BeanDefinition)
 }
 
 // 获取实例
@@ -74,13 +74,13 @@ func (c *ApplicationContext) Has(name string) (ok bool) {
 // 合并
 // args | fields 内的字段会替换之前定义的值
 // args 内的 nil 值将会忽略，不会替换处理
-func merge(def *BeanDefinition, fields Fields, args ConstructorArgs) *BeanDefinition {
+func merge(def BeanDefinition, fields Fields, args ConstructorArgs) BeanDefinition {
     hf := len(fields) > 0
     ha := len(args) > 0
     if !(hf || ha) {
         return def
     }
-    ndef := &BeanDefinition{
+    ndef := BeanDefinition{
         Name:            def.Name,
         Scope:           def.Scope,
         Reflect:         def.Reflect,
