@@ -53,7 +53,7 @@ func NewHttpClient(timeout time.Duration) *http.Client {
     }
 }
 
-func TestApplicationContextGet(t *testing.T) {
+func TestGet(t *testing.T) {
     a := assert.New(t)
 
     context := NewApplicationContext(definitions)
@@ -63,7 +63,7 @@ func TestApplicationContextGet(t *testing.T) {
     a.Equal(err, nil)
 }
 
-func TestApplicationContextGetReflectFunc(t *testing.T) {
+func TestGetReflectFunc(t *testing.T) {
     a := assert.New(t)
 
     context := NewApplicationContext(definitions)
@@ -73,7 +73,7 @@ func TestApplicationContextGetReflectFunc(t *testing.T) {
     a.Equal(err, nil)
 }
 
-func TestApplicationContextGetReflectStruct(t *testing.T) {
+func TestGetReflectStruct(t *testing.T) {
     a := assert.New(t)
 
     context := NewApplicationContext(definitions)
@@ -86,3 +86,7 @@ func TestApplicationContextGetReflectStruct(t *testing.T) {
 
     a.Equal(err, nil)
 }
+
+
+
+
