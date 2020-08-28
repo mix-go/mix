@@ -44,6 +44,12 @@
 - 安装开发工具
 
 ~~~
+// 快速安装
+go get github.com/mix-go/mix
+~~~
+
+~~~
+// 源码安装
 git clone https://github.com/mix-go/mix
 cd mix
 go install
@@ -52,7 +58,13 @@ go install
 - 创建应用骨架
 
 ~~~
+// console
 mix new --name=hello
+~~~
+
+~~~
+// api
+mix api --name=hello
 ~~~
 
 - 编译到骨架的 `bin` 目录
