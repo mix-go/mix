@@ -86,8 +86,10 @@ cd bin
 ./go_build_main_go
 ~~~
 
+- `api` 测试
+
 ~~~
-./go_build_main_go api
+$> ./go_build_main_go api
              ___         
  ______ ___  _ /__ ___ _____ ______ 
   / __ `__ \/ /\ \/ /__  __ `/  __ \
@@ -104,6 +106,12 @@ Listen      Addr:     :8080
 time=2020-08-28 18:54:31 level=info msg=Server start file=api.go:58
 ~~~
 
+访问测试 (新开一个终端)：
+
+```
+$> curl http://127.0.0.1:8080/hello
+{"message":"hello, world!","status":200}
+```
 
 ## 技术交流
 
