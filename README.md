@@ -52,7 +52,13 @@ go install
 - 创建应用骨架
 
 ~~~
+// console
 mix new --name=hello
+~~~
+
+~~~
+// api
+mix api --name=hello
 ~~~
 
 - 编译到骨架的 `bin` 目录
