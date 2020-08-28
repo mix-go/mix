@@ -4,10 +4,15 @@
 
 <p align="center">
     <img src="http://mixphp.cn/static/image/logo_go.png" width="120" alt="MixPHP">
-    <h2 align="center">Mix Go</h2>
-    <p align="center">混合型高性能 Go 框架</p>
-    <p align="center">hybrid high performance Go framework</p>
 </p>
+
+<p align="center">混合型高性能 Go 框架</p>
+
+<p align="center">hybrid high performance Go framework</p>
+
+## Mix Go 是什么
+
+Mix Go 是在开发 [Mix PHP](https://github.com/mix-php/mix) 项目的时候就规划打造的同类设计架构的框架，该框架可以开发 console, api, web 等各种项目，得益于 go 生态更好的跨平台、静态执行的优势，相比 PHP 该框架更加适合系统核心模块或者对稳定性要求更高的项目。
 
 ## 与 Mix PHP 的关系
 
