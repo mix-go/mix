@@ -50,16 +50,16 @@ func (t *ApplicationContext) GetBeanDefinition(name string) *BeanDefinition {
 
 // 获取实例
 func (t *ApplicationContext) GetBean(name string, fields Fields, args ConstructorArgs) interface{} {
-    def := merge(t.GetBeanDefinition(name), fields, args)
-    if def.Scope == SINGLETON {
+    bd := merge(t.GetBeanDefinition(name), fields, args)
+    if bd.Scope == SINGLETON {
         if ins, ok := t.instances.Load(name); ok {
             return ins
         }
-        val := def.instance()
+        val := bd.instance()
         ins, _ := t.instances.LoadOrStore(name, val) // LoadOrStore 处理并发穿透
         return ins
     }
-    return def.instance()
+    return bd.instance()
 }
 
 // 快速获取实例
@@ -82,42 +82,42 @@ func (c *ApplicationContext) Has(name string) (ok bool) {
 // 合并
 // args | fields 内的字段会替换之前定义的值
 // args 内的 nil 值将会忽略，不会替换处理
-func merge(def *BeanDefinition, fields Fields, args ConstructorArgs) *BeanDefinition {
-    hf := len(fields) > 0
-    ha := len(args) > 0
-    if !(hf || ha) {
-        return def
+func merge(bd *BeanDefinition, fields Fields, args ConstructorArgs) *BeanDefinition {
+    f := len(fields) > 0
+    a := len(args) > 0
+    if !(f || a) {
+        return bd
     }
-    ndef := &BeanDefinition{
-        Name:            def.Name,
-        Scope:           def.Scope,
-        Reflect:         def.Reflect,
-        InitMethod:      def.InitMethod,
+    nbd := &BeanDefinition{
+        Name:            bd.Name,
+        Scope:           bd.Scope,
+        Reflect:         bd.Reflect,
+        InitMethod:      bd.InitMethod,
         ConstructorArgs: nil,
         Fields:          nil,
-        context:         def.context,
+        context:         bd.context,
     }
-    if hf {
+    if f {
         // 合并替换字段
         tmp := Fields{}
-        for k, v := range def.Fields {
+        for k, v := range bd.Fields {
             tmp[k] = v
         }
         for k, v := range fields {
             tmp[k] = v
         }
-        ndef.Fields = tmp
+        nbd.Fields = tmp
     }
-    if ha {
+    if a {
         // 合并替换参数，nil 忽略
         tmp := ConstructorArgs{}
-        tmp = append(tmp, def.ConstructorArgs...)
+        tmp = append(tmp, bd.ConstructorArgs...)
         for k, v := range args {
             if v == nil {
                 continue
             }
             ok := false
-            for sk, _ := range def.ConstructorArgs {
+            for sk, _ := range bd.ConstructorArgs {
                 if sk == k {
                     ok = true
                 }
@@ -128,7 +128,7 @@ func merge(def *BeanDefinition, fields Fields, args ConstructorArgs) *BeanDefini
                 tmp = append(tmp, v)
             }
         }
-        ndef.ConstructorArgs = tmp
+        nbd.ConstructorArgs = tmp
     }
-    return ndef
+    return nbd
 }

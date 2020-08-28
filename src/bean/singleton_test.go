@@ -31,8 +31,7 @@ func TestRefresh(t *testing.T) {
 
     context := NewApplicationContext(definitions1)
     f1 := context.Get("foo").(*foo)
-    d := context.GetBeanDefinition("foo")
-    d.Refresh()
+    context.GetBeanDefinition("foo").Refresh()
     f2 := context.Get("foo").(*foo)
 
     a.NotEqual(fmt.Sprintf("%p", f1), fmt.Sprintf("%p", f2))
