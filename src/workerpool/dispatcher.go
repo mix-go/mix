@@ -25,6 +25,7 @@ func (t *Dispatcher) Run() {
         t.workers = append(t.workers, w)
     }
     t.dispatch()
+    t.wait()
 }
 
 func (t *Dispatcher) dispatch() {
@@ -53,7 +54,7 @@ func (t *Dispatcher) Stop() {
     }()
 }
 
-func (t *Dispatcher) Wait() {
+func (t *Dispatcher) wait() {
     t.wg.Wait()
 }
 

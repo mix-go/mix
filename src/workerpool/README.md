@@ -48,8 +48,7 @@ go func() {
     d.Stop()
 }()
 
-d.Run()
-d.Wait() // 等待任务全部执行完成并停止全部 Worker
+d.Run() // 等待任务全部执行完成并停止全部 Worker
 ~~~
 
 ## License
