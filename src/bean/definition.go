@@ -62,8 +62,13 @@ type BeanDefinition struct {
     context         *ApplicationContext
 }
 
+// 刷新
+func (t *BeanDefinition) Refresh() {
+    t.context.instances.Store(t.Name, t.instance())
+}
+
 // 实例化
-func (t *BeanDefinition) Instance() interface{} {
+func (t *BeanDefinition) instance() interface{} {
     v := t.Reflect()
 
     // 构造器注入

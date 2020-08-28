@@ -7,16 +7,16 @@ import (
     "time"
 )
 
-type Foo struct {
+type foo struct {
     Bar    string
     Client *http.Client
 }
 
-func (c *Foo) Init() {
+func (c *foo) Init() {
     c.Bar = "test"
 }
 
-var Definitions = []BeanDefinition{
+var definitions = []BeanDefinition{
     {
         Name:    "httpclient",
         Scope:   SINGLETON,
@@ -38,7 +38,7 @@ var Definitions = []BeanDefinition{
     {
         Name:       "foo",
         InitMethod: "Init",
-        Reflect:    NewReflect(Foo{}),
+        Reflect:    NewReflect(foo{}),
         Fields: Fields{
             "Bar":    "bar",
             "Client": NewReference("httpclient2"),
@@ -56,7 +56,7 @@ func NewHttpClient(timeout time.Duration) *http.Client {
 func TestApplicationContextGet(t *testing.T) {
     a := assert.New(t)
 
-    context := NewApplicationContext(Definitions)
+    context := NewApplicationContext(definitions)
     cli := context.Get("httpclient").(*http.Client)
     _, err := cli.Get("http://www.baidu.com/")
 
@@ -66,7 +66,7 @@ func TestApplicationContextGet(t *testing.T) {
 func TestApplicationContextGetReflectFunc(t *testing.T) {
     a := assert.New(t)
 
-    context := NewApplicationContext(Definitions)
+    context := NewApplicationContext(definitions)
     cli := context.Get("httpclient2").(*http.Client)
     _, err := cli.Get("http://www.baidu.com/")
 
@@ -76,8 +76,8 @@ func TestApplicationContextGetReflectFunc(t *testing.T) {
 func TestApplicationContextGetReflectStruct(t *testing.T) {
     a := assert.New(t)
 
-    context := NewApplicationContext(Definitions)
-    foo := context.Get("foo").(*Foo)
+    context := NewApplicationContext(definitions)
+    foo := context.Get("foo").(*foo)
 
     a.Equal(foo.Bar, "test")
 
