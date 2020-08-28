@@ -6,9 +6,9 @@ import (
 )
 
 var (
-    ConsoleSkeletonVersion = "v1.0.4"
+    ConsoleSkeletonVersion = "v1.0.5"
     APISkeletonVersion     = "v1.0.4"
-    FrameworkVersion       = "v1.0.4"
+    FrameworkVersion       = "v1.0.5"
 )
 
 const logo = `             ___         
