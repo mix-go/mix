@@ -43,12 +43,12 @@ func (t *NewCommand) NewProject(name, typ string) {
 
     sdir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/mix-%s-skeleton@%s", os.Getenv("GOPATH"), typ, ver)
     if _, err := os.Stat(sdir); err != nil {
-        fmt.Println(fmt.Sprintf("Skeleton '%s' local not found, exec 'go get -u github.com/mix-go/mix-%s-skeleton@%s', please wait ...", typ, typ, ver))
-        cmd := exec.Command("go", "get", "-u", fmt.Sprintf("github.com/mix-go/mix-%s-skeleton@%s", typ, ver))
+        fmt.Println(fmt.Sprintf("Skeleton '%s' local not found, exec 'go get github.com/mix-go/mix-%s-skeleton@%s', please wait ...", typ, typ, ver))
+        cmd := exec.Command("go", "get", fmt.Sprintf("github.com/mix-go/mix-%s-skeleton@%s", typ, ver))
         err = cmd.Run()
         if err != nil {
             fmt.Println(fmt.Sprintf("Exec failed: %s", err.Error()))
-            fmt.Println("Please try again, or manually execute 'go get -u ***'")
+            fmt.Println("Please try again, or manually execute 'go get ***'")
             return
         }
         _ = os.Remove(fmt.Sprintf("%s/bin/mix-%s-skeleton", os.Getenv("GOPATH"), typ))
