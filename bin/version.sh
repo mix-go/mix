@@ -51,9 +51,11 @@ do
     )
 done
 
-# Update app ver
+# Update app version
+sed -i "" "s/Version = \".*/Version = \"${VERSION##*v}\"/g" ${BASEPATH}/console/application.go
 
-sed -i "" "s/Version = \".*/Version = \"${VERSION##*v}\";/g" ${BASEPATH}/console/application.go
+# Update devtool version
+sed -i "" "s/FrameworkVersion       = \"v.*/FrameworkVersion       = \"v${VERSION##*v}\"/g" ${BASEPATH}/../devtool/commands/version.go
 
 TIME=$(echo "$(date +%s) - $NOW" | bc)
 
