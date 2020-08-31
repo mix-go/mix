@@ -9,7 +9,17 @@ import (
 type LogFormatter func(params LogFormatterParams) string
 type LogFormatterParams gin.LogFormatterParams
 
-// LogrusWithFormatter instance a Logger middleware with the specified log format function.
+type Logger interface {
+    Info(args ...interface{})
+}
+
+func LoggerWithFormatter(logger Logger, f LogFormatter) gin.HandlerFunc {
+    return func(c *gin.Context) {
+        logger.Info(format(c, f))
+    }
+}
+
+// deprecated: 使用 LoggerWithFormatter 替代
 func LogrusWithFormatter(logger *logrus.Logger, f LogFormatter) gin.HandlerFunc {
     return func(c *gin.Context) {
         logger.Info(format(c, f))
