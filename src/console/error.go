@@ -20,6 +20,14 @@ func NewUnsupportError(err error) *UnsupportError {
     return &UnsupportError{err}
 }
 
+type Error interface {
+    Handle(err interface{}, stack []byte)
+}
+
+type Logger interface {
+    ErrorStack(err interface{}, stack []byte)
+}
+
 type ErrorHandler struct {
     Logger     Logger
     Dispatcher event.Dispatcher
@@ -47,12 +55,4 @@ func NewError(logger Logger) Error {
     return &ErrorHandler{
         Logger: logger,
     }
-}
-
-type Error interface {
-    Handle(err interface{}, stack []byte)
-}
-
-type Logger interface {
-    ErrorStack(err interface{}, stack []byte)
 }
