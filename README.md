@@ -47,15 +47,7 @@ Mix Go 是混合型高性能 Go 框架，该框架可以开发 console, api, web
 - 安装开发工具
 
 ~~~
-// 快速安装
-go get github.com/mix-go/mix
-~~~
-
-~~~
-// 源码安装
-git clone https://github.com/mix-go/mix
-cd mix
-go install
+go get -u github.com/mix-go/mix@master
 ~~~
 
 - 创建应用骨架
