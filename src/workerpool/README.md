@@ -27,6 +27,10 @@ func (t *FooWorker) Handle(data interface{}) {
     // do something
 }
 
+func (t *FooWorker) Error(err interface{}) {
+    // handle err
+}
+
 func NewFooWorker() workerpool.Worker {
     return &FooWorker{}
 }

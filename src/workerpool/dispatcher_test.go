@@ -16,6 +16,10 @@ func (t *worker) Handle(data interface{}) {
     atomic.AddInt64(&count, 1)
 }
 
+func (t *worker) Error(err interface{}) {
+    // handle err
+}
+
 func newWorker() Worker {
     return &worker{}
 }
