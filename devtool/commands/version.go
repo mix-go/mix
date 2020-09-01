@@ -2,13 +2,12 @@ package commands
 
 import (
     "fmt"
+    "runtime"
     "strings"
 )
 
 var (
-    ConsoleSkeletonVersion = "v1.0.6"
-    APISkeletonVersion     = "v1.0.6"
-    FrameworkVersion       = "v1.0.6"
+    FrameworkVersion = "1.0.7"
 )
 
 const logo = `             ___         
@@ -25,7 +24,7 @@ type VersionCommand struct {
 func (t *VersionCommand) Main() {
     fmt.Println(strings.Replace(logo, "*", "`", -1))
     fmt.Println("")
-    fmt.Println(fmt.Sprintf("Console      Version: %s", ConsoleSkeletonVersion))
-    fmt.Println(fmt.Sprintf("API          Version: %s", APISkeletonVersion))
-    fmt.Println(fmt.Sprintf("Framework    Version: %s", FrameworkVersion))
+    fmt.Println(fmt.Sprintf("System      Name:      %s", runtime.GOOS))
+    fmt.Println(fmt.Sprintf("Go          Version:   %s", runtime.Version()[2:]))
+    fmt.Println(fmt.Sprintf("Framework   Version:   %s", FrameworkVersion))
 }

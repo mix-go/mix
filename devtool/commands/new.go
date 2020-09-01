@@ -25,11 +25,8 @@ func (t *NewCommand) Main() {
 func (t *NewCommand) NewProject(name, typ string) {
     ver := ""
     switch typ {
-    case "console":
-        ver = ConsoleSkeletonVersion
-        break
-    case "api":
-        ver = APISkeletonVersion
+    case Console, API:
+        ver = fmt.Sprintf("v%s", FrameworkVersion)
         break
     default:
         fmt.Println("Type error, only be console, api, web")
