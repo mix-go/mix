@@ -23,7 +23,7 @@ type FooWorker struct {
     workerpool.WorkerTrait
 }
 
-func (t *FooWorker) Handle(data interface{}) {
+func (t *FooWorker) Do(data interface{}) {
     // do something
 }
 

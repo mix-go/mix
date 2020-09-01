@@ -12,7 +12,7 @@ type worker struct {
     WorkerTrait
 }
 
-func (t *worker) Handle(data interface{}) {
+func (t *worker) Do(data interface{}) {
     atomic.AddInt64(&count, 1)
 }
 

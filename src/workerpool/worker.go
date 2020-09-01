@@ -9,9 +9,9 @@ type ErrorHandler func(err interface{})
 
 type Worker interface {
     Init(workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler, errorHandler ErrorHandler)
-    Start()
+    Run()
     Stop()
-    Handle(data interface{})
+    Do(data interface{})
     Error(err interface{})
 }
 
@@ -33,7 +33,7 @@ func (t *WorkerTrait) Init(workerPool chan JobQueue, wg *sync.WaitGroup, handler
     t.quit = make(chan bool)
 }
 
-func (t *WorkerTrait) Start() {
+func (t *WorkerTrait) Run() {
     t.wg.Add(1)
     go func() {
         defer t.wg.Done()
