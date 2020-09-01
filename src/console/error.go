@@ -2,6 +2,7 @@ package console
 
 import (
     "github.com/mix-go/event"
+    "runtime/debug"
 )
 
 type NotFoundError struct {
@@ -21,7 +22,7 @@ func NewUnsupportError(err error) *UnsupportError {
 }
 
 type Error interface {
-    Handle(err interface{}, stack []byte)
+    Handle(err interface{}, stack ...bool)
 }
 
 type Logger interface {
@@ -33,12 +34,22 @@ type ErrorHandler struct {
     Dispatcher event.Dispatcher
 }
 
-func (t *ErrorHandler) Handle(err interface{}, stack []byte) {
+func (t *ErrorHandler) Handle(err interface{}, stack ...bool) {
+    LastError = err
+
     // dispatch
     t.dispatch(err)
 
     // log
-    t.Logger.ErrorStack(err, stack)
+    val := false
+    if len(stack) > 0 {
+        val = stack[0]
+    }
+    trace := []byte{}
+    if val {
+        trace = debug.Stack()
+    }
+    t.Logger.ErrorStack(err, trace)
 }
 
 func (t *ErrorHandler) dispatch(err interface{}) {

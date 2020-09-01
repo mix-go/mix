@@ -7,7 +7,6 @@ import (
     "github.com/mix-go/console/argv"
     "github.com/mix-go/console/flag"
     "github.com/mix-go/event"
-    "runtime/debug"
     "strings"
 )
 
@@ -119,19 +118,13 @@ func (t *Application) Init() {
 func (t *Application) Run() {
     defer func() {
         if err := recover(); err != nil {
-            LastError = err
-
             switch err.(type) {
             case *NotFoundError, *UnsupportError:
                 fmt.Println(err)
                 return
             }
 
-            if t.AppDebug {
-                t.Error.Handle(err, debug.Stack())
-            } else {
-                t.Error.Handle(err, []byte(""))
-            }
+            t.Error.Handle(err, t.AppDebug)
         }
     }()
 
