@@ -87,7 +87,7 @@ func (t *BeanDefinition) instance() interface{} {
                     if err, ok := err.(*ReturnError); ok {
                         panic(err)
                     }
-                    panic(fmt.Sprintf("Bean name '%s' reflect %s construct failed, arguments type or number is incorrect", t.Name, v.Type().String()))
+                    panic(fmt.Sprintf("Bean name '%s' reflect %s construct failed, %s", t.Name, v.Type().String(), err))
                 }
             }()
             res := v.Call(in)

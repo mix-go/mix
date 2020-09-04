@@ -73,7 +73,7 @@ func NewDispatcher(jobQueue chan interface{}, maxWorkers int, workerFunc interfa
     func() {
         defer func() {
             if err := recover(); err != nil {
-                panic(errors.New(fmt.Sprintf("WorkerFunc Call %s", err)))
+                panic(errors.New(fmt.Sprintf("WorkerFunc %s", err)))
             }
         }()
         values := value.Call(valueArgs)
