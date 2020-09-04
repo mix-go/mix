@@ -40,7 +40,7 @@ func NewFooWorker() workerpool.Worker {
 
 ~~~
 jobQueue := make(chan interface{}, 200)
-d := workerpool.NewDispatcher(NewFooWorker, 15, jobQueue)
+d := workerpool.NewDispatcher(jobQueue, 15, NewFooWorker)
 
 go func() {
     // 投放任务

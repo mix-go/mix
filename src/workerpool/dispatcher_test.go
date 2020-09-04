@@ -28,7 +28,7 @@ func TestOnce(t *testing.T) {
     a := assert.New(t)
 
     jobQueue := make(chan interface{}, 200)
-    d := NewDispatcher(newWorker, 15, jobQueue)
+    d := NewDispatcher(jobQueue, 15, newWorker)
 
     go func() {
         for i := 0; i < 10000; i++ {
