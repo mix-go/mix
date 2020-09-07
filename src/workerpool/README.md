@@ -55,6 +55,8 @@ go func() {
 d.Run() // 等待任务全部执行完成并停止全部 Worker
 ~~~
 
+注意：Worker Do 方法中，不可以使用 jobQueue 将任务又直接归还，会导致 Worker 全部阻塞，应该归还到 jobQueue 前面的逻辑，比如：jobQueue 是读取的 redis 的数据，那就可以归还到 redis 中。
+
 ## License
 
 Apache License Version 2.0, http://www.apache.org/licenses/
