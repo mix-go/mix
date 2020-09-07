@@ -44,15 +44,15 @@ func (t *WorkerTrait) Run() {
                 t.errorHandler(err)
             }
         }()
+        t.workerPool <- t.jobChan
         for {
             select {
-            case t.workerPool <- t.jobChan:
-                // none
             case data := <-t.jobChan:
                 if data == nil {
                     return
                 }
                 t.handler(data)
+                t.workerPool <- t.jobChan
             case <-t.quit:
                 close(t.jobChan)
             }
