@@ -4,6 +4,7 @@ import (
     "github.com/stretchr/testify/assert"
     "sync/atomic"
     "testing"
+    "time"
 )
 
 var count int64
@@ -24,7 +25,7 @@ func newWorker() Worker {
     return &worker{}
 }
 
-func TestOnce(t *testing.T) {
+func TestOnceRun(t *testing.T) {
     a := assert.New(t)
 
     jobQueue := make(chan interface{}, 200)
@@ -40,4 +41,25 @@ func TestOnce(t *testing.T) {
     d.Run()
 
     a.Equal(count, int64(10000))
+}
+
+func TestStop(t *testing.T) {
+    a := assert.New(t)
+    jobQueue := make(chan interface{}, 200)
+    d := NewDispatcher(jobQueue, 15, newWorker)
+    go func() {
+        defer func() {
+            err := recover()
+            a.EqualError(err.(error), "send on closed channel")
+        }()
+        for {
+            jobQueue <- struct {
+            }{}
+        }
+    }()
+    go func() {
+        time.Sleep(100 * time.Millisecond)
+        d.Stop()
+    }()
+    d.Run()
 }
