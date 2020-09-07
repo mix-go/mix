@@ -8,7 +8,7 @@ type Handler func(data interface{})
 type ErrorHandler func(err interface{})
 
 type Worker interface {
-    Init(workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler, errorHandler ErrorHandler)
+    Init(WorkerID int, workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler, errorHandler ErrorHandler)
     Run()
     Stop()
     Do(data interface{})
@@ -16,6 +16,7 @@ type Worker interface {
 }
 
 type WorkerTrait struct {
+    WorkerID     int
     workerPool   chan JobQueue
     wg           *sync.WaitGroup
     handler      Handler
@@ -24,7 +25,8 @@ type WorkerTrait struct {
     quit         chan bool
 }
 
-func (t *WorkerTrait) Init(workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler, errorHandler ErrorHandler) {
+func (t *WorkerTrait) Init(WorkerID int, workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler, errorHandler ErrorHandler) {
+    t.WorkerID = WorkerID
     t.workerPool = workerPool
     t.wg = wg
     t.handler = handler

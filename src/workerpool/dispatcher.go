@@ -23,7 +23,7 @@ type Dispatcher struct {
 func (t *Dispatcher) Run() {
     for i := 0; i < t.MaxWorkers; i++ {
         w := t.WorkerFunc.Call(t.WorkerFuncArgs)[0].Interface().(Worker)
-        w.Init(t.workerPool, t.wg, w.Do, w.Error)
+        w.Init(i, t.workerPool, t.wg, w.Do, w.Error)
         w.Run()
         t.workers = append(t.workers, w)
     }
