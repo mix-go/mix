@@ -6,9 +6,33 @@ import (
     "strings"
 )
 
+const (
+    defaultFormat = "%v"
+)
+
 type pointer struct {
     Ptr  uintptr
     Addr reflect.Value
+}
+
+func Print(depth int, a interface{}) (n int, err error) {
+    return fmt.Print(Sprintf(depth, defaultFormat, a))
+}
+
+func Println(depth int, a interface{}) (n int, err error) {
+    return fmt.Println(Sprintf(depth, defaultFormat+"\n", a))
+}
+
+func Printf(depth int, format string, a interface{}) (n int, err error) {
+    return fmt.Print(Sprintf(depth, format, a))
+}
+
+func Sprint(depth int, a interface{}) string {
+    return Sprintf(depth, defaultFormat, a)
+}
+
+func Sprintln(depth int, a interface{}) string {
+    return Sprintf(depth, defaultFormat+"\n", a)
 }
 
 func Sprintf(depth int, format string, a interface{}) string {
@@ -41,5 +65,17 @@ func extract(val reflect.Value, level int) []pointer {
             }
         }
     }
-    return pointers
+    unique := []pointer{}
+    for _, p := range pointers {
+        find := false
+        for _, u := range unique {
+            if p.Ptr == u.Ptr {
+                find = true
+            }
+        }
+        if !find {
+            unique = append(unique, p)
+        }
+    }
+    return unique
 }
