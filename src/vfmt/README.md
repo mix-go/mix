@@ -17,9 +17,9 @@ go get -u github.com/mix-go/vfmt
   - `Sprintf(depth int, format string, a interface{}) string` 
   - `Sprint(depth int, a interface{}) string` 
   - `Sprintln(depth int, a interface{}) string` 
-  - `Printf(depth int, format string, a interface{}) (n int, err error)` 
-  - `Print(depth int, a interface{}) (n int, err error)` 
-  - `Println(depth int, a interface{}) (n int, err error)` 
+  - `Printf(depth int, format string, a interface{})` 
+  - `Print(depth int, a interface{})` 
+  - `Println(depth int, a interface{})` 
 
 - 使用
 

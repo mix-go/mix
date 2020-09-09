@@ -15,16 +15,16 @@ type pointer struct {
     Addr reflect.Value
 }
 
-func Print(depth int, a interface{}) (n int, err error) {
-    return fmt.Print(Sprintf(depth, defaultFormat, a))
+func Print(depth int, a interface{}) {
+    fmt.Print(Sprintf(depth, defaultFormat, a))
 }
 
-func Println(depth int, a interface{}) (n int, err error) {
-    return fmt.Println(Sprintf(depth, defaultFormat+"\n", a))
+func Println(depth int, a interface{}) {
+    fmt.Println(Sprintf(depth, defaultFormat+"\n", a))
 }
 
-func Printf(depth int, format string, a interface{}) (n int, err error) {
-    return fmt.Print(Sprintf(depth, format, a))
+func Printf(depth int, format string, a interface{}) {
+    fmt.Print(Sprintf(depth, format, a))
 }
 
 func Sprint(depth int, a interface{}) string {
