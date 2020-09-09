@@ -9,6 +9,8 @@ type level1 struct {
     level2   *level2
     name     string
     level2_1 *level2
+    level4   *level4
+    level4_1 level4
 }
 
 type level2 struct {
@@ -20,10 +22,21 @@ type level3 struct {
     name string
 }
 
+type level4 struct {
+    level5 *level5
+    name   string
+}
+
+type level5 struct {
+    name string
+}
+
 func Test(t *testing.T) {
+    l5 := level5{name: "level5"}
+    l4 := level4{name: "level4", level5: &l5}
     l3 := level3{name: "level3"}
     l2 := level2{name: "level2", level3: &l3}
-    l1 := level1{name: "level1", level2: &l2, level2_1: &l2}
+    l1 := level1{name: "level1", level2: &l2, level2_1: &l2, level4: &l4, level4_1: l4}
     fmt.Println(Sprintf(1, "%+v", &l1))
     fmt.Println(Sprintf(1, "%+v", l1))
     fmt.Println(Sprintf(2, "%+v", l1))
