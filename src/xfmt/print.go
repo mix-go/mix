@@ -50,6 +50,9 @@ func replace(str string, format string, pointers []pointer) string {
 }
 
 func extract(val reflect.Value, level int) []pointer {
+    if val.Kind() == reflect.Ptr {
+        val = val.Elem()
+    }
     pointers := []pointer{}
     for i := 0; i < val.NumField(); i++ {
         if val.Field(i).Kind() == reflect.Ptr {

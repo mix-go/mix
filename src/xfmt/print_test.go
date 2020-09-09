@@ -24,6 +24,7 @@ func Test(t *testing.T) {
     l3 := level3{name: "level3"}
     l2 := level2{name: "level2", level3: &l3}
     l1 := level1{name: "level1", level2: &l2, level2_1: &l2}
+    fmt.Println(Sprintf(1, "%+v", &l1))
     fmt.Println(Sprintf(1, "%+v", l1))
     fmt.Println(Sprintf(2, "%+v", l1))
     fmt.Println(Sprintf(3, "%+v", l1))
