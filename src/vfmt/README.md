@@ -26,18 +26,18 @@ go get -u github.com/mix-go/vfmt
 包含指针的结构体
 
 ```
-type level1 struct {
-    level2   *level2
+type Level1 struct {
+    Level2   *Level2
     name     string
-    level2_1 *level2
+    Level2_1 *Level2
 }
 
-type level2 struct {
-    level3 *level3
+type Level2 struct {
+    Level3 *Level3
     name   string
 }
 
-type level3 struct {
+type Level3 struct {
     name string
 }
 ```
@@ -45,9 +45,9 @@ type level3 struct {
 创建变量
 
 ```
-l3 := level3{name: "level3"}
-l2 := level2{name: "level2", level3: &l3}
-l1 := level1{name: "level1", level2: &l2, level2_1: &l2}
+l3 := Level3{name: "Level3"}
+l2 := Level2{name: "Level2", Level3: &l3}
+l1 := Level1{name: "Level1", Level2: &l2, Level2_1: &l2}
 ```
 
 打印
@@ -59,9 +59,9 @@ fmt.Println(vfmt.Sprintf(3, "%+v", l1))
 ```
 
 ```
-{level2:0xc00000c0e0 name:level1 level2_1:0xc00000c0e0}
-{level2:0xc00000c0e0=&{level3:0xc00003e480 name:level2} name:level1 level2_1:0xc00000c0e0}
-{level2:0xc00000c0e0=&{level3:0xc00003e480=&{name:level3} name:level2} name:level1 level2_1:0xc00000c0e0}
+{Level2:0xc00000c0e0 name:Level1 Level2_1:0xc00000c0e0}
+{Level2:0xc00000c0e0=&{Level3:0xc00003e480 name:Level2} name:Level1 Level2_1:0xc00000c0e0}
+{Level2:0xc00000c0e0=&{Level3:0xc00003e480=&{name:Level3} name:Level2} name:Level1 Level2_1:0xc00000c0e0}
 ```
 
 ## License
