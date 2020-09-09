@@ -1,4 +1,4 @@
-## Mix VFMT
+## Mix XFMT
 
 可以打印内部指针的格式化库
 
@@ -13,7 +13,7 @@ A formatting library that prints internal Pointers
 - 安装
 
 ```
-go get -u github.com/mix-go/vfmt
+go get -u github.com/mix-go/xfmt
 ```
 
 - 支持的方法
@@ -57,9 +57,9 @@ l1 := Level1{name: "Level1", Level2: &l2, Level2_1: &l2}
 打印
 
 ```
-fmt.Println(vfmt.Sprintf(1, "%+v", l1))
-fmt.Println(vfmt.Sprintf(2, "%+v", l1))
-fmt.Println(vfmt.Sprintf(3, "%+v", l1))
+fmt.Println(xfmt.Sprintf(1, "%+v", l1))
+fmt.Println(xfmt.Sprintf(2, "%+v", l1))
+fmt.Println(xfmt.Sprintf(3, "%+v", l1))
 ```
 
 ```
