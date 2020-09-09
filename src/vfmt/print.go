@@ -44,7 +44,7 @@ func Sprintf(depth int, format string, a interface{}) string {
 func replace(str string, format string, pointers []pointer) string {
     for _, ptr := range pointers {
         sptr := fmt.Sprintf("0x%x", ptr.Ptr)
-        str = strings.Replace(str, sptr, fmt.Sprintf("%s="+format, sptr, ptr.Addr), 1)
+        str = strings.Replace(str, sptr, fmt.Sprintf("%s:"+format, sptr, ptr.Addr), 1)
     }
     return str
 }

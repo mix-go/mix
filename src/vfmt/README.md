@@ -1,8 +1,12 @@
 ## Mix VFMT
 
-可以打印变量内部指针的格式化库
+可以打印内部指针的格式化库
 
-Formatting library that can print pointers inside variable
+A formatting library that prints internal Pointers
+
+## Overview
+
+在 go 中使用 `fmt` 打印结构体时，无法打印指针内部的数据结构，导致增加 debug 工作量，该库可以解决这个问题，并支持设定打印的深度。
 
 ## Usage
 
@@ -59,9 +63,9 @@ fmt.Println(vfmt.Sprintf(3, "%+v", l1))
 ```
 
 ```
-{Level2:0xc00000c0e0 name:Level1 Level2_1:0xc00000c0e0}
-{Level2:0xc00000c0e0=&{Level3:0xc00003e480 name:Level2} name:Level1 Level2_1:0xc00000c0e0}
-{Level2:0xc00000c0e0=&{Level3:0xc00003e480=&{name:Level3} name:Level2} name:Level1 Level2_1:0xc00000c0e0}
+{level2:0xc00000c0e0 name:level1 level2_1:0xc00000c0e0}
+{level2:0xc00000c0e0:&{level3:0xc0000404d0 name:level2} name:level1 level2_1:0xc00000c0e0}
+{level2:0xc00000c0e0:&{level3:0xc0000404d0:&{name:level3} name:level2} name:level1 level2_1:0xc00000c0e0}
 ```
 
 ## License
