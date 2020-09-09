@@ -1,57 +1,120 @@
 package xfmt
 
 import (
+    "errors"
     "fmt"
     "reflect"
     "strings"
 )
 
 const (
-    defaultFormat = "%v"
+    varFlag = "%v"
 )
 
 type pointer struct {
-    Ptr  uintptr
-    Addr reflect.Value
+    Format string
+    Ptr    uintptr
+    Addr   reflect.Value
 }
 
-func Print(depth int, a interface{}) {
-    fmt.Print(Sprintf(depth, defaultFormat, a))
+func Print(depth int, args ...interface{}) {
+    fmt.Print(Sprintf(depth, format(args...), args...))
 }
 
-func Println(depth int, a interface{}) {
-    fmt.Println(Sprintf(depth, defaultFormat+"\n", a))
+func Println(depth int, args ...interface{}) {
+    fmt.Println(Sprintf(depth, format(args...), args...))
 }
 
-func Printf(depth int, format string, a interface{}) {
-    fmt.Print(Sprintf(depth, format, a))
+func Printf(depth int, format string, args ...interface{}) {
+    fmt.Print(Sprintf(depth, format, args...))
 }
 
-func Sprint(depth int, a interface{}) string {
-    return Sprintf(depth, defaultFormat, a)
+func Sprint(depth int, args ...interface{}) string {
+    return Sprintf(depth, format(args...), args...)
 }
 
-func Sprintln(depth int, a interface{}) string {
-    return Sprintf(depth, defaultFormat+"\n", a)
+func Sprintln(depth int, args ...interface{}) string {
+    return Sprintf(depth, format(args...)+"\n", args...)
 }
 
-func Sprintf(depth int, format string, a interface{}) string {
-    str := fmt.Sprintf(format, a) // 放在第一行可以起到效验的作用
-    pointers := extract(reflect.ValueOf(a), depth-1)
-    return replace(str, format, pointers)
+func Sprintf(depth int, format string, args ...interface{}) string {
+    // 放在第一行可以起到效验的作用
+    str := fmt.Sprintf(format, args...)
+
+    values := []interface{}{}
+    for _, arg := range args {
+        switch reflect.ValueOf(arg).Kind() {
+        case reflect.Ptr, reflect.Struct:
+            values = append(values, arg)
+            break
+        }
+    }
+    flags := flags(format)
+    if len(values) != len(flags) {
+        panic(errors.New("Format invalid"))
+    }
+
+    pointers := []pointer{}
+    for k, val := range values {
+        pointers = append(pointers, extract(reflect.ValueOf(val), depth-1, flags[k])...)
+    }
+
+    return replace(str, pointers)
 }
 
-func replace(str string, format string, pointers []pointer) string {
+func format(args ...interface{}) string {
+    flags := []string{}
+    for i := 0; i < len(args); i++ {
+        flags = append(flags, varFlag)
+    }
+    return strings.Join(flags, " ")
+}
+
+func flags(format string) []string {
+    fbytes := []byte(format)
+    l := len(fbytes) - 1
+    flags := []string{}
+    for k, v := range fbytes {
+        if v == '%' {
+            if k+1 <= l {
+                switch fbytes[k+1] {
+                case 'v':
+                    flags = append(flags, "%v")
+                    break
+                case '+':
+                    if k+2 <= l && fbytes[k+2] == 'v' {
+                        flags = append(flags, "%+v")
+                    }
+                    break
+                case '#':
+                    if k+2 <= l && fbytes[k+2] == 'v' {
+                        flags = append(flags, "%#v")
+                    }
+                    break
+                }
+            }
+        }
+    }
+    return flags
+}
+
+func replace(str string, pointers []pointer) string {
     for _, ptr := range pointers {
         sptr := fmt.Sprintf("0x%x", ptr.Ptr)
-        str = strings.Replace(str, sptr, fmt.Sprintf("%s:"+format, sptr, ptr.Addr), 1)
+        str = strings.Replace(str, sptr, fmt.Sprintf("%s:"+ptr.Format, sptr, ptr.Addr), 1)
     }
     return str
 }
 
-func extract(val reflect.Value, level int) []pointer {
-    if val.Kind() == reflect.Ptr {
+func extract(val reflect.Value, level int, format string) []pointer {
+    switch val.Kind() {
+    case reflect.Ptr:
         val = val.Elem()
+        break
+    case reflect.Struct:
+        break
+    default:
+        return []pointer{}
     }
     pointers := []pointer{}
     for i := 0; i < val.NumField(); i++ {
@@ -59,12 +122,13 @@ func extract(val reflect.Value, level int) []pointer {
             elem := val.Field(i).Elem()
             if level > 0 {
                 pointers = append(pointers, pointer{
-                    Ptr:  elem.Addr().Pointer(),
-                    Addr: elem.Addr(),
+                    Format: format,
+                    Ptr:    elem.Addr().Pointer(),
+                    Addr:   elem.Addr(),
                 })
             }
             if level-1 > 0 {
-                pointers = append(pointers, extract(elem, level-1)...)
+                pointers = append(pointers, extract(elem, level-1, format)...)
             }
         }
     }

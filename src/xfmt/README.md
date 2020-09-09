@@ -18,12 +18,12 @@ go get -u github.com/mix-go/xfmt
 
 - 支持的方法
 
-  - `Sprintf(depth int, format string, a interface{}) string` 
-  - `Sprint(depth int, a interface{}) string` 
-  - `Sprintln(depth int, a interface{}) string` 
-  - `Printf(depth int, format string, a interface{})` 
-  - `Print(depth int, a interface{})` 
-  - `Println(depth int, a interface{})` 
+  - `Sprintf(depth int, format string, args ...interface{}) string` 
+  - `Sprint(depth int, args ...interface{}) string` 
+  - `Sprintln(depth int, args ...interface{}) string` 
+  - `Printf(depth int, format string, args ...interface{})` 
+  - `Print(depth int, args ...interface{})` 
+  - `Println(depth int, args ...interface{})` 
 
 - 使用
 
@@ -63,9 +63,9 @@ fmt.Println(xfmt.Sprintf(3, "%+v", l1))
 ```
 
 ```
-{level2:0xc00000c0e0 name:level1 level2_1:0xc00000c0e0}
-{level2:0xc00000c0e0:&{level3:0xc0000404d0 name:level2} name:level1 level2_1:0xc00000c0e0}
-{level2:0xc00000c0e0:&{level3:0xc0000404d0:&{name:level3} name:level2} name:level1 level2_1:0xc00000c0e0}
+{Level2:0xc00000c0e0 name:Level1 Level2_1:0xc00000c0e0}
+{Level2:0xc00000c0e0:&{Level3:0xc0000404d0 name:Level2} name:Level1 Level2_1:0xc00000c0e0}
+{Level2:0xc00000c0e0:&{Level3:0xc0000404d0:&{name:Level3} name:Level2} name:Level1 Level2_1:0xc00000c0e0}
 ```
 
 ## License

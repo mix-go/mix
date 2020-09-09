@@ -31,16 +31,34 @@ type level5 struct {
     name string
 }
 
-func Test(t *testing.T) {
+func TestRun(t *testing.T) {
     l5 := level5{name: "level5"}
     l4 := level4{name: "level4", level5: &l5}
     l3 := level3{name: "level3"}
     l2 := level2{name: "level2", level3: &l3}
     l1 := level1{name: "level1", level2: &l2, level2_1: &l2, level4: &l4, level4_1: l4}
+
+    fmt.Println(fmt.Sprintf("%+v", l1))
+
     fmt.Println(Sprintf(1, "%+v", &l1))
     fmt.Println(Sprintf(1, "%+v", l1))
     fmt.Println(Sprintf(2, "%+v", l1))
     fmt.Println(Sprintf(3, "%+v", l1))
     fmt.Println(Sprintf(100, "%+v", l1))
-    fmt.Println(fmt.Sprintf("%+v", l1))
+    fmt.Println(Sprintf(100, "%v And %+v And %#v And %s", l3, l4, &l5, "str1"))
+}
+
+func TestMore(t *testing.T) {
+    l5 := level5{name: "level5"}
+    l4 := level4{name: "level4", level5: &l5}
+
+    fmt.Println(l4, &l5)
+
+    Print(2, l4, &l5)
+    println("")
+    Println(2, l4, &l5)
+    Printf(2, "%v %v\n", l4, &l5)
+    println(Sprint(2, l4, &l5))
+    print(Sprintln(2, l4, &l5))
+    print(Sprintf(2, "%v %v\n", l4, &l5))
 }
