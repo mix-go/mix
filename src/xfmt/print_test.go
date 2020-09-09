@@ -28,5 +28,6 @@ func Test(t *testing.T) {
     fmt.Println(Sprintf(1, "%+v", l1))
     fmt.Println(Sprintf(2, "%+v", l1))
     fmt.Println(Sprintf(3, "%+v", l1))
+    fmt.Println(Sprintf(100, "%+v", l1))
     fmt.Println(fmt.Sprintf("%+v", l1))
 }
