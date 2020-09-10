@@ -120,6 +120,9 @@ func extract(val reflect.Value, level int, format string) []pointer {
     for i := 0; i < val.NumField(); i++ {
         if val.Field(i).Kind() == reflect.Ptr {
             elem := val.Field(i).Elem()
+            if !elem.CanAddr() { // 空指针无法寻址
+                continue
+            }
             if level > 0 {
                 pointers = append(pointers, pointer{
                     Format: format,
