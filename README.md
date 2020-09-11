@@ -40,6 +40,7 @@ Mix Go 是混合型高性能 Go 框架，该框架可以开发 console, api, web
 
 ## 开发文档
 
+- https://openmix.org/mix-go/doc
 - https://www.kancloud.cn/onanying/mixgo1/content
 
 ## 快速开始
