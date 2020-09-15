@@ -7,6 +7,8 @@ import (
     "github.com/mix-go/mix/devtool/logic"
     "os"
     "os/exec"
+    "runtime"
+    "strings"
 )
 
 var (
@@ -35,6 +37,15 @@ func (t *NewCommand) NewProject(name, typ string) {
 
     if os.Getenv("GOPATH") == "" {
         fmt.Println("$GOPATH is not configured, see 'echo $GOPATH'")
+        return
+    }
+
+    dr := ":"
+    if runtime.GOOS == "windows" {
+        dr = ";"
+    }
+    if strings.Contains(os.Getenv("GOPATH"), dr) {
+        fmt.Println("$GOPATH cannot have multiple directories, see 'echo $GOPATH'")
         return
     }
 
