@@ -48,7 +48,7 @@ func TestRun(t *testing.T) {
     fmt.Println(Sprintf(100, "%v And %+v And %#v And %s", l3, l4, &l5, "str1"))
 }
 
-func TestMore(t *testing.T) {
+func TestMultiple(t *testing.T) {
     l5 := level5{name: "level5"}
     l4 := level4{name: "level4", level5: &l5}
 
@@ -61,4 +61,18 @@ func TestMore(t *testing.T) {
     println(Sprint(2, l4, &l5))
     print(Sprintln(2, l4, &l5))
     print(Sprintf(2, "%v %v\n", l4, &l5))
+}
+
+func TestMap(t *testing.T) {
+    m := map[string]*level5{}
+    m["foo"] = &level5{}
+    print(Sprintf(2, "%v\n", m))
+    print(Sprintf(2, "%v\n", &m))
+}
+
+func TestArray(t *testing.T) {
+    a := []*level5{}
+    a = append(a, &level5{})
+    print(Sprintf(2, "%v\n", a))
+    print(Sprintf(2, "%v\n", &a))
 }

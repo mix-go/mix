@@ -1,7 +1,6 @@
 package xfmt
 
 import (
-    "errors"
     "fmt"
     "reflect"
     "strings"
@@ -41,22 +40,26 @@ func Sprintf(depth int, format string, args ...interface{}) string {
     // 放在第一行可以起到效验的作用
     str := fmt.Sprintf(format, args...)
 
-    values := []interface{}{}
-    for _, arg := range args {
+    flags := flags(format)
+    values := [][]interface{}{}
+    for k, arg := range args {
         switch reflect.ValueOf(arg).Kind() {
-        case reflect.Ptr, reflect.Struct:
-            values = append(values, arg)
+        case reflect.Struct:
+            values = append(values, []interface{}{arg, flags[k]})
+            break
+        case reflect.Ptr:
+            if reflect.ValueOf(arg).Elem().Kind() == reflect.Struct {
+                values = append(values, []interface{}{arg, flags[k]})
+            }
             break
         }
     }
-    flags := flags(format)
-    if len(values) != len(flags) {
-        panic(errors.New("Format invalid"))
-    }
 
     pointers := []pointer{}
-    for k, val := range values {
-        pointers = append(pointers, extract(reflect.ValueOf(val), depth-1, flags[k])...)
+    for _, vs := range values {
+        val := vs[0]
+        flag := vs[1].(string)
+        pointers = append(pointers, extract(reflect.ValueOf(val), depth-1, flag)...)
     }
 
     return replace(str, pointers)
@@ -110,6 +113,9 @@ func extract(val reflect.Value, level int, format string) []pointer {
     switch val.Kind() {
     case reflect.Ptr:
         val = val.Elem()
+        if val.Kind() != reflect.Struct {
+            return []pointer{}
+        }
         break
     case reflect.Struct:
         break
