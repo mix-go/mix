@@ -10,6 +10,11 @@ const (
     varFlag = "%v"
 )
 
+type value struct {
+    Arg  interface{}
+    Flag string
+}
+
 type pointer struct {
     Format string
     Ptr    uintptr
@@ -41,55 +46,67 @@ func Sprintf(depth int, format string, args ...interface{}) string {
     str := fmt.Sprintf(format, args...)
 
     pointers := []pointer{}
-    for _, vs := range values(format, args...) {
-        arg := vs[0]
-        flag := vs[1].(string)
-        pointers = append(pointers, extract(reflect.ValueOf(arg), depth-1, flag)...)
+    for _, v := range values(format, args...) {
+        pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth-1, v.Flag)...)
     }
 
-    return replace(str, pointers)
+    // 去重
+    unique := []pointer{}
+    for _, p := range pointers {
+        find := false
+        for _, u := range unique {
+            if p.Ptr == u.Ptr {
+                find = true
+            }
+        }
+        if !find {
+            unique = append(unique, p)
+        }
+    }
+
+    return replace(str, unique)
 }
 
-func values(format string, args ...interface{}) [][]interface{} {
+func values(format string, args ...interface{}) []value {
     flags := flags(format)
-    values := [][]interface{}{}
+    values := []value{}
     for k, arg := range args {
-        value := reflect.ValueOf(arg)
-        switch value.Kind() {
+        val := reflect.ValueOf(arg)
+        switch val.Kind() {
         case reflect.Struct:
-            values = append(values, []interface{}{arg, flags[k]})
+            values = append(values, value{arg, flags[k]})
             break
         case reflect.Ptr:
-            elem := value.Elem()
+            elem := val.Elem()
             if !elem.CanAddr() {
                 continue
             }
             switch elem.Kind() {
             case reflect.Struct:
-                values = append(values, []interface{}{arg, flags[k]})
+                values = append(values, value{arg, flags[k]})
                 break
             case reflect.Map:
                 iter := elem.MapRange()
                 for iter.Next() {
-                    values = append(values, []interface{}{iter.Value().Interface(), flags[k]})
+                    values = append(values, value{iter.Value().Interface(), flags[k]})
                 }
                 break
             case reflect.Slice, reflect.Array:
                 for i := 0; i < elem.Len(); i++ {
-                    values = append(values, []interface{}{elem.Index(i).Interface(), flags[k]})
+                    values = append(values, value{elem.Index(i).Interface(), flags[k]})
                 }
                 break
             }
             break
         case reflect.Map:
-            iter := value.MapRange()
+            iter := val.MapRange()
             for iter.Next() {
-                values = append(values, []interface{}{iter.Value().Interface(), flags[k]})
+                values = append(values, value{iter.Value().Interface(), flags[k]})
             }
             break
         case reflect.Slice, reflect.Array:
-            for i := 0; i < value.Len(); i++ {
-                values = append(values, []interface{}{value.Index(i).Interface(), flags[k]})
+            for i := 0; i < val.Len(); i++ {
+                values = append(values, value{val.Index(i).Interface(), flags[k]})
             }
             break
         }
@@ -179,17 +196,5 @@ func extract(val reflect.Value, level int, format string) []pointer {
             }
         }
     }
-    unique := []pointer{}
-    for _, p := range pointers {
-        find := false
-        for _, u := range unique {
-            if p.Ptr == u.Ptr {
-                find = true
-            }
-        }
-        if !find {
-            unique = append(unique, p)
-        }
-    }
-    return unique
+    return pointers
 }
