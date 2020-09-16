@@ -66,11 +66,13 @@ func TestMultiple(t *testing.T) {
 func TestMap(t *testing.T) {
     m := map[string]*level5{}
     m["foo"] = &level5{}
+    m["bar"] = &level5{}
     print(Sprintf(2, "%v\n", m))
     print(Sprintf(2, "%v\n", &m))
 
     m2 := map[string]level5{}
     m2["foo"] = level5{}
+    m2["bar"] = level5{}
     print(Sprintf(2, "%v\n", m2))
     print(Sprintf(2, "%v\n", &m2))
 }
@@ -78,10 +80,12 @@ func TestMap(t *testing.T) {
 func TestArray(t *testing.T) {
     a := []*level5{}
     a = append(a, &level5{})
+    a = append(a, &level5{})
     print(Sprintf(2, "%v\n", a))
     print(Sprintf(2, "%v\n", &a))
 
     a2 := []level5{}
+    a2 = append(a2, level5{})
     a2 = append(a2, level5{})
     print(Sprintf(2, "%v\n", a2))
     print(Sprintf(2, "%v\n", &a2))

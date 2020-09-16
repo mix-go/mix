@@ -40,15 +40,30 @@ func Sprintf(depth int, format string, args ...interface{}) string {
     // 放在第一行可以起到效验的作用
     str := fmt.Sprintf(format, args...)
 
+    pointers := []pointer{}
+    for _, vs := range values(format, args...) {
+        arg := vs[0]
+        flag := vs[1].(string)
+        pointers = append(pointers, extract(reflect.ValueOf(arg), depth-1, flag)...)
+    }
+
+    return replace(str, pointers)
+}
+
+func values(format string, args ...interface{}) [][]interface{} {
     flags := flags(format)
     values := [][]interface{}{}
     for k, arg := range args {
-        switch reflect.ValueOf(arg).Kind() {
+        value := reflect.ValueOf(arg)
+        switch value.Kind() {
         case reflect.Struct:
             values = append(values, []interface{}{arg, flags[k]})
             break
         case reflect.Ptr:
-            elem := reflect.ValueOf(arg).Elem()
+            elem := value.Elem()
+            if !elem.CanAddr() {
+                continue
+            }
             switch elem.Kind() {
             case reflect.Struct:
                 values = append(values, []interface{}{arg, flags[k]})
@@ -59,24 +74,27 @@ func Sprintf(depth int, format string, args ...interface{}) string {
                     values = append(values, []interface{}{iter.Value().Interface(), flags[k]})
                 }
                 break
+            case reflect.Slice, reflect.Array:
+                for i := 0; i < elem.Len(); i++ {
+                    values = append(values, []interface{}{elem.Index(i).Interface(), flags[k]})
+                }
+                break
             }
             break
         case reflect.Map:
-            iter := reflect.ValueOf(arg).MapRange()
+            iter := value.MapRange()
             for iter.Next() {
                 values = append(values, []interface{}{iter.Value().Interface(), flags[k]})
             }
+            break
+        case reflect.Slice, reflect.Array:
+            for i := 0; i < value.Len(); i++ {
+                values = append(values, []interface{}{value.Index(i).Interface(), flags[k]})
+            }
+            break
         }
     }
-
-    pointers := []pointer{}
-    for _, vs := range values {
-        arg := vs[0]
-        flag := vs[1].(string)
-        pointers = append(pointers, extract(reflect.ValueOf(arg), depth-1, flag)...)
-    }
-
-    return replace(str, pointers)
+    return values
 }
 
 func format(args ...interface{}) string {
