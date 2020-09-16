@@ -48,18 +48,32 @@ func Sprintf(depth int, format string, args ...interface{}) string {
             values = append(values, []interface{}{arg, flags[k]})
             break
         case reflect.Ptr:
-            if reflect.ValueOf(arg).Elem().Kind() == reflect.Struct {
+            elem := reflect.ValueOf(arg).Elem()
+            switch elem.Kind() {
+            case reflect.Struct:
                 values = append(values, []interface{}{arg, flags[k]})
+                break
+            case reflect.Map:
+                iter := elem.MapRange()
+                for iter.Next() {
+                    values = append(values, []interface{}{iter.Value().Interface(), flags[k]})
+                }
+                break
             }
             break
+        case reflect.Map:
+            iter := reflect.ValueOf(arg).MapRange()
+            for iter.Next() {
+                values = append(values, []interface{}{iter.Value().Interface(), flags[k]})
+            }
         }
     }
 
     pointers := []pointer{}
     for _, vs := range values {
-        val := vs[0]
+        arg := vs[0]
         flag := vs[1].(string)
-        pointers = append(pointers, extract(reflect.ValueOf(val), depth-1, flag)...)
+        pointers = append(pointers, extract(reflect.ValueOf(arg), depth-1, flag)...)
     }
 
     return replace(str, pointers)
@@ -110,19 +124,25 @@ func replace(str string, pointers []pointer) string {
 }
 
 func extract(val reflect.Value, level int, format string) []pointer {
+    pointers := []pointer{}
     switch val.Kind() {
     case reflect.Ptr:
-        val = val.Elem()
-        if val.Kind() != reflect.Struct {
+        elem := val.Elem()
+        if elem.Kind() != reflect.Struct || !elem.CanAddr() {
             return []pointer{}
         }
+        pointers = append(pointers, pointer{
+            Format: format,
+            Ptr:    elem.Addr().Pointer(),
+            Addr:   elem.Addr(),
+        })
+        val = elem
         break
     case reflect.Struct:
         break
     default:
         return []pointer{}
     }
-    pointers := []pointer{}
     for i := 0; i < val.NumField(); i++ {
         if val.Field(i).Kind() == reflect.Ptr {
             elem := val.Field(i).Elem()
