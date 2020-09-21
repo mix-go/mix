@@ -36,7 +36,7 @@ func NewApplication(definition ApplicationDefinition, dispatcherName, errorName 
         DispatcherName:        dispatcherName,
         ErrorName:             errorName,
     }
-    app.Init();
+    app.Init()
     return app
 }
 
@@ -299,19 +299,19 @@ func (t *Application) commandHelp() {
 
 // 打印全局选项
 func (t *Application) printGlobalOptions() {
-    tabs := "\t";
-    fmt.Println("");
-    fmt.Println("Global Options:");
-    fmt.Println(fmt.Sprintf("  -h, --help%sPrint usage", tabs));
-    fmt.Println(fmt.Sprintf("  -v, --version%sPrint version information", tabs));
+    tabs := "\t"
+    fmt.Println("")
+    fmt.Println("Global Options:")
+    fmt.Println(fmt.Sprintf("  -h, --help%sPrint usage", tabs))
+    fmt.Println(fmt.Sprintf("  -v, --version%sPrint version information", tabs))
 }
 
 // 打印命令
 func (t *Application) printCommands() {
-    fmt.Println("");
-    fmt.Println("Commands:");
+    fmt.Println("")
+    fmt.Println("Commands:")
     for _, v := range t.Commands {
-        command := v.Name;
+        command := v.Name
         usage := v.Usage
         fmt.Println(fmt.Sprintf("  %s\t%s", command, usage))
     }
@@ -339,8 +339,8 @@ func (t *Application) printCommandOptions() {
         return
     }
 
-    fmt.Println("");
-    fmt.Println("Command Options:");
+    fmt.Println("")
+    fmt.Println("Command Options:")
     for _, o := range options {
         flags := []string{}
         for _, v := range o.Names {
@@ -352,14 +352,14 @@ func (t *Application) printCommandOptions() {
         }
         fg := strings.Join(flags, ", ")
         usage := o.Usage
-        fmt.Println(fmt.Sprintf("  %s\t%s", fg, usage));
+        fmt.Println(fmt.Sprintf("  %s\t%s", fg, usage))
     }
 }
 
 // 版本号
 func (t *Application) version() {
-    appName := t.AppName;
-    appVersion := t.AppVersion;
-    frameworkVersion := Version;
-    fmt.Println(fmt.Sprintf("%s %s, framework %s", appName, appVersion, frameworkVersion));
+    appName := t.AppName
+    appVersion := t.AppVersion
+    frameworkVersion := Version
+    fmt.Println(fmt.Sprintf("%s %s, framework %s", appName, appVersion, frameworkVersion))
 }

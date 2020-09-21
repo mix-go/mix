@@ -107,7 +107,7 @@ func TestCommandRun(t *testing.T) {
     argv.Parse()
     flag.Parse()
 
-    app := NewApplication(def1, "eventDispatcher", "error");
+    app := NewApplication(def1, "eventDispatcher", "error")
     app.Run()
 
     a.NotEqual(app.BasePath, nil)
@@ -123,7 +123,7 @@ func TestSingletonCommandRun(t *testing.T) {
     argv.Parse()
     flag.Parse()
 
-    app := NewApplication(def2, "eventDispatcher", "error");
+    app := NewApplication(def2, "eventDispatcher", "error")
     app.Run()
 
     a.NotEqual(app.BasePath, nil)

@@ -11,7 +11,7 @@ func (t *EventDispatcher) Dispatch(event Event) Event {
             break
         }
     }
-    return event;
+    return event
 }
 
 func NewDispatcher(listeners ...Listener) Dispatcher {
