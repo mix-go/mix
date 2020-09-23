@@ -25,8 +25,14 @@ func App() *Application {
 }
 
 // 上下文
+// deprecated: 废弃
 func Context() *bean.ApplicationContext {
     return App().Context
+}
+
+// 快速获取实例
+func Get(name string) interface{} {
+    return App().Context.Get(name)
 }
 
 // 创建App
