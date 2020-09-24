@@ -33,6 +33,8 @@ go get -u github.com/mix-go/console
 
 ## Quick start
 
+下面这些复杂的配置，在 [mix](https://github.com/mix-go/mix) 生成的骨架中都已经配置好了，并且做了合理的目录规划。
+
 ```go
 package main
 

@@ -7,7 +7,9 @@ import (
 
 // 创建实例
 func NewApplicationContext(definitions []BeanDefinition) *ApplicationContext {
-    context := &ApplicationContext{Definitions: definitions}
+    context := &ApplicationContext{
+        Definitions: definitions,
+    }
     context.Init()
     return context
 }
