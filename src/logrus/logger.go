@@ -11,9 +11,9 @@ type Logger struct {
     *l.Logger
 }
 
-func (t *Logger) ErrorStack(err interface{}, stack []byte) {
-    if len(stack) > 0 {
-        t.Logger.Errorf(fmt.Sprintf("%s\n%s", err, string(stack)))
+func (t *Logger) ErrorStack(err interface{}, stack *[]byte) {
+    if stack != nil {
+        t.Logger.Errorf(fmt.Sprintf("%s\n%s", err, string(*stack)))
     } else {
         t.Logger.Errorf(fmt.Sprintf("%s", err))
     }

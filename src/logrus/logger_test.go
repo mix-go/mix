@@ -30,5 +30,6 @@ func TestFile(t *testing.T) {
 
 func TestErrorStack(t *testing.T) {
     logger := NewLogger()
-    logger.ErrorStack(errors.New("panic test"), debug.Stack())
+    stack := debug.Stack()
+    logger.ErrorStack(errors.New("panic test"), &stack)
 }
