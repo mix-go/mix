@@ -33,7 +33,7 @@ go get -u github.com/mix-go/console
 
 ## Quick start
 
-```
+```go
 package main
 
 import (
@@ -183,7 +183,7 @@ process.Daemon()
 
 我们可以通过配合 `console.CommandBeforeExecuteEvent` 和 `flag` 获取参数，实现通过某几个参数控制程序后台执行。
 
-```
+```go
 package listeners
 
 import (
@@ -279,7 +279,7 @@ console.App().Context.Get("logger").(*logrus.Logger)
 
 ## Logger
 
-控制台 `error` 组件的必须传一个 Logger 接口：
+控制台 `error` 组件创建时必须传一个 Logger 接口：
 
 ```
 type Logger interface {
