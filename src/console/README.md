@@ -55,7 +55,7 @@ func main() {
         AppName:    "app",
         AppVersion: "0.0.0-alpha",
         AppDebug:   true,
-        // 该字段为程序依赖配置，内部的 event, error 是两个核心依赖，是必须配置的
+        // 该字段为程序依赖配置，内部的 eventDispatcher, error 是两个核心依赖，是必须配置的
         Beans: []bean.BeanDefinition{
             bean.BeanDefinition{
                 Name:            "eventDispatcher",
@@ -103,6 +103,8 @@ func main() {
 }
 ```
 
+编译后，查看整个命令行程序的帮助
+
 ```
 $ ./go_build_main_go 
 Usage: ./go_build_main_go [OPTIONS] COMMAND [opt...]
@@ -119,28 +121,15 @@ Run './go_build_main_go COMMAND --help' for more information on a command.
 
 Developed with Mix Go framework. (openmix.org/mix-go)
 ```
+
+查看命令行程序的版本信息
 
 ```
 $ ./go_build_main_go -v
 app 0.0.0-alpha, framework 1.0.9
 ```
 
-```
-$ ./go_build_main_go 
-Usage: ./go_build_main_go [OPTIONS] COMMAND [opt...]
-
-Global Options:
-  -h, --help    Print usage
-  -v, --version Print version information
-
-Commands:
-  hello         Echo demo
-
-
-Run './go_build_main_go COMMAND --help' for more information on a command.
-
-Developed with Mix Go framework. (openmix.org/mix-go)
-```
+查看 `hello` 命令的帮助
 
 ```
 $ ./go_build_main_go hello --help
@@ -151,6 +140,12 @@ Command Options:
   --say         Say ...
 
 Developed with Mix Go framework. (openmix.org/mix-go)
+```
+
+执行 `hello` 命令
+
+```
+$ ./go_build_main_go hello 
 ```
 
 ## Flag 
