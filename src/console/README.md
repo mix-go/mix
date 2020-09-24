@@ -6,6 +6,19 @@ Command line console program development framework
 
 > 该库还有 php 版本：https://github.com/mix-php/console
 
+## Contents
+
+- [Overview](#overview)
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Flag](#flag)
+- [Event](#event)
+- [Daemon](#daemon)
+- [Catch panic](#catch-panic)
+- [Application](#application)
+- [Bean](#bean)
+- [Logger](#logger)
+
 ## Overview
 
 Mix Console 不仅仅只是一个命令行骨架，它还包括命令行参数获取、依赖注入、事件驱动、全局 panic 捕获，错误信息接入日志或者第三方、程序后台执行等各种命令行开发常用功能，是一个完整的命令行程序开发框架。
