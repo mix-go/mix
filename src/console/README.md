@@ -21,55 +21,73 @@ go get -u github.com/mix-go/console
 ## Quick start
 
 ```
-definition := console.ApplicationDefinition{
-    AppName:    "app",
-    AppVersion: "0.0.0-alpha",
-    AppDebug:   true,
-    // 该字段为程序依赖配置，内部的 event, error 是两个核心依赖，是必须配置的
-    Beans: []bean.BeanDefinition{
-        bean.BeanDefinition{
-            Name:            "eventDispatcher",
-            Reflect:         bean.NewReflect(event.NewDispatcher),
-            Scope:           bean.SINGLETON,
-            ConstructorArgs: bean.ConstructorArgs{},
-        },
-        bean.BeanDefinition{
-            Name:            "error",
-            Reflect:         bean.NewReflect(console.NewError),
-            Scope:           bean.SINGLETON,
-            ConstructorArgs: bean.ConstructorArgs{bean.NewReference("logger")},
-            Fields: bean.Fields{
-                "Dispatcher": bean.NewReference("eventDispatcher"),
-            },
-        },
-        bean.BeanDefinition{
-            Name:    "logger",
-            Reflect: bean.NewReflect(logrus.NewLogger),
-            Scope:   bean.SINGLETON,
-        },
-    },
-    // 该字段配置了程序有多少个命令，并且包含的参数，所有在程序中需要使用的参数都必须在这里定义
-    Commands: []console.CommandDefinition{
-        console.CommandDefinition{
-            Name:  "hello",
-            Usage: "\tEcho demo",
-            Options: []console.OptionDefinition{
-                {
-                    Names: []string{"n", "name"},
-                    Usage: "Your name",
-                },
-                {
-                    Names: []string{"say"},
-                    Usage: "\tSay ...",
-                },
-            },
-            Command: &commands.HelloCommand{},
-            /* Singleton: true, // 如果这个程序只有一个命令，就开启这个配置 */
-        },
-    },
+package main
+
+import (
+    "github.com/mix-go/bean"
+    "github.com/mix-go/console"
+    "github.com/mix-go/event"
+    "github.com/mix-go/logrus"
+)
+
+type HelloCommand struct {
 }
-// 后面两个参数指定了必须配置的两个核心依赖的名称
-console.NewApplication(definition, "eventDispatcher", "error").Run()
+
+func (t *HelloCommand) Main() {
+    // do something
+}
+
+func main() {
+    definition := console.ApplicationDefinition{
+        AppName:    "app",
+        AppVersion: "0.0.0-alpha",
+        AppDebug:   true,
+        // 该字段为程序依赖配置，内部的 event, error 是两个核心依赖，是必须配置的
+        Beans: []bean.BeanDefinition{
+            bean.BeanDefinition{
+                Name:            "eventDispatcher",
+                Reflect:         bean.NewReflect(event.NewDispatcher),
+                Scope:           bean.SINGLETON,
+                ConstructorArgs: bean.ConstructorArgs{},
+            },
+            bean.BeanDefinition{
+                Name:            "error",
+                Reflect:         bean.NewReflect(console.NewError),
+                Scope:           bean.SINGLETON,
+                ConstructorArgs: bean.ConstructorArgs{bean.NewReference("logger")},
+                Fields: bean.Fields{
+                    "Dispatcher": bean.NewReference("eventDispatcher"),
+                },
+            },
+            bean.BeanDefinition{
+                Name:    "logger",
+                Reflect: bean.NewReflect(logrus.NewLogger),
+                Scope:   bean.SINGLETON,
+            },
+        },
+        // 该字段配置了程序有多少个命令，并且包含的参数，所有在程序中需要使用的参数都必须在这里定义
+        Commands: []console.CommandDefinition{
+            console.CommandDefinition{
+                Name:  "hello",
+                Usage: "\tEcho demo",
+                Options: []console.OptionDefinition{
+                    {
+                        Names: []string{"n", "name"},
+                        Usage: "Your name",
+                    },
+                    {
+                        Names: []string{"say"},
+                        Usage: "\tSay ...",
+                    },
+                },
+                Command: &HelloCommand{},
+                /* Singleton: true, // 如果这个程序只有一个命令，就开启这个配置 */
+            },
+        },
+    }
+    // 后面两个参数指定了必须配置的两个核心依赖的名称
+    console.NewApplication(definition, "eventDispatcher", "error").Run()
+}
 ```
 
 ```
@@ -124,11 +142,21 @@ Developed with Mix Go framework. (openmix.org/mix-go)
 
 ## Flag 
 
+> 该 flag 比 golang 自带的更加好用，不需要 Parse 操作
+
 获取命令行参数，可以获取 `String`、`Bool`、`Int64`、`Float64` 多种类型，也可以指定默认值。
 
 ```
 name := flag.Match("n", "name").String("Xiao Ming")
 ```
+
+参数规则 (部分UNIX风格+GNU风格)
+
+- 单字母参数只支持一个中杠，如 `-p`，多字母参数只支持二个中杠，如：`--option`
+- 参数可以有值、也可以没有值，如：
+    - 无值：`-p`、 `--option`
+    - 有值(空格)：`-p value`、`--option value`
+    - 有值(等号)：`-p=value`、`--option=value`
 
 ## Event 
 
@@ -136,18 +164,6 @@ name := flag.Match("n", "name").String("Xiao Ming")
 
 - `console.CommandBeforeExecuteEvent` 当命令执行前会调度该事件，用户可监听该事件在命令执行前处理前置逻辑，比如：将程序后台执行
 - `console.HandleErrorEvent` 当程序捕获到全局 panic 或者代码中手动捕获的错误信息时调度该事件，用户可监听该事件将错误信息打印到日志或者发送到 Sentry 等平台。 
-
-## Catch panic
-
-go 程序的 err 返回设计虽然用户手动处理了大部分的错误，但是总是会有一些运行时 panic 是忘记处理的，但是这个错误信息是默认直接输出在 `os.Stdout` 中，日志中无法看到，非常容易忽略并且 debug 困难，我们解决了这个问题，可以将全部错误捕获集中交给 `error` 组件处理。
-
-- Main 主协程
-   - `console.Error` 当主协程中的抛出 panic 时，Application 会内部使用了 recover 将错误信息传递到 `error` 组件处理。
-- 子协程：子协程里的 panic 只能在子协程中使用 recover 捕获
-   - `catch.Error` 可以手动在子协程通过 recover 将错误信息使用该方法传递给 `error` 组件处理。
-   - `catch.Call` 更加省事的方法就是在开启子协程的位置使用该方法，如：`go foo()` 修改为 `go catch.Call(foo)`
-
-错误信息将会集中到 `error` 处理，该组件会调用 `logger` 组件打印到日志，logger 组件会将 panic 的错误堆栈信息打印到日志中，这样就不用怕忽略错误信息，并且 debug 将变得更加容易，该组件还会使用 `event` 组件调度 `console.HandleErrorEvent` 事件，用户可将错误信息自定接入 Sentry 等第三方平台。
 
 ## Daemon
 
@@ -190,14 +206,32 @@ func (t *CommandListener) Process(e event.Event) {
 }
 ```
 
+创建的监听器需要注册到 `eventDispatcher` 组件的构造参数中
+
+```
+ConstructorArgs: bean.ConstructorArgs{listeners.CommandListener{}},
+```
+
 上面就实现了一个当命令行参数中带有 `-d/--daemon` 参数时，程序就在后台执行，注意：这两个参数需要在 `console.CommandDefinition` 中配置才可使用。
+
+## Catch panic
+
+go 程序的 err 返回设计虽然用户手动处理了大部分的错误，但是总是会有一些运行时 panic 是忘记处理的，但是这个错误信息是默认直接输出在 `os.Stdout` 中，日志中无法看到，非常容易忽略并且 debug 困难，我们解决了这个问题，可以将全部错误捕获集中交给 `error` 组件处理。
+
+- Main 主协程
+   - `error` 当主协程中的抛出 panic 时，Application 会内部使用了 recover 将错误信息传递到 `error` 组件处理。
+- 子协程：子协程里的 panic 只能在子协程中使用 recover 捕获。
+   - `catch.Error` 可以手动在子协程通过 recover 将错误信息使用该方法传递给 `error` 组件处理，如：`catch.Error(err, true)` 第二个参数强制打印堆栈信息。
+   - `catch.Call` 更加省事的方法就是在开启子协程的位置使用该方法，如：`go foo()` 修改为 `go catch.Call(foo)`
+
+错误信息将会集中到 `error` 处理，该组件会调用 `logger` 组件打印到日志，logger 组件会将 panic 的错误堆栈信息打印到日志中，这样就不用怕忽略错误信息，并且 debug 将变得更加容易，该组件还会使用 `eventDispatcher` 组件调度 `console.HandleErrorEvent` 事件，用户可将错误信息自定接入 Sentry 等第三方平台。
 
 ## Application
 
-我们在 `Command: &commands.HelloCommand{}` 中编写代码时，经常会要调用 App 中的一些功能。
+我们在 `Command: &HelloCommand{}` 中编写代码时，经常会要调用 App 中的一些功能。
 
 ```
-app := console.App()
+console.App()
 ```
 
 APP 的一些属性
@@ -230,6 +264,22 @@ console.Get("logger").(*logrus.Logger)
 ```
 console.App().Context.Get("logger").(*logrus.Logger)
 ```
+
+## Bean
+
+控制台基于 [Mix Bean](https://github.com/mix-go/bean) 管理程序内部库的全部依赖关系，实现 DI、IoC，上面提到的 `console.App().Context` 就是控制台通过该库创建，该库设计思想参考 java spring，使用非常灵活。
+
+## Logger
+
+控制台 `error` 组件的必须传一个 Logger 接口：
+
+```
+type Logger interface {
+    ErrorStack(err interface{}, stack []byte)
+}
+```
+
+这个接口是为了实现可以通过 Logger 打印 panic 的堆栈信息到日志中，因此我们需要自己扩展这个接口，[Mix Logrus](https://github.com/mix-go/logrus) 就实现了这个接口，因此可以接入到我们控制台中用于将 panic 的堆栈信息打印到日志文件中，如需要使用其他开源 Logger 就需要用户自行扩展实现上面的接口。
 
 ## License
 
