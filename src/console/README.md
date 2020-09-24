@@ -288,7 +288,7 @@ console.App().Context.Get("logger").(*logrus.Logger)
 
 ```
 type Logger interface {
-    ErrorStack(err interface{}, stack []byte)
+    ErrorStack(err interface{}, stack *[]byte)
 }
 ```
 
