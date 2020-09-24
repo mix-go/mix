@@ -281,13 +281,13 @@ console.App().Context.Get("logger").(*logrus.Logger)
 
 控制台 `error` 组件创建时必须传一个 Logger 接口：
 
-```
+```go
 type Logger interface {
     ErrorStack(err interface{}, stack *[]byte)
 }
 ```
 
-这个接口是为了实现可以通过 Logger 打印 panic 的堆栈信息到日志中，因此我们需要自己扩展这个接口，[Mix Logrus](https://github.com/mix-go/logrus) 就实现了这个接口，因此可以接入到我们控制台中用于将 panic 的堆栈信息打印到日志文件中，如需要使用其他开源 Logger 就需要用户自行扩展实现上面的接口。
+这个接口是为了实现可以通过 Logger 打印 panic 的堆栈信息到日志中，因此传入的 Logger 需要实现这个接口，[Mix Logrus](https://github.com/mix-go/logrus) 就实现了这个接口，因此可以接入到我们控制台中用于将 panic 的堆栈信息打印到日志文件中，如需要使用其他开源 Logger 就需要用户自行扩展实现上面的接口。
 
 ## License
 
