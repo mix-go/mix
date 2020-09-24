@@ -9,6 +9,7 @@ import (
 
 type Logger struct {
     *l.Logger
+    SupportGORM bool
 }
 
 func (t *Logger) ErrorStack(err interface{}, stack *[]byte) {
@@ -17,6 +18,18 @@ func (t *Logger) ErrorStack(err interface{}, stack *[]byte) {
     } else {
         t.Logger.Errorf(fmt.Sprintf("%s", err))
     }
+}
+
+func (t *Logger) Print(args ...interface{}) {
+    // 为了对接 grom 的 logger，让 sql 日志更加美观，让参数使用空格分隔
+    if t.SupportGORM {
+        var tmp []interface{}
+        for _, arg := range args {
+            tmp = append(tmp, arg, " ")
+        }
+        args = tmp[:len(tmp)-1]
+    }
+    t.Logger.Print(args...)
 }
 
 func NewLogger() *Logger {
@@ -32,5 +45,7 @@ func NewLogger() *Logger {
     }
     logger.Formatter = formatter
 
-    return &Logger{logger}
+    return &Logger{
+        Logger: logger,
+    }
 }

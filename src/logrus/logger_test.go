@@ -15,6 +15,9 @@ func TestLog(t *testing.T) {
     logger.Infof("test")
     logger.Infof("test\ntest")
     logger.WithField(logrus.FieldKeyLogrusError, "dfsdfsdf").Infof("test")
+
+    logger.SupportGORM = true
+    logger.Print("a", "b", "c")
 }
 
 func TestFile(t *testing.T) {
