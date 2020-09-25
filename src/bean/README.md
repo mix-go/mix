@@ -19,11 +19,11 @@ go get -u github.com/mix-go/bean
 - `ConstructorArgs` 构造器注入
 
 ```golang
-var Definitions = []Definition{
+var definitions = []bean.Definition{
     {
         Name: "foo",
-        Reflect: NewReflect(NewHttpClient),
-        ConstructorArgs: ConstructorArgs{
+        Reflect: bean.NewReflect(NewHttpClient),
+        ConstructorArgs: bean.ConstructorArgs{
             time.Duration(time.Second * 3),
         },
     },
@@ -36,7 +36,7 @@ func NewHttpClient(timeout time.Duration) *http.Client {
     }
 }
 
-context := NewApplicationContext(Definitions)
+context := bean.NewApplicationContext(definitions)
 foo := context.Get("foo").(*http.Client) // 返回的都是指针类型
 fmt.Println(fmt.Sprintf("%+v", foo))
 ```
@@ -44,17 +44,17 @@ fmt.Println(fmt.Sprintf("%+v", foo))
 - `Fields` 字段注入
 
 ```golang
-var Definitions = []Definition{
+var definitions = []bean.Definition{
     {
         Name: "foo",
-        Reflect: NewReflect(http.Client{}),
-        Fields: Fields{
+        Reflect: bean.NewReflect(http.Client{}),
+        Fields: bean.Fields{
             "Timeout": time.Duration(time.Second * 3),
         },
     },
 }
 
-context := NewApplicationContext(Definitions)
+context := bean.NewApplicationContext(definitions)
 foo := context.Get("foo").(*http.Client) // 返回的都是指针类型
 fmt.Println(fmt.Sprintf("%+v", foo))
 ```
@@ -62,14 +62,14 @@ fmt.Println(fmt.Sprintf("%+v", foo))
 - `ConstructorArgs + Fields` 混合使用
 
 ```golang
-var Definitions = []Definition{
+var definitions = []bean.Definition{
     {
         Name: "foo",
-        Reflect: NewReflect(NewHttpClient),
-        ConstructorArgs: ConstructorArgs{
+        Reflect: bean.NewReflect(NewHttpClient),
+        ConstructorArgs: bean.ConstructorArgs{
             time.Duration(time.Second * 3),
         },
-        Fields: Fields{
+        Fields: bean.Fields{
             "Timeout": time.Duration(time.Second * 2),
         },
     },
@@ -82,7 +82,7 @@ func NewHttpClient(timeout time.Duration) *http.Client {
     }
 }
 
-context := NewApplicationContext(Definitions)
+context := bean.NewApplicationContext(definitions)
 foo := context.Get("foo").(*http.Client) // 返回的都是指针类型
 fmt.Println(fmt.Sprintf("%+v", foo))
 ```
@@ -96,25 +96,25 @@ type Foo struct {
     Client *http.Client // 引用注入的都是指针类型
 }
 
-var Definitions = []Definition{
+var definitions = []bean.Definition{
     {
         Name: "foo",
-        Reflect: NewReflect(Foo{}),
+        Reflect: bean.NewReflect(Foo{}),
         },
-        Fields: Fields{
+        Fields: bean.Fields{
             "Client": NewReference("bar"),
         },
     },
     {
         Name: "bar",
-        Reflect: NewReflect(http.Client{}),
-        Fields: Fields{
+        Reflect: bean.NewReflect(http.Client{}),
+        Fields: bean.Fields{
             "Timeout": time.Duration(time.Second * 3),
         },
     },
 }
 
-context := NewApplicationContext(Definitions)
+context := bean.NewApplicationContext(definitions)
 foo := context.Get("foo").(*Foo) // 返回的都是指针类型
 cli := foo.Client
 fmt.Println(fmt.Sprintf("%+v", cli))
@@ -125,18 +125,18 @@ fmt.Println(fmt.Sprintf("%+v", cli))
 定义组件为全局单例
 
 ```golang
-var Definitions = []Definition{
+var definitions = []bean.Definition{
     {
         Name: "foo",
-        Scope: SINGLETON,
-        Reflect: NewReflect(http.Client{}),
-        Fields: Fields{
+        Scope: bean.SINGLETON,
+        Reflect: bean.NewReflect(http.Client{}),
+        Fields: bean.Fields{
             "Timeout": time.Duration(time.Second * 3),
         },
     },
 }
 
-context := NewApplicationContext(Definitions)
+context := bean.NewApplicationContext(definitions)
 foo := context.Get("foo").(*http.Client) // 返回的都是指针类型
 fmt.Println(fmt.Sprintf("%+v", foo))
 ```
@@ -155,18 +155,18 @@ func (c *Foo) Init() {
     fmt.Println("init")
 }
 
-var Definitions = []Definition{
+var definitions = []bean.Definition{
     {
         Name:       "foo",
         InitMethod: "Init",
-        Reflect: NewReflect(Foo{}),
-        Fields: Fields{
+        Reflect: bean.NewReflect(Foo{}),
+        Fields: bean.Fields{
             "Bar":    "bar",
         },
     },
 }
 
-context := NewApplicationContext(Definitions)
+context := bean.NewApplicationContext(definitions)
 foo := context.Get("foo").(*Foo) // 返回的都是指针类型
 fmt.Println(fmt.Sprintf("%+v", foo))
 ```
