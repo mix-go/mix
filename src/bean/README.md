@@ -6,7 +6,7 @@ DI, IoC container, reference spring bean
 
 > 该库还有 php 版本：https://github.com/mix-php/bean
 
-## Usage
+## Installation
 
 - 安装
 
@@ -14,7 +14,9 @@ DI, IoC container, reference spring bean
 go get -u github.com/mix-go/bean
 ```
 
-- 构造器注入
+## Usage
+
+- `ConstructorArgs` 构造器注入
 
 ```golang
 var Definitions = []Definition{
@@ -39,7 +41,7 @@ foo := context.Get("foo").(*http.Client) // 返回的都是指针类型
 fmt.Println(fmt.Sprintf("%+v", foo))
 ```
 
-- 字段注入
+- `Fields` 字段注入
 
 ```golang
 var Definitions = []Definition{
@@ -57,7 +59,7 @@ foo := context.Get("foo").(*http.Client) // 返回的都是指针类型
 fmt.Println(fmt.Sprintf("%+v", foo))
 ```
 
-- 混合使用
+- `ConstructorArgs + Fields` 混合使用
 
 ```golang
 var Definitions = []Definition{
@@ -85,7 +87,9 @@ foo := context.Get("foo").(*http.Client) // 返回的都是指针类型
 fmt.Println(fmt.Sprintf("%+v", foo))
 ```
 
-- 引用
+- `NewReference` 引用
+
+引用其他依赖注入
 
 ```golang
 type Foo struct {
@@ -98,7 +102,7 @@ var Definitions = []Definition{
         Reflect: NewReflect(Foo{}),
         },
         Fields: Fields{
-            "Client": Reference{Name: "bar"},
+            "Client": NewReference("bar"),
         },
     },
     {
@@ -116,7 +120,9 @@ cli := foo.Client
 fmt.Println(fmt.Sprintf("%+v", cli))
 ```
 
-- 单例
+- `Scope: SINGLETON` 单例
+
+定义组件为全局单例
 
 ```golang
 var Definitions = []Definition{
@@ -135,7 +141,9 @@ foo := context.Get("foo").(*http.Client) // 返回的都是指针类型
 fmt.Println(fmt.Sprintf("%+v", foo))
 ```
 
-- 初始化方法
+- `InitMethod` 初始化方法
+
+对象创建完成并且 `ConstructorArgs + Fields` 两种注入全部完成后执行该方法，用来初始化处理。
 
 ```golang
 type Foo struct {
