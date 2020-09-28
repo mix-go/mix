@@ -8,7 +8,7 @@ DI, IoC container, reference spring bean
 
 ## Overview
 
-一个管理对象创建依赖关系的库，该库可以实现统一管理依赖，全局对象管理，动态配置刷新等。
+一个创建对象以及处理对象依赖关系的库，该库可以实现统一管理依赖，全局对象管理，动态配置刷新等。
 
 ## Installation
 
