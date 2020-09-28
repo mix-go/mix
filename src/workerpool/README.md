@@ -6,7 +6,7 @@ A common workerpool class library
 
 > 该库还有 php 版本：https://github.com/mix-php/worker-pool
 
-## Usage
+## Installation
 
 - 安装
 
@@ -14,7 +14,7 @@ A common workerpool class library
 go get -u github.com/mix-go/workerpool
 ```
 
-- 使用
+## Usage
 
 先创建一个 Worker 结构体
 

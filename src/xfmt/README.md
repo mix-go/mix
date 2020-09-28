@@ -8,13 +8,15 @@ A formatting library that prints internal Pointers
 
 在 go 中使用 `fmt` 打印结构体时，无法打印指针字段内部的数据结构，导致增加 debug 难度，该库可以解决这个问题，并支持设定打印的深度。
 
-## Usage
+## Installation
 
 - 安装
 
 ```
 go get -u github.com/mix-go/xfmt
 ```
+
+## Usage
 
 - 支持的方法
 
