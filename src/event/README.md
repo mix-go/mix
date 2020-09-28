@@ -8,7 +8,11 @@ Event dispatch library refer to PHP PSR-14 standard
 
 ## Overview
 
-事件调度是一种常见机制，允许开发人员轻松，一致地将逻辑注入应用程序，这在 PHP 中非常常见，于是我打造了这个 Go 版本的事件调度库。
+事件调度是一种常见机制，允许开发人员轻松，一致地将逻辑注入应用程序，这在 PHP 中非常常见，于是我打造了这个 Go 版本的事件调度库，整体实现基于 [PSR-14](https://www.php-fig.org/psr/psr-14/)：
+
+- 事件(Event)：一个自定义结构体，事件数据的载体
+- 监听器(Listener)：负责处理对应的事件数据
+- 事件调度器(Dispatcher)：用于触发某个事件
 
 ## Installation
 
@@ -20,7 +24,16 @@ go get -u github.com/mix-go/event
 
 ## Usage
 
-定义监听器
+定义事件 `Event`，事件可以为任意结构体，只需要继承 `event.EventTrait` 即可
+
+```
+type CommandBeforeExecuteEvent struct {
+    event.EventTrait
+    Command interface{}
+}
+```
+
+定义监听器 `Listener`，监听器是用户编写处理事件逻辑代码的地方，`Events` 方法返回一个要监听的事件类的数组，当这些事件触发时，会调用 `Process` 方法：
 
 ```
 type CommandListener struct {
@@ -47,22 +60,13 @@ func (t *CommandListener) Process(e event.Event) {
 }
 ```
 
-定义事件
-
-```
-type CommandBeforeExecuteEvent struct {
-    event.EventTrait
-    Command interface{}
-}
-```
-
-调度
+触发某个事件 `Dispatcher`
 
 ```
 e := &CommandBeforeExecuteEvent{
     Command: "foo",
 }
-d := NewDispatcher(&CommandListener)
+d := event.NewDispatcher(&CommandListener)
 d.Dispatch(e)
 ```
 
