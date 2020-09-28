@@ -6,6 +6,10 @@ DI, IoC container, reference spring bean
 
 > 该库还有 php 版本：https://github.com/mix-php/bean
 
+## Overview
+
+一个管理对象创建依赖关系的库，该库可以实现统一管理依赖，全局对象管理，动态配置刷新等。
+
 ## Installation
 
 - 安装
@@ -128,7 +132,7 @@ fmt.Println(fmt.Sprintf("%+v", cli))
 var definitions = []bean.Definition{
     {
         Name: "foo",
-        Scope: bean.SINGLETON,
+        Scope: bean.SINGLETON, // 这里定义了单例模式
         Reflect: bean.NewReflect(http.Client{}),
         Fields: bean.Fields{
             "Timeout": time.Duration(time.Second * 3),
@@ -158,7 +162,7 @@ func (c *Foo) Init() {
 var definitions = []bean.Definition{
     {
         Name:       "foo",
-        InitMethod: "Init",
+        InitMethod: "Init", // 这里定义了初始化方法
         Reflect: bean.NewReflect(Foo{}),
         Fields: bean.Fields{
             "Bar":    "bar",
@@ -167,6 +171,41 @@ var definitions = []bean.Definition{
 }
 
 context := bean.NewApplicationContext(definitions)
+foo := context.Get("foo").(*Foo) // 返回的都是指针类型
+fmt.Println(fmt.Sprintf("%+v", foo))
+```
+
+- `Refresh` 动态刷新配置
+
+这个通常用于通过微服务配置中心实现动态刷新微服务配置的功能。
+
+```golang
+type Foo struct {
+    Bar    string
+}
+
+var definitions = []bean.Definition{
+    {
+        Name:       "foo",
+        Reflect: bean.NewReflect(Foo{}),
+        Fields: bean.Fields{
+            "Bar":    "bar",
+        },
+    },
+}
+
+context := bean.NewApplicationContext(definitions)
+
+// 第一次获取
+foo := context.Get("foo").(*Foo) // 返回的都是指针类型
+fmt.Println(fmt.Sprintf("%+v", foo))
+
+// 修改配置
+bd := context.GetBeanDefinition("foo")
+bd.Fields["Bar"] = "bar2"
+bd.Refresh()
+
+// 第二次获取就是新的配置
 foo := context.Get("foo").(*Foo) // 返回的都是指针类型
 fmt.Println(fmt.Sprintf("%+v", foo))
 ```

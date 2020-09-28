@@ -64,6 +64,9 @@ type BeanDefinition struct {
 
 // 刷新
 func (t *BeanDefinition) Refresh() {
+    if t.Scope != SINGLETON {
+        return
+    }
     t.context.instances.Store(t.Name, t.instance())
 }
 
