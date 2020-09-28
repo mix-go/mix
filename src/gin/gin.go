@@ -2,12 +2,12 @@ package gin
 
 import "github.com/gin-gonic/gin"
 
-func New(definitions ...func(router *gin.Engine)) *gin.Engine {
-    e := gin.New()
-    for _, d := range definitions {
-        d(e)
+func New(routeDefinitionCallback ...func(router *gin.Engine)) *gin.Engine {
+    engine := gin.New()
+    for _, callback := range routeDefinitionCallback {
+        callback(engine)
     }
-    return e
+    return engine
 }
 
 const (
