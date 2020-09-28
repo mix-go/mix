@@ -197,7 +197,7 @@ var definitions = []bean.Definition{
 context := bean.NewApplicationContext(definitions)
 
 // 第一次获取
-foo := context.Get("foo").(*Foo) // 返回的都是指针类型
+foo := context.Get("foo").(*Foo)
 fmt.Println(fmt.Sprintf("%+v", foo))
 
 // 修改配置
@@ -206,7 +206,7 @@ bd.Fields["Bar"] = "bar2"
 bd.Refresh()
 
 // 第二次获取就是新的配置
-foo := context.Get("foo").(*Foo) // 返回的都是指针类型
+foo := context.Get("foo").(*Foo)
 fmt.Println(fmt.Sprintf("%+v", foo))
 ```
 
