@@ -23,7 +23,7 @@ func Daemon() {
     }
 
     if !ok {
-        panic(console.NewUnsupportError(errors.New("The current OS does not support background execution")))
+        panic(console.NewUnsupportError(errors.New("Error: the current OS does not support background execution")))
     }
 
     if getgid() != 1 {
