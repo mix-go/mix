@@ -1,3 +1,5 @@
+> OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
+
 ## Mix Gin
 
 基于 Gin 的 Web 库, 扩展 logrus 支持

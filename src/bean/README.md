@@ -1,3 +1,5 @@
+> OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
+
 ## Mix Bean
 
 DI、IoC 容器，参考 spring bean 设计

@@ -1,3 +1,5 @@
+> OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
+
 ## Mix Worker Pool
 
 通用的工作池类库

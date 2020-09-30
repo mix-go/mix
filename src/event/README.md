@@ -1,3 +1,5 @@
+> OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
+
 ## Mix Event
 
 参考 PHP PSR-14 标准的事件调度库

@@ -1,3 +1,5 @@
+> OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
+
 ## Mix Logrus
 
 基于 Logrus 扩展的日志库，支持行号、文件切分、调用堆栈
