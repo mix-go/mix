@@ -8,27 +8,39 @@
 
 <p align="center">高性能 • 轻量级 • 命令行</p>
 
+## 目录
+
+- [Mix Go 是什么](#mix-go-是什么)
+- [与其他 Go 框架的差别](#与其他-go-框架的差别)
+- [与 Mix PHP 的关系](#与-mix-php-的关系)
+- [微服务](#微服务)
+- [框架定位](#框架定位)
+- [开发文档](#开发文档)
+- [技术交流](#技术交流)
+- [快速开始](#快速开始)
+- [开发工具](#开发工具)
+
 ## Mix Go 是什么
 
-MixGo 是混合型高性能 Go 框架，该框架可以开发 console, api, web 等各种项目，引入了依赖注入、控制反转、事件驱动等高级特征，得益于 go 生态更好的跨平台、静态执行的优势，该框架更适合系统核心模块、对稳定性要求高、计算量比较大的项目。
+MixGo 是混合型高性能 Go 框架，可以开发 `console`, `api`, `web` 等各种项目，该框架改造整合了 `gin`, `gorm`, `logrus` 等多个流行组件，并且引入了依赖注入、控制反转、事件驱动等高级特征。
 
 ## 与其他 Go 框架的差别
 
-- 骨架代码全部基于 bean, event 依赖注入、控制反转、事件驱动库构建，同时内置了 Go 生态各个领域最流行的库，包括 gin, gorm, logrus 等，并且这些离散的库已经被整合为一体，可以相互关联使用。
+- 骨架代码全部基于 mix-go/bean, mix-go/event 依赖注入、控制反转、事件驱动库构建，同时内置了 Go 生态各个领域最流行的库，包括 gin, gorm, logrus 等，并且这些离散的库已经被整合为一体，可以相互关联使用。
 
 - 骨架内置了 gin 作为服务器，gin 严格来讲并不是框架，而是一个 server 库，只提供了服务器相关的功能，请求处理，中间件，视图渲染等。
 
 - 提供了 console, api, web 多种骨架生成工具，同时骨架代码中包含非常丰富的范例，开箱即用。
 
-- 框架非常轻量灵活，依赖库均可独立使用，严格来讲除了 `mix-go/console` 命令行开发组件，其他全部为选装。
-
 - 采用高度灵活的开发方式，框架只提供底层库，而与具体功能相关的代码都在骨架代码中实现，用户能更加细粒度的修改每一处细节。
+
+- 框架非常轻量灵活，依赖库均可独立使用，严格来讲除了 mix-go/console 命令行开发组件，其他全部为选装。
 
 - 由于骨架和核心类库都由 Mix 自己打造，拥有和 MixPHP 同样的设计哲学，PHP 的用户可以很容易上手开发。
 
 ## 与 Mix PHP 的关系
 
-该框架与 [MixPHP](https://github.com/mix-php/mix) 设计哲学几乎完全一致，MixPHP 的用户可以非常容易的切换到 MixGo 进行开发，达到学一会二的效果，OpenMix 可能是现在唯一一个打造跨语言框架的开源机构。
+该框架与 [MixPHP](https://github.com/mix-php/mix) 设计哲学几乎完全一致，PHP 的用户可以非常容易的切换到 MixGo 进行开发，达到学一会二的效果，OpenMix 可能是现在唯一一个打造跨语言框架的开源机构。
 
 ## 微服务
 
@@ -43,15 +55,21 @@ MixGo 是混合型高性能 Go 框架，该框架可以开发 console, api, web 
 - https://openmix.org/mix-go/doc
 - https://www.kancloud.cn/onanying/mixgo1/content
 
+## 技术交流
+
+知乎：https://www.zhihu.com/people/onanying   
+微博：http://weibo.com/onanying    
+官方QQ群：[284806582](https://shang.qq.com/wpa/qunwpa?idkey=b3a8618d3977cda4fed2363a666b081a31d89e3d31ab164497f53b72cf49968a), [825122875](http://shang.qq.com/wpa/qunwpa?idkey=d2908b0c7095fc7ec63a2391fa4b39a8c5cb16952f6cfc3f2ce4c9726edeaf20)，敲门暗号：goer
+
 ## 快速开始
 
 - 安装开发工具
 
 ~~~
-go get -u github.com/mix-go/mix@master
+go get -u github.com/mix-go/mix
 ~~~
 
-- 创建应用骨架
+- 创建 `api` 应用骨架
 
 ~~~
 mix api --name=hello
@@ -71,7 +89,7 @@ cd bin
 ./go_build_main_go
 ~~~
 
-- 测试
+- 启动 `api`
 
 ~~~
 $> ./go_build_main_go api
@@ -98,11 +116,59 @@ $> curl http://127.0.0.1:8080/hello
 {"message":"hello, world!","status":200}
 ```
 
-## 技术交流
+## 开发工具
 
-知乎：https://www.zhihu.com/people/onanying   
-微博：http://weibo.com/onanying    
-官方QQ群：[284806582](https://shang.qq.com/wpa/qunwpa?idkey=b3a8618d3977cda4fed2363a666b081a31d89e3d31ab164497f53b72cf49968a), [825122875](http://shang.qq.com/wpa/qunwpa?idkey=d2908b0c7095fc7ec63a2391fa4b39a8c5cb16952f6cfc3f2ce4c9726edeaf20)，敲门暗号：goer
+源码仓库中不仅包含全部组件的源码，还包含一个开发工具：
+
+- 可以生成 `console`、`api` 等骨架代码
+- 包含热更新工具 (开发中)
+
+### Installation
+
+- 安装
+
+```
+go get -u github.com/mix-go/mix
+```
+
+### Help
+
+查看命令帮助
+
+~~~
+$ mix
+Usage: mix [OPTIONS] COMMAND [opt...]
+
+Global Options:
+  -h, --help	Print usage
+  -v, --version	Print version information
+
+Commands:
+  version	Prints the current Mix Go version
+  new		Create a console application
+  api		Create a api application
+
+
+Run 'mix COMMAND --help' for more information on a command.
+
+Developed with Mix Go framework. (openmix.org/mix-go)
+~~~
+
+### New application
+
+创建应用骨架
+
+- console
+
+~~~
+mix new --name=hello
+~~~
+
+- api
+
+~~~
+mix api --name=hello
+~~~
 
 ## License
 
