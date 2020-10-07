@@ -2,7 +2,7 @@ package gin
 
 import "github.com/gin-gonic/gin"
 
-func New(routeDefinitionCallback ...func(router *gin.Engine)) *gin.Engine {
+func New(routeDefinitionCallbacks ...func(router *gin.Engine)) *gin.Engine {
     engine := gin.New()
     for _, callback := range routeDefinitionCallback {
         callback(engine)
