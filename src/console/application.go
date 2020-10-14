@@ -12,38 +12,33 @@ import (
 
 var (
     // 全局APP
-    app *Application
+    App *Application
     // 版本号
     Version = "1.0.15"
     // 最后的错误
     LastError interface{}
 )
 
-// App
-func App() *Application {
-    return app
-}
-
 // 上下文
 // deprecated: 废弃，使用 Get 取代
 func Context() *bean.ApplicationContext {
-    return App().Context
+    return App.Context
 }
 
 // 快速获取实例
 func Get(name string) interface{} {
-    return App().Context.Get(name)
+    return App.Context.Get(name)
 }
 
 // 创建App
 func NewApplication(definition ApplicationDefinition, dispatcherName, errorName string) *Application {
-    app = &Application{
+    App = &Application{
         ApplicationDefinition: definition,
         DispatcherName:        dispatcherName,
         ErrorName:             errorName,
     }
-    app.Init()
-    return app
+    App.Init()
+    return App
 }
 
 // App 定义

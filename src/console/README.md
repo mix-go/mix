@@ -243,26 +243,26 @@ go 程序的 err 返回设计虽然用户手动处理了大部分的错误，但
 我们在 `Command: &HelloCommand{}` 中编写代码时，经常会要调用 App 中的一些功能。
 
 ```
-console.App()
+console.App
 ```
 
 APP 的一些属性
 
 ```
 // 获取基础路径(二进制所在目录路径)
-console.App().BasePath
+console.App.BasePath
 
 // App名称
-console.App().AppName
+console.App.AppName
 
 // App版本号
-console.App().AppVersion
+console.App.AppVersion
 
 // 是否开启debug
-console.App().AppDebug
+console.App.AppDebug
 
 // 依赖注入容器
-console.App().Context
+console.App.Context
 ```
 
 由于依赖注入容器使用非常频繁，于是我们可以这样快速获取组件
@@ -274,12 +274,12 @@ console.Get("logger").(*logrus.Logger)
 上面语句实际上等于这个
 
 ```
-console.App().Context.Get("logger").(*logrus.Logger)
+console.App.Context.Get("logger").(*logrus.Logger)
 ```
 
 ## Bean
 
-控制台基于 [Mix Bean](https://github.com/mix-go/bean) 管理程序内部库的全部依赖关系，实现 DI、IoC，上面提到的 `console.App().Context` 就是控制台通过该库创建，该库设计思想参考 java spring，使用非常灵活。
+控制台基于 [Mix Bean](https://github.com/mix-go/bean) 管理程序内部库的全部依赖关系，实现 DI、IoC，上面提到的 `console.App.Context` 就是控制台通过该库创建，该库设计思想参考 java spring，使用非常灵活。
 
 ## Logger
 

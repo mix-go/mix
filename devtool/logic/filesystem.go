@@ -12,7 +12,7 @@ import (
 )
 
 func CopyPath(src, dst string) bool {
-    debug := console.App().AppDebug
+    debug := console.App.AppDebug
     if debug {
         fmt.Println("")
     }

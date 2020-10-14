@@ -34,11 +34,11 @@ func Call(fn interface{}, args ...interface{}) {
 
 // 捕获错误
 func Error(err interface{}, trace ...bool) {
-    if console.App() == nil {
+    if console.App == nil {
         panic(err)
     }
     if len(trace) == 0 {
-        trace = append(trace, console.App().AppDebug)
+        trace = append(trace, console.App.AppDebug)
     }
-    console.App().Error.Handle(err, trace...)
+    console.App.Error.Handle(err, trace...)
 }

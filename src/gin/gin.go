@@ -4,7 +4,7 @@ import "github.com/gin-gonic/gin"
 
 func New(routeDefinitionCallbacks ...func(router *gin.Engine)) *gin.Engine {
     engine := gin.New()
-    for _, callback := range routeDefinitionCallback {
+    for _, callback := range routeDefinitionCallbacks {
         callback(engine)
     }
     return engine
