@@ -146,7 +146,7 @@ func flags(format string) []string {
 // 提取指针信息
 func extract(val reflect.Value, depth int, format string) []pointer {
     pointers := []pointer{}
-    if depth <= 0 {
+    if depth < 0 {
         return pointers
     }
     switch val.Kind() {
@@ -161,7 +161,7 @@ func extract(val reflect.Value, depth int, format string) []pointer {
             Addr:   elem.Addr(),
         })
         for _, v := range values(format, elem.Interface()) {
-            pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth-1, v.Flag)...)
+            pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth, v.Flag)...)
         }
         break
     case reflect.Struct:
@@ -174,14 +174,11 @@ func extract(val reflect.Value, depth int, format string) []pointer {
             }
         }
         break
-    case reflect.Map:
+    case reflect.Map, reflect.Slice, reflect.Array:
         for _, v := range values(format, val.Interface()) {
             pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth-1, v.Flag)...)
         }
-    case reflect.Slice, reflect.Array:
-        for _, v := range values(format, val.Interface()) {
-            pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth-1, v.Flag)...)
-        }
+        break
     }
     return pointers
 }

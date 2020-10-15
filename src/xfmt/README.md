@@ -36,26 +36,26 @@ go get -u github.com/mix-go/xfmt
 ```
 type Level1 struct {
     Level2   *Level2
-    name     string
+    Name     string
     Level2_1 *Level2
 }
 
 type Level2 struct {
     Level3 *Level3
-    name   string
+    Name   string
 }
 
 type Level3 struct {
-    name string
+    Name string
 }
 ```
 
 创建变量
 
 ```
-l3 := Level3{name: "Level3"}
-l2 := Level2{name: "Level2", Level3: &l3}
-l1 := Level1{name: "Level1", Level2: &l2, Level2_1: &l2}
+l3 := Level3{Name: "Level3"}
+l2 := Level2{Name: "Level2", Level3: &l3}
+l1 := Level1{Name: "Level1", Level2: &l2, Level2_1: &l2}
 ```
 
 打印
@@ -67,9 +67,9 @@ fmt.Println(xfmt.Sprintf(3, "%+v", l1))
 ```
 
 ```
-{Level2:0xc00000c0e0 name:Level1 Level2_1:0xc00000c0e0}
-{Level2:0xc00000c0e0:&{Level3:0xc0000404d0 name:Level2} name:Level1 Level2_1:0xc00000c0e0}
-{Level2:0xc00000c0e0:&{Level3:0xc0000404d0:&{name:Level3} name:Level2} name:Level1 Level2_1:0xc00000c0e0}
+{Level2:0xc00000c0e0 Name:Level1 Level2_1:0xc00000c0e0}
+{Level2:0xc00000c0e0:&{Level3:0xc0000404d0 Name:Level2} Name:Level1 Level2_1:0xc00000c0e0}
+{Level2:0xc00000c0e0:&{Level3:0xc0000404d0:&{Name:Level3} Name:Level2} Name:Level1 Level2_1:0xc00000c0e0}
 ```
 
 ## License
