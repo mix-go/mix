@@ -6,37 +6,43 @@ import (
 )
 
 type level1 struct {
-    level2   *level2
-    name     string
-    level2_1 *level2
-    level4   *level4
-    level4_1 level4
+    Level2   *level2
+    Name     string
+    Level2_1 *level2
+    Level4   *level4
+    Level4_1 level4
 }
 
 type level2 struct {
-    level3 *level3
-    name   string
+    Level3 *level3
+    Name   string
 }
 
 type level3 struct {
-    name string
+    Name string
 }
 
 type level4 struct {
-    level5 *level5
-    name   string
+    Level5 *level5
+    Name   string
 }
 
 type level5 struct {
-    name string
+    Name string
+}
+
+type level6 struct {
+    N   string
+    Map map[string]*level5
+    Ary []*level5
 }
 
 func TestRun(t *testing.T) {
-    l5 := level5{name: "level5"}
-    l4 := level4{name: "level4", level5: &l5}
-    l3 := level3{name: "level3"}
-    l2 := level2{name: "level2", level3: &l3}
-    l1 := level1{name: "level1", level2: &l2, level2_1: &l2, level4: &l4, level4_1: l4}
+    l5 := level5{Name: "Level5"}
+    l4 := level4{Name: "Level4", Level5: &l5}
+    l3 := level3{Name: "Level3"}
+    l2 := level2{Name: "Level2", Level3: &l3}
+    l1 := level1{Name: "level1", Level2: &l2, Level2_1: &l2, Level4: &l4, Level4_1: l4}
 
     fmt.Println(fmt.Sprintf("%+v", l1))
 
@@ -49,8 +55,8 @@ func TestRun(t *testing.T) {
 }
 
 func TestMultiple(t *testing.T) {
-    l5 := level5{name: "level5"}
-    l4 := level4{name: "level4", level5: &l5}
+    l5 := level5{Name: "Level5"}
+    l4 := level4{Name: "Level4", Level5: &l5}
 
     fmt.Println(l4, &l5)
 
@@ -89,4 +95,22 @@ func TestArray(t *testing.T) {
     a2 = append(a2, level5{})
     print(Sprintf(2, "%v\n", a2))
     print(Sprintf(2, "%v\n", &a2))
+}
+
+func TestStructMapArray(t *testing.T) {
+    m := map[string]*level5{}
+    m["foo"] = &level5{Name: "Level5"}
+    m["bar"] = &level5{Name: "Level5"}
+
+    a := []*level5{}
+    a = append(a, &level5{Name: "Level5"})
+    a = append(a, &level5{Name: "Level5"})
+
+    x := level6{
+        N:   "level6",
+        Map: m,
+        Ary: a,
+    }
+    print(Sprintf(3, "%v\n", x))
+    print(Sprintf(3, "%v\n", &x))
 }

@@ -73,54 +73,6 @@ func Sprintf(depth int, format string, args ...interface{}) string {
     return replace(str, unique)
 }
 
-// 获取全部指针对象的反射
-func values(format string, args ...interface{}) []value {
-    flags := flags(format)
-    values := []value{}
-    for k, arg := range args {
-        val := reflect.ValueOf(arg)
-        switch val.Kind() {
-        case reflect.Struct:
-            values = append(values, value{arg, flags[k]})
-            break
-        case reflect.Ptr:
-            elem := val.Elem()
-            if !elem.CanAddr() {
-                continue
-            }
-            switch elem.Kind() {
-            case reflect.Struct:
-                values = append(values, value{arg, flags[k]})
-                break
-            case reflect.Map:
-                iter := elem.MapRange()
-                for iter.Next() {
-                    values = append(values, value{iter.Value().Interface(), flags[k]})
-                }
-                break
-            case reflect.Slice, reflect.Array:
-                for i := 0; i < elem.Len(); i++ {
-                    values = append(values, value{elem.Index(i).Interface(), flags[k]})
-                }
-                break
-            }
-            break
-        case reflect.Map:
-            iter := val.MapRange()
-            for iter.Next() {
-                values = append(values, value{iter.Value().Interface(), flags[k]})
-            }
-            break
-        case reflect.Slice, reflect.Array:
-            for i := 0; i < val.Len(); i++ {
-                values = append(values, value{val.Index(i).Interface(), flags[k]})
-            }
-            break
-        }
-    }
-    return values
-}
-
 // 生成格式
 func format(args ...interface{}) string {
     flags := []string{}
@@ -130,82 +82,115 @@ func format(args ...interface{}) string {
     return strings.Join(flags, " ")
 }
 
+// 获取全部指针对象的反射
+func values(format string, args ...interface{}) []value {
+    flags := flags(format)
+    result := []value{}
+    for k, arg := range args {
+        val := reflect.ValueOf(arg)
+        switch val.Kind() {
+        case reflect.Struct:
+            result = append(result, value{arg, flags[k]})
+            break
+        case reflect.Ptr:
+            if !val.Elem().CanAddr() {
+                continue
+            }
+            result = append(result, value{arg, flags[k]})
+            break
+        case reflect.Map:
+            iter := val.MapRange()
+            for iter.Next() {
+                result = append(result, value{iter.Value().Interface(), flags[k]})
+            }
+            break
+        case reflect.Slice, reflect.Array:
+            for i := 0; i < val.Len(); i++ {
+                result = append(result, value{val.Index(i).Interface(), flags[k]})
+            }
+            break
+        }
+    }
+    return result
+}
+
 // 获取全部参数的格式
 func flags(format string) []string {
     fbytes := []byte(format)
     l := len(fbytes) - 1
-    flags := []string{}
+    result := []string{}
     for k, v := range fbytes {
         if v == '%' {
             if k+1 <= l {
                 switch fbytes[k+1] {
                 case 'v':
-                    flags = append(flags, "%v")
+                    result = append(result, "%v")
                     break
                 case '+':
                     if k+2 <= l && fbytes[k+2] == 'v' {
-                        flags = append(flags, "%+v")
+                        result = append(result, "%+v")
                     }
                     break
                 case '#':
                     if k+2 <= l && fbytes[k+2] == 'v' {
-                        flags = append(flags, "%#v")
+                        result = append(result, "%#v")
                     }
                     break
                 }
             }
         }
     }
-    return flags
-}
-
-// 替换指针为机构体
-func replace(str string, pointers []pointer) string {
-    for _, ptr := range pointers {
-        sptr := fmt.Sprintf("0x%x", ptr.Ptr)
-        str = strings.Replace(str, sptr, fmt.Sprintf("%s:"+ptr.Format, sptr, ptr.Addr), 1)
-    }
-    return str
+    return result
 }
 
 // 提取指针信息
-func extract(val reflect.Value, level int, format string) []pointer {
+func extract(val reflect.Value, depth int, format string) []pointer {
     pointers := []pointer{}
+    if depth <= 0 {
+        return pointers
+    }
     switch val.Kind() {
     case reflect.Ptr:
         elem := val.Elem()
-        if elem.Kind() != reflect.Struct || !elem.CanAddr() {
-            return []pointer{}
+        if !elem.CanAddr() {
+            return pointers
         }
         pointers = append(pointers, pointer{
             Format: format,
             Ptr:    elem.Addr().Pointer(),
             Addr:   elem.Addr(),
         })
-        val = elem
+        for _, v := range values(format, elem.Interface()) {
+            pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth-1, v.Flag)...)
+        }
         break
     case reflect.Struct:
-        break
-    default:
-        return []pointer{}
-    }
-    for i := 0; i < val.NumField(); i++ {
-        if val.Field(i).Kind() == reflect.Ptr {
-            elem := val.Field(i).Elem()
-            if !elem.CanAddr() { // 空指针无法寻址
+        for i := 0; i < val.NumField(); i++ {
+            if !val.Field(i).CanInterface() {
                 continue
             }
-            if level > 0 {
-                pointers = append(pointers, pointer{
-                    Format: format,
-                    Ptr:    elem.Addr().Pointer(),
-                    Addr:   elem.Addr(),
-                })
+            for _, v := range values(format, val.Field(i).Interface()) {
+                pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth-1, v.Flag)...)
             }
-            if level-1 > 0 {
-                pointers = append(pointers, extract(elem, level-1, format)...)
-            }
+        }
+        break
+    case reflect.Map:
+        for _, v := range values(format, val.Interface()) {
+            pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth-1, v.Flag)...)
+        }
+    case reflect.Slice, reflect.Array:
+        for _, v := range values(format, val.Interface()) {
+            pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth-1, v.Flag)...)
         }
     }
     return pointers
+}
+
+// 替换指针为机构体
+func replace(str string, pointers []pointer) string {
+    for _, ptr := range pointers {
+        ptrString := fmt.Sprintf("0x%x", ptr.Ptr)
+        str = strings.Replace(str, ptrString, fmt.Sprintf("%s:"+ptr.Format, ptrString, ptr.Addr), 1)
+    }
+    return str
 }
