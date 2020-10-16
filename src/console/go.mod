@@ -9,8 +9,8 @@ replace (
 )
 
 require (
-	github.com/mix-go/bean v1.0.8
-	github.com/mix-go/event v1.0.15
-	github.com/mix-go/logrus v1.0.15
+	github.com/mix-go/bean v1.0.16
+	github.com/mix-go/event v1.0.16
+	github.com/mix-go/logrus v1.0.16
 	github.com/stretchr/testify v1.6.1
 )
