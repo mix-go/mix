@@ -19,7 +19,7 @@ func LoggerWithFormatter(logger Logger, f LogFormatter) gin.HandlerFunc {
     }
 }
 
-// deprecated: 使用 LoggerWithFormatter 替代
+// Deprecated: 使用 LoggerWithFormatter 替代
 func LogrusWithFormatter(logger *logrus.Logger, f LogFormatter) gin.HandlerFunc {
     return func(c *gin.Context) {
         logger.Info(format(c, f))

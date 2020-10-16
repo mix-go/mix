@@ -20,7 +20,7 @@ var (
 )
 
 // 上下文
-// deprecated: 废弃，使用 Get 取代
+// Deprecated: 废弃，使用 Get 取代
 func Context() *bean.ApplicationContext {
     return App.Context
 }
