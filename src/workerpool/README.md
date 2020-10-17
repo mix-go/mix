@@ -53,6 +53,19 @@ go func() {
 d.Run() // 等待任务全部执行完成并停止全部 Worker
 ~~~
 
+异常处理：`Do` 方法中执行的代码，可能会出现 `panic` 异常，这时该 Worker 当前协程会抛出 `panic`，然后会重启一个新的协程继续处理任务。我们可以通过 `recover` 获取异常信息记录到日志或者执行其他处理
+
+~~~
+func (t *FooWorker) Do(data interface{}) {
+    defer func() {
+        if err := recover(); err != nil {
+            // handle error
+        }
+    }()
+    // do something
+}
+~~~
+
 ## License
 
 Apache License Version 2.0, http://www.apache.org/licenses/
