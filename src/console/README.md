@@ -56,9 +56,9 @@ func (t *HelloCommand) Main() {
 
 func main() {
     definition := console.ApplicationDefinition{
-        AppName:    "app",
-        AppVersion: "0.0.0-alpha",
-        AppDebug:   true,
+        Name:    "app",
+        Version: "0.0.0-alpha",
+        Debug:   true,
         // 该字段为程序依赖配置，内部的 eventDispatcher, error 是两个核心依赖，是必须配置的
         Beans: []bean.BeanDefinition{
             bean.BeanDefinition{
@@ -253,13 +253,13 @@ APP 的一些属性
 console.App.BasePath
 
 // App名称
-console.App.AppName
+console.App.Name
 
 // App版本号
-console.App.AppVersion
+console.App.Version
 
 // 是否开启debug
-console.App.AppDebug
+console.App.Debug
 
 // 依赖注入容器
 console.App.Context
