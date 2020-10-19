@@ -48,8 +48,7 @@ func Sprintln(depth int, args ...interface{}) string {
 
 // Sprintf
 func Sprintf(depth int, format string, args ...interface{}) string {
-    // 放在第一行可以起到效验的作用
-    str := fmt.Sprintf(format, args...)
+    str := fmt.Sprintf(format, args...) // 放在第一行可以起到效验的作用
 
     pointers := []pointer{}
     for _, v := range values(format, args...) {
@@ -84,29 +83,28 @@ func format(args ...interface{}) string {
 
 // 获取全部指针对象的反射
 func values(format string, args ...interface{}) []value {
-    flags := flags(format)
     result := []value{}
-    for k, arg := range args {
-        val := reflect.ValueOf(arg)
+    for _, v := range filter(format, args...) {
+        val := reflect.ValueOf(v.Arg)
         switch val.Kind() {
         case reflect.Struct:
-            result = append(result, value{arg, flags[k]})
+            result = append(result, v)
             break
         case reflect.Ptr:
             if !val.Elem().CanAddr() {
                 continue
             }
-            result = append(result, value{arg, flags[k]})
+            result = append(result, v)
             break
         case reflect.Map:
             iter := val.MapRange()
             for iter.Next() {
-                result = append(result, value{iter.Value().Interface(), flags[k]})
+                result = append(result, value{iter.Value().Interface(), v.Flag})
             }
             break
         case reflect.Slice, reflect.Array:
             for i := 0; i < val.Len(); i++ {
-                result = append(result, value{val.Index(i).Interface(), flags[k]})
+                result = append(result, value{val.Index(i).Interface(), v.Flag})
             }
             break
         }
@@ -114,26 +112,37 @@ func values(format string, args ...interface{}) []value {
     return result
 }
 
-// 获取全部参数的格式
-func flags(format string) []string {
-    fbytes := []byte(format)
-    l := len(fbytes) - 1
-    result := []string{}
-    for k, v := range fbytes {
+// 过滤无需解析的参数
+func filter(format string, args ...interface{}) []value {
+    fb := []byte(format)
+    next := len(fb) - 1
+    loc := -1
+    result := []value{}
+    for k, v := range fb {
         if v == '%' {
-            if k+1 <= l {
-                switch fbytes[k+1] {
+            loc += 1
+            if k+1 <= next {
+                switch fb[k+1] {
                 case 'v':
-                    result = append(result, "%v")
+                    result = append(result, value{
+                        Arg:  args[loc],
+                        Flag: "%v",
+                    })
                     break
                 case '+':
-                    if k+2 <= l && fbytes[k+2] == 'v' {
-                        result = append(result, "%+v")
+                    if k+2 <= next && fb[k+2] == 'v' {
+                        result = append(result, value{
+                            Arg:  args[loc],
+                            Flag: "%+v",
+                        })
                     }
                     break
                 case '#':
-                    if k+2 <= l && fbytes[k+2] == 'v' {
-                        result = append(result, "%#v")
+                    if k+2 <= next && fb[k+2] == 'v' {
+                        result = append(result, value{
+                            Arg:  args[loc],
+                            Flag: "%#v",
+                        })
                     }
                     break
                 }
