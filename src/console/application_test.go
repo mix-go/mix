@@ -14,9 +14,9 @@ import (
 
 var (
     def1 = ApplicationDefinition{
-        AppName:    "app-test",
-        AppVersion: "1.0.0-test",
-        AppDebug:   true,
+        Name:    "app-test",
+        Version: "1.0.0-test",
+        Debug:   true,
         Beans: []bean.BeanDefinition{
             {
                 Name:    "eventDispatcher",
@@ -52,9 +52,9 @@ var (
     }
 
     def2 = ApplicationDefinition{
-        AppName:    "app-test",
-        AppVersion: "1.0.0-test",
-        AppDebug:   true,
+        Name:    "app-test",
+        Version: "1.0.0-test",
+        Debug:   true,
         Beans: []bean.BeanDefinition{
             {
                 Name:    "eventDispatcher",

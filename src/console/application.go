@@ -44,11 +44,11 @@ func NewApplication(definition ApplicationDefinition, dispatcherName, errorName 
 // App 定义
 type ApplicationDefinition struct {
     // 应用名称
-    AppName string
+    Name string
     // 应用版本
-    AppVersion string
+    Version string
     // 应用调试
-    AppDebug bool
+    Debug bool
     // 依赖配置
     Beans []bean.BeanDefinition
     // 命令集合
@@ -125,7 +125,7 @@ func (t *Application) Run() {
                 return
             }
 
-            t.Error.Handle(err, t.AppDebug)
+            t.Error.Handle(err, t.Debug)
         }
     }()
 
@@ -359,8 +359,8 @@ func (t *Application) printCommandOptions() {
 
 // 版本号
 func (t *Application) version() {
-    appName := t.AppName
-    appVersion := t.AppVersion
+    appName := t.Name
+    appVersion := t.Version
     frameworkVersion := Version
     fmt.Println(fmt.Sprintf("%s %s, framework %s", appName, appVersion, frameworkVersion))
 }

@@ -16,10 +16,10 @@ func Init() {
     beans.Init()
 
     ApplicationDefinition = console.ApplicationDefinition{
-        AppName:    "mix",
-        AppVersion: commands2.FrameworkVersion,
-        AppDebug:   dotenv.Getenv("APP_DEBUG").Bool(false),
-        Beans:      beans.Beans,
-        Commands:   commands.Commands,
+        Name:     "mix",
+        Version:  commands2.FrameworkVersion,
+        Debug:    dotenv.Getenv("APP_DEBUG").Bool(false),
+        Beans:    beans.Beans,
+        Commands: commands.Commands,
     }
 }

@@ -38,7 +38,7 @@ func Error(err interface{}, trace ...bool) {
         panic(err)
     }
     if len(trace) == 0 {
-        trace = append(trace, console.App.AppDebug)
+        trace = append(trace, console.App.Debug)
     }
     console.App.Error.Handle(err, trace...)
 }
