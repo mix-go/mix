@@ -32,6 +32,13 @@ func Get(name string) interface{} {
 
 // 创建App
 func NewApplication(definition ApplicationDefinition, dispatcherName, errorName string) *Application {
+    // 旧版兼容处理
+    if definition.AppName != "" {
+        definition.Name = definition.AppName
+        definition.Version = definition.AppVersion
+        definition.Debug = definition.AppDebug
+    }
+    // App
     App = &Application{
         ApplicationDefinition: definition,
         DispatcherName:        dispatcherName,
@@ -49,6 +56,12 @@ type ApplicationDefinition struct {
     Version string
     // 应用调试
     Debug bool
+    // Deprecated: 废弃
+    AppName string
+    // Deprecated: 废弃
+    AppVersion string
+    // Deprecated: 废弃
+    AppDebug bool
     // 依赖配置
     Beans []bean.BeanDefinition
     // 命令集合
