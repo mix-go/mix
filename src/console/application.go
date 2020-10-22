@@ -138,7 +138,7 @@ func (t *Application) Run() {
                 return
             }
 
-            t.Error.Handle(err, t.Debug)
+            t.Error.Handle(err)
         }
     }()
 

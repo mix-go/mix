@@ -22,7 +22,7 @@ func NewUnsupportError(err error) *UnsupportError {
 }
 
 type Error interface {
-    Handle(err interface{}, trace ...bool)
+    Handle(err interface{})
 }
 
 type Logger interface {
@@ -34,23 +34,15 @@ type ErrorHandler struct {
     Dispatcher event.Dispatcher
 }
 
-func (t *ErrorHandler) Handle(err interface{}, trace ...bool) {
+func (t *ErrorHandler) Handle(err interface{}) {
     LastError = err
 
     // dispatch
     t.dispatch(err)
 
     // log
-    first := false
-    if len(trace) > 0 {
-        first = trace[0]
-    }
-    if first {
-        trace := debug.Stack()
-        t.Logger.ErrorStack(err, &trace)
-    } else {
-        t.Logger.ErrorStack(err, nil)
-    }
+    trace := debug.Stack()
+    t.Logger.ErrorStack(err, &trace)
 }
 
 func (t *ErrorHandler) dispatch(err interface{}) {

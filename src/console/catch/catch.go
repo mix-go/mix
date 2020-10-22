@@ -17,7 +17,7 @@ func Call(fn interface{}, args ...interface{}) {
     case reflect.Func:
         defer func() {
             if err := recover(); err != nil {
-                Error(err, true)
+                Error(err)
             }
         }()
         v := reflect.ValueOf(fn)
@@ -33,12 +33,9 @@ func Call(fn interface{}, args ...interface{}) {
 }
 
 // 捕获错误
-func Error(err interface{}, trace ...bool) {
+func Error(err interface{}) {
     if console.App == nil {
         panic(err)
     }
-    if len(trace) == 0 {
-        trace = append(trace, console.App.Debug)
-    }
-    console.App.Error.Handle(err, trace...)
+    console.App.Error.Handle(err)
 }
