@@ -34,13 +34,7 @@ func (t *WorkerTrait) Init(WorkerID int, workerPool chan JobQueue, wg *sync.Wait
 func (t *WorkerTrait) Run() {
     t.wg.Add(1)
     go func() {
-        defer func() {
-            t.wg.Done()
-            if err := recover(); err != nil {
-                t.Run()
-                panic(err)
-            }
-        }()
+        defer t.wg.Done()
         t.workerPool <- t.jobChan
         for {
             select {
