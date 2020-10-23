@@ -22,10 +22,6 @@ func (t *worker) Do(data interface{}) {
     workerMap.Store(t.WorkerID, 1)
 }
 
-func (t *worker) Error(err interface{}) {
-    // handle err
-}
-
 func newWorker() Worker {
     return &worker{}
 }
