@@ -233,7 +233,7 @@ go 程序的 err 返回设计虽然用户手动处理了大部分的错误，但
 - Main 主协程
    - `error` 当主协程中的抛出 panic 时，Application 会内部使用了 recover 将错误信息传递到 `error` 组件处理。
 - 子协程：子协程里的 panic 只能在子协程中使用 recover 捕获。
-   - `catch.Error` 可以手动在子协程通过 recover 将错误信息使用该方法传递给 `error` 组件处理，如：`catch.Error(err, true)` 第二个参数强制打印堆栈信息。
+   - `catch.Error` 可以手动在子协程通过 recover 将错误信息使用该方法传递给 `error` 组件处理，如：`catch.Error(err)` 该方法会打印堆栈信息。
    - `catch.Call` 更加省事的方法就是在开启子协程的位置使用该方法，如：`go foo()` 修改为 `go catch.Call(foo)`
 
 错误信息将会集中到 `error` 处理，该组件会调用 `logger` 组件打印到日志，logger 组件会将 panic 的错误堆栈信息打印到日志中，这样就不用怕忽略错误信息，并且 debug 将变得更加容易，该组件还会使用 `eventDispatcher` 组件调度 `console.HandleErrorEvent` 事件，用户可将错误信息自定接入 Sentry 等第三方平台。
@@ -268,7 +268,7 @@ console.App.Context
 由于依赖注入容器使用非常频繁，于是我们可以这样快速获取组件
 
 ```
-console.Get("logger").(*logrus.Logger)
+console.App.Get("logger").(*logrus.Logger)
 ```
 
 上面语句实际上等于这个
