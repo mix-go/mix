@@ -11,8 +11,8 @@ replace (
 
 require (
 	github.com/mix-go/bean v1.0.16
-	github.com/mix-go/console v1.0.17
+	github.com/mix-go/console v1.0.18
 	github.com/mix-go/dotenv v1.0.16
 	github.com/mix-go/event v1.0.16
-	github.com/mix-go/logrus v1.0.16
+	github.com/mix-go/logrus v1.0.18
 )

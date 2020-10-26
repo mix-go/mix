@@ -7,7 +7,7 @@ import (
 )
 
 var (
-    FrameworkVersion = "1.0.17"
+    FrameworkVersion = "1.0.18"
 )
 
 const logo = `             ___         
