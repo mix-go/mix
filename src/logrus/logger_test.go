@@ -24,7 +24,7 @@ func TestFile(t *testing.T) {
     logger := NewLogger()
 
     pwd, _ := os.Getwd()
-    file := NewFileWriter(fmt.Sprintf("%s/test.log", pwd), 7)
+    file := NewFileWriter(fmt.Sprintf("%s/test.log", pwd), 7, 200*1024*1024)
     writer := io.MultiWriter(os.Stdout, file)
     logger.SetOutput(writer)
 
