@@ -7,7 +7,7 @@ import (
 type Handler func(data interface{})
 
 type Worker interface {
-    Init(WorkerID int, workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler)
+    Init(workerID int, workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler)
     Run()
     Stop()
     Do(data interface{})
@@ -22,8 +22,8 @@ type WorkerTrait struct {
     quit       chan bool
 }
 
-func (t *WorkerTrait) Init(WorkerID int, workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler) {
-    t.WorkerID = WorkerID
+func (t *WorkerTrait) Init(workerID int, workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler) {
+    t.WorkerID = workerID
     t.workerPool = workerPool
     t.wg = wg
     t.handler = handler
