@@ -20,12 +20,13 @@ var (
 )
 
 // 上下文
-// Deprecated: 废弃，使用 Get 取代
+// Deprecated: 废弃，使用 App.Get 取代
 func Context() *bean.ApplicationContext {
     return App.Context
 }
 
 // 快速获取实例
+// Deprecated: 废弃，使用 App.Get 取代
 func Get(name string) interface{} {
     return App.Context.Get(name)
 }
@@ -128,6 +129,11 @@ func (t *Application) Init() {
     }
 }
 
+// 快速获取实例
+func (t *Application) Get(name string) interface{} {
+    return t.Context.Get(name)
+}
+
 // 执行
 func (t *Application) Run() {
     defer func() {
@@ -143,7 +149,7 @@ func (t *Application) Run() {
     }()
 
     if len(t.Commands) == 0 {
-        panic(errors.New("Command cannot be empty"))
+        panic(errors.New("command cannot be empty"))
     }
 
     command := argv.Command()
@@ -197,7 +203,7 @@ func (t *Application) call() {
             }
         }
         if d == nil {
-            panic(errors.New("Singleton command not found"))
+            panic(errors.New("singleton command not found"))
         }
     } else {
         for _, c := range t.Commands {
@@ -226,7 +232,7 @@ func (t *Application) call() {
 
 // 命令行选项效验
 func (t *Application) validateOptions() {
-    options := []OptionDefinition{}
+    var options []OptionDefinition
     if !t.Singleton {
         for _, v := range t.Commands {
             if v.Name == argv.Command() {
@@ -246,7 +252,7 @@ func (t *Application) validateOptions() {
         return
     }
 
-    flags := []string{}
+    var flags []string
     for _, o := range options {
         for _, v := range o.Names {
             if len(v) == 1 {
@@ -333,7 +339,7 @@ func (t *Application) printCommands() {
 
 // 打印命令选项
 func (t *Application) printCommandOptions() {
-    options := []OptionDefinition{}
+    var options []OptionDefinition
     if !t.Singleton {
         for _, v := range t.Commands {
             if v.Name == argv.Command() {
@@ -356,7 +362,7 @@ func (t *Application) printCommandOptions() {
     fmt.Println("")
     fmt.Println("Command Options:")
     for _, o := range options {
-        flags := []string{}
+        var flags []string
         for _, v := range o.Names {
             if len(v) == 1 {
                 flags = append(flags, fmt.Sprintf("-%s", v))
