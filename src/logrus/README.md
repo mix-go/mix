@@ -41,11 +41,11 @@ INFO[2020-09-18 18:36:23.342]hello.go:16 This is the content
 
 - 同时配置  `os.Stdout` 与 `io.Writer` 输出
 
->[info] NewFileWriter(filename string, maxFiles int) io.Writer
+>[info] NewFileWriter(filename string, count uint, size int64) *rotatelogs.RotateLogs
 
 ~~~
 logger := logrus.NewLogger()
-file := logrus.NewFileWriter("/tmp/logs/test.log", 7)
+file := logrus.NewFileWriter("/tmp/logs/test.log", 7, 500*1024*1024)
 writer := io.MultiWriter(os.Stdout, file)
 logger.SetOutput(writer)
 ~~~
