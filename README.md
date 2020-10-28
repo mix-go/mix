@@ -22,7 +22,7 @@
 
 ## Mix Go 是什么
 
-Mix Go 是混合型高性能 Go 框架，可以开发 `console`, `api`, `web` 等各种项目，该框架改造整合了 `gin`, `gorm`, `logrus` 等多个流行组件，并且引入了依赖注入、控制反转、事件驱动等高级特征。
+Mix Go 是混合型高性能 Go 框架，该框架改造整合了 `gin`, `gorm`, `logrus` 等多个流行组件，可以开发 `console`, `api`, `web` 等各种项目，并且引入了依赖注入、控制反转、事件驱动等高级特征。
 
 ## 与其他 Go 框架的差别
 
@@ -40,7 +40,7 @@ Mix Go 是混合型高性能 Go 框架，可以开发 `console`, `api`, `web` �
 
 ## 与 Mix PHP 的关系
 
-该框架与 [MixPHP](https://github.com/mix-php/mix) 设计哲学几乎完全一致，PHP 的用户可以非常容易的切换到 MixGo 进行开发，达到学一会二的效果，OpenMix 可能是现在唯一一个打造跨语言框架的开源机构。
+该框架与 [MixPHP](https://github.com/mix-php/mix) 设计哲学几乎完全一致，PHP 的用户可以非常容易的切换到 MixGo 进行开发，达到学一会二的效果，[OpenMix](https://openmix.org) 可能是现在唯一一个打造跨语言框架的开源机构。
 
 ## 微服务
 
