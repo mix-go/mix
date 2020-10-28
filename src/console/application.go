@@ -290,12 +290,12 @@ func (t *Application) globalHelp() {
         fg = " [OPTIONS] COMMAND"
     }
     fmt.Println(fmt.Sprintf("Usage: %s%s [opt...]", program, fg))
-    t.printGlobalOptions()
     if !t.Singleton {
         t.printCommands()
     } else {
         t.printCommandOptions()
     }
+    t.printGlobalOptions()
     fmt.Println("")
     fg = ""
     if !t.Singleton {
