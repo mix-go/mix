@@ -20,16 +20,16 @@ go get -u github.com/mix-go/xfmt
 
 ## Usage
 
-- 支持的方法
+- 支持的方法，与 `fmt` 系统库完全一致
 
-  - `Sprintf(depth int, format string, args ...interface{}) string` 
-  - `Sprint(depth int, args ...interface{}) string` 
-  - `Sprintln(depth int, args ...interface{}) string` 
-  - `Printf(depth int, format string, args ...interface{})` 
-  - `Print(depth int, args ...interface{})` 
-  - `Println(depth int, args ...interface{})` 
+  - `Sprintf(format string, args ...interface{}) string` 
+  - `Sprint(args ...interface{}) string` 
+  - `Sprintln(args ...interface{}) string` 
+  - `Printf(format string, args ...interface{})` 
+  - `Print(args ...interface{})` 
+  - `Println(args ...interface{})` 
 
-- 支持 `Tag` 忽略某些字段
+- 支持 `Tag` 忽略某个引用字段
 
 ```
 type Foo struct {
@@ -47,7 +47,7 @@ type Level3 struct {
 }
 
 type Level2 struct {
-    Level3 *Level3
+    Level3 *Level3 `xfmt:"-"`
     Name   string
 }
 
@@ -61,23 +61,19 @@ type Level1 struct {
 创建变量
 
 ```
-l3 := Level3{name: "Level3"}
-l2 := Level2{name: "Level2", Level3: &l3}
-l1 := Level1{name: "Level1", Level2: &l2, Level2_1: &l2}
+l3 := Level3{Name: "Level3"}
+l2 := Level2{Name: "Level2", Level3: &l3}
+l1 := Level1{Name: "Level1", Level2: &l2, Level2_1: &l2}
 ```
 
 打印
 
 ```
-fmt.Println(xfmt.Sprintf(1, "%+v", l1))
-fmt.Println(xfmt.Sprintf(2, "%+v", l1))
-fmt.Println(xfmt.Sprintf(3, "%+v", l1))
+fmt.Println(xfmt.Sprintf("%+v", l1))
 ```
 
 ```
-{Name:Level1 Level2:0xc0000a2500 Level2_1:0xc0000a2500}
-{Name:Level1 Level2:0xc0000a2500:&{Level3:0xc000087000 Name:Level2} Level2_1:0xc0000a2500}
-{Name:Level1 Level2:0xc0000a2500:&{Level3:0xc000087000:&{Name:Level3} Name:Level2} Level2_1:0xc0000a2500}
+{Name:Level1 Level2:0xc00009c500:&{Level3:0xc00007f030 Name:Level2} Level2_1:0xc00009c500}
 ```
 
 ## License

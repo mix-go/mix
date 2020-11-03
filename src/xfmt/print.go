@@ -22,37 +22,37 @@ type pointer struct {
 }
 
 // Print
-func Print(depth int, args ...interface{}) {
-    fmt.Print(Sprintf(depth, format(args...), args...))
+func Print(args ...interface{}) {
+    fmt.Print(Sprintf(format(args...), args...))
 }
 
 // Println
-func Println(depth int, args ...interface{}) {
-    fmt.Println(Sprintf(depth, format(args...), args...))
+func Println(args ...interface{}) {
+    fmt.Println(Sprintf(format(args...), args...))
 }
 
 // Printf
-func Printf(depth int, format string, args ...interface{}) {
-    fmt.Print(Sprintf(depth, format, args...))
+func Printf(format string, args ...interface{}) {
+    fmt.Print(Sprintf(format, args...))
 }
 
 // Sprint
-func Sprint(depth int, args ...interface{}) string {
-    return Sprintf(depth, format(args...), args...)
+func Sprint(args ...interface{}) string {
+    return Sprintf(format(args...), args...)
 }
 
 // Sprintln
-func Sprintln(depth int, args ...interface{}) string {
-    return Sprintf(depth, format(args...)+"\n", args...)
+func Sprintln(args ...interface{}) string {
+    return Sprintf(format(args...)+"\n", args...)
 }
 
 // Sprintf
-func Sprintf(depth int, format string, args ...interface{}) string {
+func Sprintf(format string, args ...interface{}) string {
     str := fmt.Sprintf(format, args...) // 放在第一行可以起到效验的作用
 
     pointers := []pointer{}
     for _, v := range values(format, args...) {
-        pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth-1, v.Flag)...)
+        pointers = append(pointers, extract(reflect.ValueOf(v.Arg), v.Flag)...)
     }
 
     // 去重
@@ -153,11 +153,8 @@ func filter(format string, args ...interface{}) []value {
 }
 
 // 提取指针信息
-func extract(val reflect.Value, depth int, format string) []pointer {
+func extract(val reflect.Value, format string) []pointer {
     pointers := []pointer{}
-    if depth < 0 {
-        return pointers
-    }
     switch val.Kind() {
     case reflect.Ptr:
         elem := val.Elem()
@@ -170,7 +167,7 @@ func extract(val reflect.Value, depth int, format string) []pointer {
             Addr:   elem.Addr(),
         })
         for _, v := range values(format, elem.Interface()) {
-            pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth, v.Flag)...)
+            pointers = append(pointers, extract(reflect.ValueOf(v.Arg), v.Flag)...)
         }
         break
     case reflect.Struct:
@@ -183,13 +180,13 @@ func extract(val reflect.Value, depth int, format string) []pointer {
                 continue
             }
             for _, v := range values(format, val.Field(i).Interface()) {
-                pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth-1, v.Flag)...)
+                pointers = append(pointers, extract(reflect.ValueOf(v.Arg), v.Flag)...)
             }
         }
         break
     case reflect.Map, reflect.Slice, reflect.Array:
         for _, v := range values(format, val.Interface()) {
-            pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth-1, v.Flag)...)
+            pointers = append(pointers, extract(reflect.ValueOf(v.Arg), v.Flag)...)
         }
         break
     }
