@@ -39,6 +39,11 @@ type level6 struct {
     Array []*level5
 }
 
+type level7 struct {
+    Name   string
+    Level6 *level6 `xfmt:"-"`
+}
+
 func filterAddr(a string) string {
     reg, _ := regexp.Compile("0x[0-9a-z]*")
     return string(reg.ReplaceAll([]byte(a), []byte("")))
@@ -143,4 +148,17 @@ func TestStructMapArray(t *testing.T) {
     }
     a.Equal(filterAddr(Sprintf(2, "%v", x)), filterAddr("{level6 map[bar:0xc000049020:&{Level5} foo:0xc000049010:&{Level5}] [0xc000049030:&{Level5} 0xc000049040:&{Level5}]}"))
     a.Equal(filterAddr(Sprintf(2, "%v", &x)), filterAddr("&{level6 map[bar:0xc000049020:&{Level5} foo:0xc000049010:&{Level5}] [0xc000049030:&{Level5} 0xc000049040:&{Level5}]}"))
+}
+
+func TestTag(t *testing.T) {
+    a := assert.New(t)
+
+    l6 := level6{
+        Name: "level6",
+    }
+    l7 := level7{
+        Name:   "Level7",
+        Level6: &l6,
+    }
+    a.Equal(filterAddr(Sprintf(2, "%+v", l7)), filterAddr("{Name:Level7 Level6:0xc00007f2f0}"))
 }

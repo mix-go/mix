@@ -178,6 +178,10 @@ func extract(val reflect.Value, depth int, format string) []pointer {
             if !val.Field(i).CanInterface() {
                 continue
             }
+            tag := val.Type().Field(i).Tag.Get("xfmt")
+            if tag == "-" || tag == "_" {
+                continue
+            }
             for _, v := range values(format, val.Field(i).Interface()) {
                 pointers = append(pointers, extract(reflect.ValueOf(v.Arg), depth-1, v.Flag)...)
             }

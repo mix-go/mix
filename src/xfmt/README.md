@@ -29,6 +29,14 @@ go get -u github.com/mix-go/xfmt
   - `Print(depth int, args ...interface{})` 
   - `Println(depth int, args ...interface{})` 
 
+- 支持 `Tag` 忽略某些字段
+
+```
+type Foo struct {
+    Bar *Bar `xfmt:"-"`
+}
+```
+
 - 使用
 
 包含指针的结构体
