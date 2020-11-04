@@ -14,6 +14,7 @@ import (
 var (
     Console = "console"
     API     = "api"
+    gRPC    = "grpc"
 )
 
 type NewCommand struct {
@@ -49,17 +50,17 @@ func (t *NewCommand) NewProject(name, typ string) {
         return
     }
 
-    sdir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/mix-%s-skeleton@%s", os.Getenv("GOPATH"), typ, ver)
+    sdir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/%s-skeleton@%s", os.Getenv("GOPATH"), typ, ver)
     if _, err := os.Stat(sdir); err != nil {
-        fmt.Println(fmt.Sprintf("Skeleton '%s' local not found, exec 'go get github.com/mix-go/mix-%s-skeleton@%s', please wait ...", typ, typ, ver))
-        cmd := exec.Command("go", "get", fmt.Sprintf("github.com/mix-go/mix-%s-skeleton@%s", typ, ver))
+        fmt.Println(fmt.Sprintf("Skeleton '%s' local not found, exec 'go get github.com/mix-go/%s-skeleton@%s', please wait ...", typ, typ, ver))
+        cmd := exec.Command("go", "get", fmt.Sprintf("github.com/mix-go/%s-skeleton@%s", typ, ver))
         err = cmd.Run()
         if err != nil {
             fmt.Println(fmt.Sprintf("Exec failed: %s", err.Error()))
             fmt.Println("Please try again, or manually execute 'go get ***'")
             return
         }
-        _ = os.Remove(fmt.Sprintf("%s/bin/mix-%s-skeleton", os.Getenv("GOPATH"), typ))
+        _ = os.Remove(fmt.Sprintf("%s/bin/%s-skeleton", os.Getenv("GOPATH"), typ))
     } else {
         fmt.Println(fmt.Sprintf("Skeleton '%s' local found", typ))
     }
@@ -76,7 +77,7 @@ func (t *NewCommand) NewProject(name, typ string) {
     fmt.Println(" > ok")
 
     fmt.Print(" - Rewrite package name")
-    if err := logic.ReplaceName(dest, fmt.Sprintf("github.com/mix-go/mix-%s-skeleton", typ), name); err != nil {
+    if err := logic.ReplaceName(dest, fmt.Sprintf("github.com/mix-go/%s-skeleton", typ), name); err != nil {
         panic(errors.New("Replace name failed"))
     }
     if err := logic.ReplaceMod(dest); err != nil {
@@ -94,4 +95,13 @@ type APICommand struct {
 func (t *APICommand) Main() {
     name := flag.Match("n", "name").String("hello")
     t.NewProject(name, API)
+}
+
+type GrpcCommand struct {
+    NewCommand
+}
+
+func (t *GrpcCommand) Main() {
+    name := flag.Match("n", "name").String("hello")
+    t.NewProject(name, gRPC)
 }

@@ -38,5 +38,16 @@ func init() {
             },
             Command: &commands.APICommand{},
         },
+        console.CommandDefinition{
+            Name:  "grpc",
+            Usage: "\tCreate a gRPC application",
+            Options: []console.OptionDefinition{
+                {
+                    Names: []string{"n", "name"},
+                    Usage: "Project name",
+                },
+            },
+            Command: &commands.GrpcCommand{},
+        },
     )
 }
