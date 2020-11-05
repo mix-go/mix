@@ -19,27 +19,8 @@ var (
     LastError interface{}
 )
 
-// 上下文
-// Deprecated: 废弃，使用 App.Get 取代
-func Context() *bean.ApplicationContext {
-    return App.Context
-}
-
-// 快速获取实例
-// Deprecated: 废弃，使用 App.Get 取代
-func Get(name string) interface{} {
-    return App.Context.Get(name)
-}
-
 // 创建App
 func NewApplication(definition ApplicationDefinition, dispatcherName, errorName string) *Application {
-    // 旧版兼容处理
-    if definition.AppName != "" {
-        definition.Name = definition.AppName
-        definition.Version = definition.AppVersion
-        definition.Debug = definition.AppDebug
-    }
-    // App
     App = &Application{
         ApplicationDefinition: definition,
         DispatcherName:        dispatcherName,
@@ -57,12 +38,6 @@ type ApplicationDefinition struct {
     Version string
     // 应用调试
     Debug bool
-    // Deprecated: 废弃
-    AppName string
-    // Deprecated: 废弃
-    AppVersion string
-    // Deprecated: 废弃
-    AppDebug bool
     // 依赖配置
     Beans []bean.BeanDefinition
     // 命令集合
