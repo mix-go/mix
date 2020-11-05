@@ -139,14 +139,16 @@ go get -u github.com/mix-go/mix
 $ mix
 Usage: mix [OPTIONS] COMMAND [opt...]
 
-Global Options:
-  -h, --help	Print usage
-  -v, --version	Print version information
-
 Commands:
-  version	Prints the current Mix Go version
-  new		Create a console application
-  api		Create a api application
+  version       Prints the current Mix Go version
+  new           Create a console application
+  api           Create a api application
+  web           Create a web application
+  grpc          Create a gRPC application
+
+Global Options:
+  -h, --help    Print usage
+  -v, --version Print version information
 
 
 Run 'mix COMMAND --help' for more information on a command.
