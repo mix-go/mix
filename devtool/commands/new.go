@@ -29,11 +29,11 @@ func (t *NewCommand) Main() {
 func (t *NewCommand) NewProject(name, typ string) {
     ver := ""
     switch typ {
-    case Console, API:
+    case Console, API, Web, gRPC:
         ver = fmt.Sprintf("v%s", FrameworkVersion)
         break
     default:
-        fmt.Println("Type error, only be console, api, web")
+        fmt.Println("Type error, only be console, api, web, grpc")
         return
     }
 

@@ -14,7 +14,7 @@ var (
     // 全局APP
     App *Application
     // 版本号
-    Version = "1.0.19"
+    Version = "1.0.20"
     // 最后的错误
     LastError interface{}
 )
