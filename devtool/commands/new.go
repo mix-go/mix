@@ -14,6 +14,7 @@ import (
 var (
     Console = "console"
     API     = "api"
+    Web     = "web"
     gRPC    = "grpc"
 )
 
@@ -95,6 +96,15 @@ type APICommand struct {
 func (t *APICommand) Main() {
     name := flag.Match("n", "name").String("hello")
     t.NewProject(name, API)
+}
+
+type WebCommand struct {
+    NewCommand
+}
+
+func (t *WebCommand) Main() {
+    name := flag.Match("n", "name").String("hello")
+    t.NewProject(name, Web)
 }
 
 type GrpcCommand struct {

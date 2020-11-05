@@ -170,6 +170,18 @@ mix new --name=hello
 mix api --name=hello
 ~~~
 
+- web (含websocket)
+
+~~~
+mix web --name=hello
+~~~
+
+- grpc
+
+~~~
+mix grpc --name=hello
+~~~
+
 ## License
 
 Apache License Version 2.0, http://www.apache.org/licenses/
