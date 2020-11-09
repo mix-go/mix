@@ -7,22 +7,27 @@ import (
     "strings"
 )
 
+// 命令行参数信息
 var (
     options map[string]string
 )
 
+// 初始化
 func init() {
     Parse()
 }
 
+// 解析
 func Parse() {
     options = newOptions()
 }
 
+// 获取全部命令行参数信息
 func Options() map[string]string {
     return options
 }
 
+// 创建全部命令行参数信息
 func newOptions() map[string]string {
     ops := make(map[string]string, 0)
     s := 1

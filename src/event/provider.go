@@ -2,10 +2,12 @@ package event
 
 import "fmt"
 
+// 监听供应器
 type ListenerProvider struct {
     EventListeners map[string][]Listener
 }
 
+// 获取监听器列表
 func (t *ListenerProvider) getListenersForEvent(event Event) []func(event Event) {
     typ := fmt.Sprintf("%T", event)
     iterable := []func(event Event){}
@@ -19,6 +21,7 @@ func (t *ListenerProvider) getListenersForEvent(event Event) []func(event Event)
     return iterable
 }
 
+// 创建监听供应器
 func newListenerProvider(listeners ...Listener) ListenerProvider {
     eventListeners := map[string][]Listener{}
     for _, listener := range listeners {

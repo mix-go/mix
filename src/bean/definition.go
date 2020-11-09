@@ -5,6 +5,7 @@ import (
     "reflect"
 )
 
+// 依赖场景类型
 const (
     PROTOTYPE = "prototype"
     SINGLETON = "singleton"
@@ -43,10 +44,12 @@ func NewReference(name string) Reference {
     return Reference{Name: name}
 }
 
+// 返回错误
 type ReturnError struct {
     error
 }
 
+// 创建返回错误
 func NewReturnError(err error) *ReturnError {
     return &ReturnError{err}
 }

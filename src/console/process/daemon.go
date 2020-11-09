@@ -39,6 +39,7 @@ func Daemon() {
     }
 }
 
+// 获取协程id
 func getgid() uint64 {
     b := make([]byte, 64)
     runtime.Stack(b, false)

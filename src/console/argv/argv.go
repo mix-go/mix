@@ -6,28 +6,34 @@ import (
     "regexp"
 )
 
+// 命令行信息
 var (
     prog program
     cmd  string
 )
 
+// 初始化
 func init() {
     Parse()
 }
 
+// 解析命令行参数
 func Parse() {
     prog = newProgram()
     cmd = newCommand()
 }
 
+// 返回命令行程序信息
 func Program() *program {
     return &prog
 }
 
+// 返回当前执行的命令信息
 func Command() string {
     return cmd
 }
 
+// 命令行程序信息
 type program struct {
     Path    string
     AbsPath string
@@ -35,6 +41,7 @@ type program struct {
     File    string
 }
 
+// 创建命令行程序信息
 func newProgram() program {
     abspath, err := filepath.Abs(os.Args[0])
     if err != nil {
@@ -49,6 +56,7 @@ func newProgram() program {
     }
 }
 
+// 创建当前执行的命令信息
 func newCommand() string {
     cmd := ""
     if len(os.Args) <= 1 {
