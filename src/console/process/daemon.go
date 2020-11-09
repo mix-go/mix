@@ -12,7 +12,7 @@ import (
 
 // 使当前进程蜕变为一个守护进程
 func Daemon() {
-    ok := false
+    var ok bool
     switch runtime.GOOS {
     case "darwin", "linux":
         ok = true
