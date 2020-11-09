@@ -153,7 +153,7 @@ func (t *Application) Run() {
             break
         }
         p := argv.Program().Path
-        panic(NewNotFoundError(errors.New(fmt.Sprintf("flag provided but not defined: '%s', see '%s --help'.", f, p))))
+        panic(NewNotFoundError(fmt.Errorf("flag provided but not defined: '%s', see '%s --help'.", f, p)))
     } else if flag.Match("help").Bool(false) {
         t.commandHelp()
         return
@@ -189,7 +189,7 @@ func (t *Application) call() {
         }
     }
     if d == nil {
-        panic(NewNotFoundError(errors.New(fmt.Sprintf("'%s' is not command, see '%s --help'.", command, argv.Program().Path))))
+        panic(NewNotFoundError(fmt.Errorf("'%s' is not command, see '%s --help'.", command, argv.Program().Path)))
     }
 
     // 获取命令
@@ -252,7 +252,7 @@ func (t *Application) validateOptions() {
             if c != "" {
                 c = fmt.Sprintf(" %s", c)
             }
-            panic(NewNotFoundError(errors.New(fmt.Sprintf("flag provided but not defined: '%s', see '%s%s --help'.", f, p, c))))
+            panic(NewNotFoundError(fmt.Errorf("flag provided but not defined: '%s', see '%s%s --help'.", f, p, c)))
         }
     }
 }
