@@ -5,43 +5,43 @@ import (
 	"runtime/debug"
 )
 
-// 未找到错误
+// NotFoundError 未找到错误
 type NotFoundError struct {
 	error
 }
 
-// 创建未找到错误
+// NewNotFoundError 创建未找到错误
 func NewNotFoundError(err error) *NotFoundError {
 	return &NotFoundError{err}
 }
 
-// 不支持错误
+// UnsupportError 不支持错误
 type UnsupportError struct {
 	error
 }
 
-// 创建不支持错误
+// NewUnsupportError 创建不支持错误
 func NewUnsupportError(err error) *UnsupportError {
 	return &UnsupportError{err}
 }
 
-// 错误接口
+// Error 错误接口
 type Error interface {
 	Handle(err interface{})
 }
 
-// 日志接口
+// Logger 日志接口
 type Logger interface {
 	ErrorStack(err interface{}, stack *[]byte)
 }
 
-// 错误处理结构体
+// ErrorHandler 错误处理结构体
 type ErrorHandler struct {
 	Logger     Logger
 	Dispatcher event.Dispatcher
 }
 
-// 处理错误
+// Handle 处理错误
 func (t *ErrorHandler) Handle(err interface{}) {
 	LastError = err
 
@@ -64,7 +64,7 @@ func (t *ErrorHandler) dispatch(err interface{}) {
 	t.Dispatcher.Dispatch(e)
 }
 
-// 创建错误对象
+// NewError 创建错误对象
 func NewError(logger Logger) Error {
 	return &ErrorHandler{
 		Logger: logger,

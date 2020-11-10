@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-// 使当前进程蜕变为一个守护进程
+// Daemon 使当前进程蜕变为一个守护进程
 func Daemon() {
 	var ok bool
 	switch runtime.GOOS {

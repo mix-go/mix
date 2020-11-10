@@ -11,15 +11,15 @@ import (
 )
 
 var (
-	// 全局APP
+	// App 全局APP
 	App *Application
-	// 版本号
+	// Version 版本号
 	Version = "1.0.21"
-	// 最后的错误
+	// LastError 最后的错误
 	LastError interface{}
 )
 
-// 创建App
+// NewApplication 创建App
 func NewApplication(definition ApplicationDefinition, dispatcherName, errorName string) *Application {
 	App = &Application{
 		ApplicationDefinition: definition,
@@ -30,7 +30,7 @@ func NewApplication(definition ApplicationDefinition, dispatcherName, errorName 
 	return App
 }
 
-// App 定义
+// ApplicationDefinition App定义
 type ApplicationDefinition struct {
 	// 应用名称
 	Name string
@@ -44,7 +44,7 @@ type ApplicationDefinition struct {
 	Commands []CommandDefinition
 }
 
-// App
+// Application
 type Application struct {
 	// App 定义
 	ApplicationDefinition
@@ -62,12 +62,12 @@ type Application struct {
 	Singleton bool
 }
 
-// 命令
+// Command 命令接口
 type Command interface {
 	Main()
 }
 
-// 命令定义
+// CommandDefinition 命令定义
 type CommandDefinition struct {
 	// 命令名称
 	Name string
@@ -81,13 +81,13 @@ type CommandDefinition struct {
 	Singleton bool
 }
 
-// 命令选项
+// OptionDefinition 命令选项
 type OptionDefinition struct {
 	Names []string
 	Usage string
 }
 
-// 初始化
+// Init 初始化
 func (t *Application) Init() {
 	t.Context = bean.NewApplicationContext(t.Beans)
 
@@ -104,12 +104,12 @@ func (t *Application) Init() {
 	}
 }
 
-// 快速获取实例
+// Get 快速获取实例
 func (t *Application) Get(name string) interface{} {
 	return t.Context.Get(name)
 }
 
-// 执行
+// Run 执行
 func (t *Application) Run() {
 	defer func() {
 		if err := recover(); err != nil {

@@ -2,7 +2,7 @@ package event
 
 import "fmt"
 
-// 监听供应器
+// ListenerProvider 监听供应器
 type ListenerProvider struct {
 	EventListeners map[string][]Listener
 }

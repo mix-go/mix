@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-// Use example: `go catch.Call`
+// Call Use example: `go catch.Call`
 // 执行方法
 // 捕获 panic，错误会统一交给 error 组件处理
 func Call(fn interface{}, args ...interface{}) {
@@ -32,7 +32,7 @@ func Call(fn interface{}, args ...interface{}) {
 	}
 }
 
-// 捕获错误
+// Error 捕获错误
 func Error(err interface{}) {
 	if console.App == nil {
 		panic(err)
