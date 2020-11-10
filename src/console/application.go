@@ -148,7 +148,7 @@ func (t *Application) Run() {
 		}
 
 		f := ""
-		for k, _ := range options {
+		for k := range options {
 			f = k
 			break
 		}
@@ -245,7 +245,7 @@ func (t *Application) validateOptions() {
 		}
 		return false
 	}
-	for f, _ := range flag.Options() {
+	for f := range flag.Options() {
 		if !inArray(f, flags) {
 			p := argv.Program().Path
 			c := argv.Command()

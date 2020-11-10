@@ -108,7 +108,7 @@ func merge(bd *BeanDefinition, fields Fields, args ConstructorArgs) *BeanDefinit
 				continue
 			}
 			ok := false
-			for sk, _ := range bd.ConstructorArgs {
+			for sk := range bd.ConstructorArgs {
 				if sk == k {
 					ok = true
 				}
