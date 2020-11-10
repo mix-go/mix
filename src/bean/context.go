@@ -65,19 +65,19 @@ func (t *ApplicationContext) GetBean(name string, fields Fields, args Constructo
 }
 
 // Get 快速获取实例
-func (c *ApplicationContext) Get(name string) interface{} {
-	return c.GetBean(name, Fields{}, ConstructorArgs{})
+func (t *ApplicationContext) Get(name string) interface{} {
+	return t.GetBean(name, Fields{}, ConstructorArgs{})
 }
 
 // Has 判断组件是否存在
-func (c *ApplicationContext) Has(name string) (ok bool) {
+func (t *ApplicationContext) Has(name string) (ok bool) {
 	ok = true
 	defer func() {
 		if err := recover(); err != nil {
 			ok = false
 		}
 	}()
-	c.GetBeanDefinition(name)
+	t.GetBeanDefinition(name)
 	return ok
 }
 

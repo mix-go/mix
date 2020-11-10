@@ -17,12 +17,12 @@ func init() {
 	Parse()
 }
 
-// 解析
+// Parse 解析
 func Parse() {
 	options = newOptions()
 }
 
-// 获取全部命令行参数信息
+// Options 获取全部命令行参数信息
 func Options() map[string]string {
 	return options
 }
