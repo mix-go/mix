@@ -17,18 +17,18 @@ func init() {
 	Parse()
 }
 
-// 解析命令行参数
+// Parse 解析命令行参数
 func Parse() {
 	prog = newProgram()
 	cmd = newCommand()
 }
 
-// 返回命令行程序信息
+// Program 返回命令行程序信息
 func Program() *program {
 	return &prog
 }
 
-// 返回当前执行的命令信息
+// Command 返回当前命令信息
 func Command() string {
 	return cmd
 }
@@ -56,7 +56,7 @@ func newProgram() program {
 	}
 }
 
-// 创建当前执行的命令信息
+// 创建当前命令信息
 func newCommand() string {
 	cmd := ""
 	if len(os.Args) <= 1 {

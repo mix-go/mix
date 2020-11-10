@@ -4,7 +4,7 @@ import (
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 )
 
-// 创建文件日志处理
+// NewFileWriter 创建文件日志处理
 // count, size == 0 时不轮转
 func NewFileWriter(filename string, count uint, size int64) *rotatelogs.RotateLogs {
 	options := []rotatelogs.Option{

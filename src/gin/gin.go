@@ -2,7 +2,7 @@ package gin
 
 import "github.com/gin-gonic/gin"
 
-// New
+// New 创建引擎
 func New(routeDefinitionCallbacks ...func(router *gin.Engine)) *gin.Engine {
 	engine := gin.New()
 	for _, callback := range routeDefinitionCallbacks {
@@ -20,7 +20,7 @@ const (
 	TestMode = "test"
 )
 
-// SetMode
+// SetMode 设置执行模式
 func SetMode(value string) {
 	gin.SetMode(value)
 }

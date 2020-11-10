@@ -11,7 +11,7 @@ type flagValue struct {
 	exist bool
 }
 
-// String
+// String 转换为字符串
 func (t *flagValue) String(val ...string) string {
 	d := ""
 	if len(val) >= 1 {
@@ -25,7 +25,7 @@ func (t *flagValue) String(val ...string) string {
 	return t.v
 }
 
-// Bool
+// Bool 转换为布尔
 func (t *flagValue) Bool(val ...bool) bool {
 	d := false
 	if len(val) >= 1 {
@@ -44,7 +44,7 @@ func (t *flagValue) Bool(val ...bool) bool {
 	}
 }
 
-// Int64
+// Int64 转换为整型
 func (t *flagValue) Int64(val ...int64) int64 {
 	d := int64(0)
 	if len(val) >= 1 {
@@ -59,7 +59,7 @@ func (t *flagValue) Int64(val ...int64) int64 {
 	return v
 }
 
-// Float64
+// Float64 转换为浮点
 func (t *flagValue) Float64(val ...float64) float64 {
 
 	d := float64(0)

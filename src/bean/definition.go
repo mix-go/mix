@@ -11,7 +11,7 @@ const (
 	SINGLETON = "singleton"
 )
 
-// 创建反射
+// NewReflect 创建反射
 func NewReflect(i interface{}) func() reflect.Value {
 	switch reflect.TypeOf(i).Kind() {
 	case reflect.Func:
@@ -28,33 +28,33 @@ func NewReflect(i interface{}) func() reflect.Value {
 	return nil
 }
 
-// 构造器参数
+// ConstructorArgs 构造器参数
 type ConstructorArgs []interface{}
 
-// 字段
+// Fields 字段
 type Fields map[string]interface{}
 
-// 引用
+// Reference 引用
 type Reference struct {
 	Name string
 }
 
-// 创建引用
+// NewReference 创建引用
 func NewReference(name string) Reference {
 	return Reference{Name: name}
 }
 
-// 返回错误
+// ReturnError 返回错误
 type ReturnError struct {
 	error
 }
 
-// 创建返回错误
+// NewReturnError 创建返回错误
 func NewReturnError(err error) *ReturnError {
 	return &ReturnError{err}
 }
 
-// 定义
+// BeanDefinition 依赖定义
 type BeanDefinition struct {
 	Name            string
 	Reflect         func() reflect.Value
@@ -65,7 +65,7 @@ type BeanDefinition struct {
 	context         *ApplicationContext
 }
 
-// 刷新
+// Refresh 刷新
 func (t *BeanDefinition) Refresh() {
 	if t.Scope != SINGLETON {
 		return

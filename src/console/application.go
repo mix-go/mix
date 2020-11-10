@@ -19,7 +19,7 @@ var (
 	LastError interface{}
 )
 
-// NewApplication 创建App
+// NewApplication 创建应用
 func NewApplication(definition ApplicationDefinition, dispatcherName, errorName string) *Application {
 	App = &Application{
 		ApplicationDefinition: definition,
@@ -30,7 +30,7 @@ func NewApplication(definition ApplicationDefinition, dispatcherName, errorName 
 	return App
 }
 
-// ApplicationDefinition App定义
+// ApplicationDefinition 应用定义
 type ApplicationDefinition struct {
 	// 应用名称
 	Name string
@@ -44,7 +44,7 @@ type ApplicationDefinition struct {
 	Commands []CommandDefinition
 }
 
-// Application
+// Application 应用
 type Application struct {
 	// App 定义
 	ApplicationDefinition

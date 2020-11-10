@@ -4,8 +4,10 @@ import (
 	"sync"
 )
 
+// Handler 处理器
 type Handler func(data interface{})
 
+// Worker 工作者接口
 type Worker interface {
 	Init(workerID int, workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler)
 	Run()
@@ -13,6 +15,7 @@ type Worker interface {
 	Do(data interface{})
 }
 
+// WorkerTrait 工作者特征
 type WorkerTrait struct {
 	WorkerID   int
 	workerPool chan JobQueue
@@ -22,6 +25,7 @@ type WorkerTrait struct {
 	quit       chan bool
 }
 
+// Init 初始化
 func (t *WorkerTrait) Init(workerID int, workerPool chan JobQueue, wg *sync.WaitGroup, handler Handler) {
 	t.WorkerID = workerID
 	t.workerPool = workerPool
@@ -31,6 +35,7 @@ func (t *WorkerTrait) Init(workerID int, workerPool chan JobQueue, wg *sync.Wait
 	t.quit = make(chan bool)
 }
 
+// Run 执行
 func (t *WorkerTrait) Run() {
 	t.wg.Add(1)
 	go func() {
@@ -51,6 +56,7 @@ func (t *WorkerTrait) Run() {
 	}()
 }
 
+// Stop 停止
 func (t *WorkerTrait) Stop() {
 	go func() {
 		t.quit <- true

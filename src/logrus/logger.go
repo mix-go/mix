@@ -7,11 +7,13 @@ import (
 	"runtime"
 )
 
+// Logger 日志处理器
 type Logger struct {
 	*l.Logger
 	SupportGORM bool
 }
 
+// ErrorStack 错误堆栈处理
 func (t *Logger) ErrorStack(err interface{}, stack *[]byte) {
 	if stack != nil {
 		t.Logger.Errorf(fmt.Sprintf("%s\n%s", err, string(*stack)))
@@ -20,6 +22,7 @@ func (t *Logger) ErrorStack(err interface{}, stack *[]byte) {
 	}
 }
 
+// Print 重写打印，为了支持 grom
 func (t *Logger) Print(args ...interface{}) {
 	// 为了对接 grom 的 logger，让 sql 日志更加美观，让参数使用空格分隔
 	if t.SupportGORM {
@@ -32,6 +35,7 @@ func (t *Logger) Print(args ...interface{}) {
 	t.Logger.Print(args...)
 }
 
+// NewLogger 创建日志处理器
 func NewLogger() *Logger {
 	logger := l.New()
 	logger.ReportCaller = true // 显示调用信息

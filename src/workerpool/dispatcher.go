@@ -7,10 +7,10 @@ import (
 	"sync"
 )
 
-// JobQueue
+// JobQueue 任务队列
 type JobQueue chan interface{}
 
-// Dispatcher
+// Dispatcher 调度器
 type Dispatcher struct {
 	WorkerFunc     reflect.Value
 	WorkerFuncArgs []reflect.Value
@@ -22,7 +22,7 @@ type Dispatcher struct {
 	quit           chan bool
 }
 
-// Run
+// Run 执行
 func (t *Dispatcher) Run() {
 	for i := 0; i < t.MaxWorkers; i++ {
 		w := t.WorkerFunc.Call(t.WorkerFuncArgs)[0].Interface().(Worker)
@@ -54,7 +54,7 @@ func (t *Dispatcher) dispatch() {
 	}()
 }
 
-// Stop
+// Stop 停止
 func (t *Dispatcher) Stop() {
 	go func() {
 		t.quit <- true
@@ -65,7 +65,7 @@ func (t *Dispatcher) wait() {
 	t.wg.Wait()
 }
 
-// NewDispatcher
+// NewDispatcher 创建调度器
 func NewDispatcher(jobQueue chan interface{}, maxWorkers int, workerFunc interface{}, args ...interface{}) *Dispatcher {
 	if reflect.TypeOf(workerFunc).Kind() != reflect.Func {
 		panic(errors.New("WorkerFunc is not a Func type"))
