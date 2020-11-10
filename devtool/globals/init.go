@@ -1,11 +1,11 @@
 package globals
 
 import (
-    "os"
+	"os"
 )
 
 func Init() {
-    // 日志配置
-    logger := Logger()
-    logger.SetOutput(os.Stdout)
+	// 日志配置
+	logger := Logger()
+	logger.SetOutput(os.Stdout)
 }

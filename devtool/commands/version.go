@@ -1,13 +1,13 @@
 package commands
 
 import (
-    "fmt"
-    "runtime"
-    "strings"
+	"fmt"
+	"runtime"
+	"strings"
 )
 
 var (
-    FrameworkVersion = "1.0.21"
+	FrameworkVersion = "1.0.21"
 )
 
 const logo = `             ___         
@@ -22,9 +22,9 @@ type VersionCommand struct {
 }
 
 func (t *VersionCommand) Main() {
-    fmt.Println(strings.Replace(logo, "*", "`", -1))
-    fmt.Println("")
-    fmt.Println(fmt.Sprintf("System      Name:      %s", runtime.GOOS))
-    fmt.Println(fmt.Sprintf("Go          Version:   %s", runtime.Version()[2:]))
-    fmt.Println(fmt.Sprintf("Framework   Version:   %s", FrameworkVersion))
+	fmt.Println(strings.Replace(logo, "*", "`", -1))
+	fmt.Println("")
+	fmt.Println(fmt.Sprintf("System      Name:      %s", runtime.GOOS))
+	fmt.Println(fmt.Sprintf("Go          Version:   %s", runtime.Version()[2:]))
+	fmt.Println(fmt.Sprintf("Framework   Version:   %s", FrameworkVersion))
 }

@@ -1,71 +1,71 @@
 package flag
 
 import (
-    "github.com/mix-go/console/argv"
-    "github.com/stretchr/testify/assert"
-    "os"
-    "testing"
+	"github.com/mix-go/console/argv"
+	"github.com/stretchr/testify/assert"
+	"os"
+	"testing"
 )
 
 func TestSingle(t *testing.T) {
-    a := assert.New(t)
+	a := assert.New(t)
 
-    os.Args = []string{os.Args[0], "foo", "-a=a1", "-b", "--cd", "--ab=ab1", "--de", "de1", "-c", "c1", "--sw", "false"}
-    argv.Parse()
-    Parse()
+	os.Args = []string{os.Args[0], "foo", "-a=a1", "-b", "--cd", "--ab=ab1", "--de", "de1", "-c", "c1", "--sw", "false"}
+	argv.Parse()
+	Parse()
 
-    v1 := Match("a").String()
-    a.Equal(v1, "a1")
+	v1 := Match("a").String()
+	a.Equal(v1, "a1")
 
-    v2 := Match("b").Bool()
-    a.Equal(v2, true)
+	v2 := Match("b").Bool()
+	a.Equal(v2, true)
 
-    v3 := Match("cd").Bool()
-    a.Equal(v3, true)
+	v3 := Match("cd").Bool()
+	a.Equal(v3, true)
 
-    v4 := Match("sw").Bool()
-    a.Equal(v4, false)
+	v4 := Match("sw").Bool()
+	a.Equal(v4, false)
 
-    v5 := Match("ab", "").String()
-    a.Equal(v5, "ab1")
+	v5 := Match("ab", "").String()
+	a.Equal(v5, "ab1")
 
-    v6 := Match("de", "").String()
-    a.Equal(v6, "de1")
+	v6 := Match("de", "").String()
+	a.Equal(v6, "de1")
 
-    v7 := Match("c", "").String()
-    a.Equal(v7, "c1")
+	v7 := Match("c", "").String()
+	a.Equal(v7, "c1")
 }
 
 func TestMatch(t *testing.T) {
-    a := assert.New(t)
+	a := assert.New(t)
 
-    os.Args = []string{os.Args[0], "foo", "-a=a1", "-b", "--bc", "--ab=ab1", "--de", "de1", "-c", "c1", "--sw", "false"}
-    argv.Parse()
-    Parse()
+	os.Args = []string{os.Args[0], "foo", "-a=a1", "-b", "--bc", "--ab=ab1", "--de", "de1", "-c", "c1", "--sw", "false"}
+	argv.Parse()
+	Parse()
 
-    v1 := Match("b", "bc").Bool()
-    a.Equal(v1, true)
+	v1 := Match("b", "bc").Bool()
+	a.Equal(v1, true)
 
-    v2 := Match("a", "ab").String()
-    a.Equal(v2, "a1")
+	v2 := Match("a", "ab").String()
+	a.Equal(v2, "a1")
 }
 
 func TestNotFound(t *testing.T) {
-    a := assert.New(t)
+	a := assert.New(t)
 
-    os.Args = []string{os.Args[0]}
-    argv.Parse()
-    Parse()
+	os.Args = []string{os.Args[0]}
+	argv.Parse()
+	Parse()
 
-    v1 := Match("cde").Bool()
-    a.Equal(v1, false)
+	v1 := Match("cde").Bool()
+	a.Equal(v1, false)
 
-    v2 := Match("x").String()
-    a.Equal(v2, "")
+	v2 := Match("x").String()
+	a.Equal(v2, "")
 
-    v3 := Match("b", "bc").Bool()
-    a.Equal(v3, false)
+	v3 := Match("b", "bc").Bool()
+	a.Equal(v3, false)
 
-    v4 := Match("a", "ab").String()
-    a.Equal(v4, "")
+	v4 := Match("a", "ab").String()
+	a.Equal(v4, "")
 }

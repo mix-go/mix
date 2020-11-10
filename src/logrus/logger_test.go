@@ -1,38 +1,38 @@
 package logrus
 
 import (
-    "errors"
-    "fmt"
-    "github.com/sirupsen/logrus"
-    "io"
-    "os"
-    "runtime/debug"
-    "testing"
+	"errors"
+	"fmt"
+	"github.com/sirupsen/logrus"
+	"io"
+	"os"
+	"runtime/debug"
+	"testing"
 )
 
 func TestLog(t *testing.T) {
-    logger := NewLogger()
-    logger.Infof("test")
-    logger.Infof("test\ntest")
-    logger.WithField(logrus.FieldKeyLogrusError, "dfsdfsdf").Infof("test")
+	logger := NewLogger()
+	logger.Infof("test")
+	logger.Infof("test\ntest")
+	logger.WithField(logrus.FieldKeyLogrusError, "dfsdfsdf").Infof("test")
 
-    logger.SupportGORM = true
-    logger.Print("a", "b", "c")
+	logger.SupportGORM = true
+	logger.Print("a", "b", "c")
 }
 
 func TestFile(t *testing.T) {
-    logger := NewLogger()
+	logger := NewLogger()
 
-    pwd, _ := os.Getwd()
-    file := NewFileWriter(fmt.Sprintf("%s/test.log", pwd), 7, 200*1024*1024)
-    writer := io.MultiWriter(os.Stdout, file)
-    logger.SetOutput(writer)
+	pwd, _ := os.Getwd()
+	file := NewFileWriter(fmt.Sprintf("%s/test.log", pwd), 7, 200*1024*1024)
+	writer := io.MultiWriter(os.Stdout, file)
+	logger.SetOutput(writer)
 
-    logger.Infof("test")
+	logger.Infof("test")
 }
 
 func TestErrorStack(t *testing.T) {
-    logger := NewLogger()
-    stack := debug.Stack()
-    logger.ErrorStack(errors.New("panic test"), &stack)
+	logger := NewLogger()
+	stack := debug.Stack()
+	logger.ErrorStack(errors.New("panic test"), &stack)
 }
