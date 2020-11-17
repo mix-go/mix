@@ -21,7 +21,6 @@ func Daemon() {
 	default:
 		ok = true
 	}
-
 	if !ok {
 		panic(console.NewUnsupportError(errors.New("Error: the current OS does not support background execution")))
 	}
@@ -30,6 +29,7 @@ func Daemon() {
 		panic(errors.New("Daemon() can only be used in Main Goroutine"))
 	}
 
+	// Getppid 父进程ID: 当父进程已经结束，在Unix中返回的ID是初始进程(1)中的一个，在Windows中仍然是同一个进程ID，该进程ID有可能已经被其他进程占用
 	if os.Getppid() != 1 {
 		cmd := exec.Command(os.Args[0], os.Args[1:]...)
 		if err := cmd.Start(); err != nil {
