@@ -7,6 +7,7 @@ import (
 	"github.com/mix-go/console/argv"
 	"github.com/mix-go/console/flag"
 	"github.com/mix-go/event"
+	"os"
 	"strings"
 )
 
@@ -60,11 +61,8 @@ type Application struct {
 	Context *bean.ApplicationContext
 	// 是否单命令
 	Singleton bool
-}
-
-// Command 命令接口
-type Command interface {
-	Main()
+	// 默认命令
+	DefaultCommand string
 }
 
 // CommandDefinition 命令定义
@@ -79,6 +77,13 @@ type CommandDefinition struct {
 	Command Command
 	// 是否单命令
 	Singleton bool
+	// 是否为默认命令
+	Default bool
+}
+
+// Command 命令接口
+type Command interface {
+	Main()
 }
 
 // OptionDefinition 命令选项
@@ -99,7 +104,9 @@ func (t *Application) Init() {
 	for _, c := range t.Commands {
 		if c.Singleton {
 			t.Singleton = true
-			break
+		}
+		if c.Default {
+			t.DefaultCommand = c.Name
 		}
 	}
 }
@@ -140,9 +147,18 @@ func (t *Application) Run() {
 
 		options := flag.Options()
 		if len(options) == 0 {
-			t.globalHelp()
+			if t.DefaultCommand != "" {
+				os.Args = append(os.Args, t.DefaultCommand)
+				argv.Parse()
+				flag.Parse()
+				t.Run()
+			} else {
+				t.globalHelp()
+			}
 			return
-		} else if t.Singleton {
+		}
+
+		if t.Singleton {
 			t.call()
 			return
 		}

@@ -13,28 +13,30 @@ import (
 )
 
 var (
+	beans = []bean.BeanDefinition{
+		{
+			Name:    "eventDispatcher",
+			Reflect: bean.NewReflect(event.NewDispatcher),
+			Scope:   bean.SINGLETON,
+		},
+		{
+			Name:            "error",
+			Reflect:         bean.NewReflect(NewError),
+			Scope:           bean.SINGLETON,
+			ConstructorArgs: bean.ConstructorArgs{bean.NewReference("logger")},
+		},
+		{
+			Name:    "logger",
+			Reflect: bean.NewReflect(logrus.NewLogger),
+			Scope:   bean.SINGLETON,
+		},
+	}
+
 	def1 = ApplicationDefinition{
 		Name:    "app-test",
 		Version: "1.0.0-test",
 		Debug:   true,
-		Beans: []bean.BeanDefinition{
-			{
-				Name:    "eventDispatcher",
-				Reflect: bean.NewReflect(event.NewDispatcher),
-				Scope:   bean.SINGLETON,
-			},
-			{
-				Name:            "error",
-				Reflect:         bean.NewReflect(NewError),
-				Scope:           bean.SINGLETON,
-				ConstructorArgs: bean.ConstructorArgs{bean.NewReference("logger")},
-			},
-			{
-				Name:    "logger",
-				Reflect: bean.NewReflect(logrus.NewLogger),
-				Scope:   bean.SINGLETON,
-			},
-		},
+		Beans:   beans,
 		Commands: []CommandDefinition{
 			{
 				Name:  "foo",
@@ -45,8 +47,7 @@ var (
 						Usage: "foo",
 					},
 				},
-				Command:   &Foo{},
-				Singleton: false,
+				Command: &Foo{},
 			},
 		},
 	}
@@ -55,24 +56,7 @@ var (
 		Name:    "app-test",
 		Version: "1.0.0-test",
 		Debug:   true,
-		Beans: []bean.BeanDefinition{
-			{
-				Name:    "eventDispatcher",
-				Reflect: bean.NewReflect(event.NewDispatcher),
-				Scope:   bean.SINGLETON,
-			},
-			{
-				Name:            "error",
-				Reflect:         bean.NewReflect(NewError),
-				Scope:           bean.SINGLETON,
-				ConstructorArgs: bean.ConstructorArgs{bean.NewReference("logger")},
-			},
-			{
-				Name:    "logger",
-				Reflect: bean.NewReflect(logrus.NewLogger),
-				Scope:   bean.SINGLETON,
-			},
-		},
+		Beans:   beans,
 		Commands: []CommandDefinition{
 			{
 				Name:  "foo",
@@ -85,6 +69,49 @@ var (
 				},
 				Command:   &Foo{},
 				Singleton: true,
+			},
+		},
+	}
+
+	def3 = ApplicationDefinition{
+		Name:    "app-test",
+		Version: "1.0.0-test",
+		Debug:   true,
+		Beans:   beans,
+		Commands: []CommandDefinition{
+			{
+				Name:  "foo",
+				Usage: "bar",
+				Options: []OptionDefinition{
+					{
+						Names: []string{"a", "bc"},
+						Usage: "foo",
+					},
+				},
+				Command: &Foo{},
+				Default: true,
+			},
+		},
+	}
+
+	def4 = ApplicationDefinition{
+		Name:    "app-test",
+		Version: "1.0.0-test",
+		Debug:   true,
+		Beans:   beans,
+		Commands: []CommandDefinition{
+			{
+				Name:  "foo",
+				Usage: "bar",
+				Options: []OptionDefinition{
+					{
+						Names: []string{"a", "bc"},
+						Usage: "foo",
+					},
+				},
+				Command:   &Foo{},
+				Singleton: true,
+				Default:   true,
 			},
 		},
 	}
@@ -132,16 +159,36 @@ func TestSingletonCommandRun(t *testing.T) {
 	run = false
 }
 
-func TestCommandNotFound(t *testing.T) {
+func TestDefaultCommandRun(t *testing.T) {
 	a := assert.New(t)
 
+	// 多命令
+	os.Args = []string{os.Args[0]}
+	argv.Parse()
+	flag.Parse()
+	app := NewApplication(def3, "eventDispatcher", "error")
+	app.Run()
+	a.NotEqual(app.BasePath, nil)
+	a.True(run)
+	run = false
+
+	// 单命令
+	os.Args = []string{os.Args[0]}
+	argv.Parse()
+	flag.Parse()
+	app = NewApplication(def4, "eventDispatcher", "error")
+	app.Run()
+	a.NotEqual(app.BasePath, nil)
+	a.True(run)
+	run = false
+}
+
+func TestCommandNotFound(t *testing.T) {
 	os.Args = []string{os.Args[0], "bar"}
 	argv.Parse()
 	flag.Parse()
 	app := NewApplication(def1, "eventDispatcher", "error")
 	app.Run()
-
-	a.Contains(LastError.(error).Error(), "'bar' is not command, see '")
 }
 
 func TestCommandPrint(t *testing.T) {
