@@ -3,10 +3,10 @@ package gin
 import "github.com/gin-gonic/gin"
 
 // New 创建引擎
-func New(routeDefinitionCallbacks ...func(router *gin.Engine)) *gin.Engine {
+func New(definitions ...func(router *gin.Engine)) *gin.Engine {
 	engine := gin.New()
-	for _, callback := range routeDefinitionCallbacks {
-		callback(engine)
+	for _, d := range definitions {
+		d(engine)
 	}
 	return engine
 }
