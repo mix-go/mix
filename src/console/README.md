@@ -156,19 +156,42 @@ $ ./go_build_main_go hello
 
 > 该 flag 比 golang 自带的更加好用，不需要 Parse 操作
 
-获取命令行参数，可以获取 `String`、`Bool`、`Int64`、`Float64` 多种类型，也可以指定默认值。
+参数规则 (部分UNIX风格+GNU风格)
+
+```
+/examples/app home -d -rf --debug -v vvv --page 23 -s=test --name=john arg0
+```
+- 命令：
+    - 第一个参数，可以为空：`home`
+- 选项：
+    - 短选项：一个中杠，如 `-d`、`-rf`
+    - 长选项：二个中杠，如：`--debug`
+- 选项值：
+    - 无值：`-d`、`-rf`、 `--debug`
+    - 有值(空格)：`-v vvv`、`--page 23`
+    - 有值(等号)：`-s=test`、`--name=john`
+- 参数：
+    - 没有定义 `-` 的参数：`arg0`
+
+获取选项，可以获取 `String`、`Bool`、`Int64`、`Float64` 多种类型，也可以指定默认值。
 
 ```
 name := flag.Match("n", "name").String("Xiao Ming")
 ```
 
-参数规则 (部分UNIX风格+GNU风格)
+获取第一个参数
 
-- 单字母参数只支持一个中杠，如 `-p`，多字母参数只支持二个中杠，如：`--option`
-- 参数可以有值、也可以没有值，如：
-    - 无值：`-p`、 `--option`
-    - 有值(空格)：`-p value`、`--option value`
-    - 有值(等号)：`-p=value`、`--option=value`
+```
+arg0 := flag.Arguments().First().String()
+```
+
+获取全部参数
+
+```
+for k, v := range flag.Arguments().Values() {
+    // do something
+}
+```
 
 ## Event 
 

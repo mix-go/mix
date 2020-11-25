@@ -73,11 +73,11 @@ func TestNotFound(t *testing.T) {
 func TestOptions(t *testing.T) {
 	a := assert.New(t)
 
-	os.Args = []string{os.Args[0], "foo", "-a=a1", "-b", "--cd", "--ab=ab1", "arg0", "--de", "de1", "-c", "c1", "--sw", "false", "arg1", "arg2"}
+	os.Args = []string{os.Args[0], "foo", "-a=a1", "-b", "-bc", "--cd", "--ab=ab1", "arg0", "--de", "de1", "-c", "c1", "--sw", "false", "arg1", "arg2"}
 	argv.Parse()
 	Parse()
 
-	a.Equal(Options().Map(), map[string]string{"--ab": "ab1", "--cd": "", "--de": "de1", "--sw": "false", "-a": "a1", "-b": "", "-c": "c1"})
+	a.Equal(Options().Map(), map[string]string{"--ab": "ab1", "--cd": "", "--de": "de1", "--sw": "false", "-a": "a1", "-b": "", "-bc": "", "-c": "c1"})
 }
 
 func TestArguments(t *testing.T) {
