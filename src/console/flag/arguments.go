@@ -9,7 +9,7 @@ func (t *arguments) Array() []string {
 	return *t
 }
 
-// Array 返回数组
+// First 获取第一个参数
 func (t *arguments) First() (string, bool) {
 	a := *t
 	if len(a) == 0 {
