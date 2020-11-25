@@ -5,6 +5,31 @@ import (
 	"strconv"
 )
 
+// Match 匹配参数名称
+func Match(names ...string) *flagValue {
+	for _, name := range names {
+		v, exist := value(name)
+		if exist {
+			return &flagValue{v, exist}
+		}
+	}
+	return &flagValue{}
+}
+
+// 获取指定参数的值
+func value(name string) (string, bool) {
+	key := ""
+	if len(name) == 1 {
+		key = fmt.Sprintf("-%s", name)
+	} else {
+		key = fmt.Sprintf("--%s", name)
+	}
+	if v, ok := Options().Map()[key]; ok {
+		return v, true
+	}
+	return "", false
+}
+
 // 参数值
 type flagValue struct {
 	v     string
@@ -73,29 +98,4 @@ func (t *flagValue) Float64(val ...float64) float64 {
 
 	v, _ := strconv.ParseFloat(t.v, 64)
 	return v
-}
-
-// Match 匹配参数名称
-func Match(names ...string) *flagValue {
-	for _, name := range names {
-		v, exist := value(name)
-		if exist {
-			return &flagValue{v, exist}
-		}
-	}
-	return &flagValue{}
-}
-
-// 获取指定参数的值
-func value(name string) (string, bool) {
-	key := ""
-	if len(name) == 1 {
-		key = fmt.Sprintf("-%s", name)
-	} else {
-		key = fmt.Sprintf("--%s", name)
-	}
-	if v, ok := Options()[key]; ok {
-		return v, true
-	}
-	return "", false
 }

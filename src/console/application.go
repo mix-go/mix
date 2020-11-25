@@ -145,7 +145,7 @@ func (t *Application) Run() {
 			return
 		}
 
-		options := flag.Options()
+		options := flag.Options().Map()
 		if len(options) == 0 {
 			if t.DefaultCommand != "" {
 				os.Args = append(os.Args, t.DefaultCommand)
@@ -261,7 +261,7 @@ func (t *Application) validateOptions() {
 		}
 		return false
 	}
-	for f := range flag.Options() {
+	for f := range flag.Options().Map() {
 		if !inArray(f, flags) {
 			p := argv.Program().Path
 			c := argv.Command()
