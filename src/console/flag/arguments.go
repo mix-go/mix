@@ -9,13 +9,23 @@ func (t *arguments) Array() []string {
 	return *t
 }
 
+// Values 返回值
+func (t *arguments) Values() []*flagValue {
+	args := *t
+	var values []*flagValue
+	for _, v := range args {
+		values = append(values, &flagValue{v, true})
+	}
+	return values
+}
+
 // First 获取第一个参数
 func (t *arguments) First() *flagValue {
-	a := *t
-	if len(a) == 0 {
+	args := *t
+	if len(args) == 0 {
 		return &flagValue{}
 	}
-	return &flagValue{a[0], true}
+	return &flagValue{args[0], true}
 }
 
 // Arguments 获取全部命令行参数
