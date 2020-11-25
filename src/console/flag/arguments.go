@@ -10,12 +10,12 @@ func (t *arguments) Array() []string {
 }
 
 // First 获取第一个参数
-func (t *arguments) First() (string, bool) {
+func (t *arguments) First() *flagValue {
 	a := *t
 	if len(a) == 0 {
-		return "", false
+		return &flagValue{}
 	}
-	return a[0], true
+	return &flagValue{a[0], true}
 }
 
 // Arguments 获取全部命令行参数

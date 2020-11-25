@@ -88,4 +88,7 @@ func TestArguments(t *testing.T) {
 	Parse()
 
 	a.Equal(Arguments().Array(), []string{"arg0", "arg1", "arg2"})
+
+	a.Equal(Arguments().First().String(), "arg0")
+	a.Equal(Arguments().First().Bool(), true)
 }
