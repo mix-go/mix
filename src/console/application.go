@@ -109,6 +109,10 @@ func (t *Application) Init() {
 			t.DefaultCommand = c.Name
 		}
 	}
+	if t.Singleton {
+		argv.Parse(true)
+		flag.Parse()
+	}
 }
 
 // Get 快速获取实例

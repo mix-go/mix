@@ -18,9 +18,17 @@ func init() {
 }
 
 // Parse 解析命令行参数
-func Parse() {
+func Parse(singleton ...bool) {
+	var s bool
+	switch len(singleton) {
+	case 0:
+		s = false
+	default:
+		s = singleton[0]
+	}
+
 	prog = newProgram()
-	cmd = newCommand()
+	cmd = newCommand(s)
 }
 
 // Program 返回命令行程序信息
@@ -57,13 +65,12 @@ func newProgram() program {
 }
 
 // 创建当前命令信息
-func newCommand() string {
-	cmd := ""
-	if len(os.Args) <= 1 {
-		return cmd
+func newCommand(singleton bool) string {
+	if len(os.Args) <= 1 || singleton {
+		return ""
 	}
-	ok, _ := regexp.MatchString(`^[a-zA-Z0-9_\-:]+$`, os.Args[1])
-	if ok {
+	cmd := ""
+	if ok, _ := regexp.MatchString(`^[a-zA-Z0-9_\-:]+$`, os.Args[1]); ok {
 		cmd = os.Args[1]
 		if cmd[:1] == "-" {
 			cmd = ""
