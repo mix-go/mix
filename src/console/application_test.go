@@ -189,6 +189,15 @@ func TestCommandNotFound(t *testing.T) {
 	flag.Parse()
 	app := NewApplication(def1, "eventDispatcher", "error")
 	app.Run()
+
+    fmt.Println("-----------------------")
+
+    // 默认 + 找不到
+    os.Args = []string{os.Args[0], "中文foo"}
+    argv.Parse()
+    flag.Parse()
+    app = NewApplication(def3, "eventDispatcher", "error")
+    app.Run()
 }
 
 func TestCommandPrint(t *testing.T) {

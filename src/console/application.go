@@ -151,7 +151,7 @@ func (t *Application) Run() {
 
 		options := flag.Options().Map()
 		if len(options) == 0 {
-			if t.DefaultCommand != "" {
+			if t.DefaultCommand != "" && len(os.Args) == 1 {
 				os.Args = append(os.Args, t.DefaultCommand)
 				argv.Parse()
 				flag.Parse()
