@@ -18,8 +18,9 @@ type Command struct {
 }
 
 // AddOption
-func (t *Command) AddOption(options ...*Option) {
+func (t *Command) AddOption(options ...*Option) *Command {
 	t.Options = append(t.Options, options...)
+	return t
 }
 
 // RunI

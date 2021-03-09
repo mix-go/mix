@@ -31,18 +31,21 @@ func NewApplication(name, version string) *Application {
 }
 
 // SetName
-func SetName(name string) {
+func SetName(name string) *Application {
 	App.Name = name
+	return App
 }
 
 // SetVersion
-func SetVersion(version string) {
+func SetVersion(version string) *Application {
 	App.Version = version
+	return App
 }
 
 // AddCommand
-func AddCommand(cmds ...*Command) {
+func AddCommand(cmds ...*Command) *Application {
 	App.AddCommand(cmds...)
+	return App
 }
 
 // Run
@@ -98,8 +101,11 @@ func (t *Application) Run() {
 				fmt.Println(err)
 				return
 			}
-
-			t.ErrorHandle(err)
+			if t.ErrorHandle != nil {
+				t.ErrorHandle(err)
+			} else {
+				panic(err)
+			}
 		}
 	}()
 

@@ -157,6 +157,11 @@ func TestCommandPrint(t *testing.T) {
 		Run: func() {
 		},
 	}
+	opt := &Option{
+		Names: []string{"a", "bc"},
+		Usage: "foo",
+	}
+	cmd.AddOption(opt)
 	app := NewApplication("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
@@ -204,6 +209,11 @@ func TestCommandPrint(t *testing.T) {
 		},
 		Singleton: true,
 	}
+	opt = &Option{
+		Names: []string{"a", "bc"},
+		Usage: "foo",
+	}
+	cmd.AddOption(opt)
 	app = NewApplication("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
