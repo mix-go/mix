@@ -173,11 +173,11 @@ cmd := &cli.Command{
     Name:  "hello",
     Usage: "Echo demo",
     ErrorHandle: func (err interface{}) {
-        // 可以捕获下面子协程的panic
+        // handle panic
     },
     Run: func() {
         go catch.Call(func() {
-            // 子协程抛出panic
+            // throw panic
             panic("error")
         })
     },
