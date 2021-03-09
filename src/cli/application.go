@@ -42,6 +42,12 @@ func SetVersion(version string) *Application {
 	return App
 }
 
+// SetDebug
+func SetDebug(debug bool) *Application {
+	App.Debug = debug
+	return App
+}
+
 // AddCommand
 func AddCommand(cmds ...*Command) *Application {
 	App.AddCommand(cmds...)
