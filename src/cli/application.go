@@ -17,11 +17,11 @@ var (
 )
 
 func init() {
-	App = NewApplication("app", "1.0.0")
+	App = New("app", "1.0.0")
 }
 
-// NewApplication
-func NewApplication(name, version string) *Application {
+// New
+func New(name, version string) *Application {
 	app := &Application{
 		Name:    name,
 		Version: version,

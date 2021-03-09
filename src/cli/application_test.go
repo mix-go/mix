@@ -30,7 +30,7 @@ func TestCommandRun(t *testing.T) {
 		Usage: "foo",
 	}
 	cmd.AddOption(opt)
-	app := NewApplication("test", "1.0.0")
+	app := New("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
 
@@ -54,7 +54,7 @@ func TestSingletonCommandRun(t *testing.T) {
 		},
 		Singleton: true,
 	}
-	app := NewApplication("test", "1.0.0")
+	app := New("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
 
@@ -79,7 +79,7 @@ func TestDefaultCommandRun(t *testing.T) {
 		},
 		Default: true,
 	}
-	app := NewApplication("test", "1.0.0")
+	app := New("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
 
@@ -101,7 +101,7 @@ func TestDefaultCommandRun(t *testing.T) {
 		Singleton: true,
 		Default:   true,
 	}
-	app = NewApplication("test", "1.0.0")
+	app = New("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
 
@@ -122,7 +122,7 @@ func TestCommandNotFound(t *testing.T) {
 			ok = true
 		},
 	}
-	app := NewApplication("test", "1.0.0")
+	app := New("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
 
@@ -141,7 +141,7 @@ func TestCommandNotFound(t *testing.T) {
 		},
 		Default: true,
 	}
-	app = NewApplication("test", "1.0.0")
+	app = New("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
 }
@@ -162,7 +162,7 @@ func TestCommandPrint(t *testing.T) {
 		Usage: "foo",
 	}
 	cmd.AddOption(opt)
-	app := NewApplication("test", "1.0.0")
+	app := New("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
 
@@ -172,7 +172,7 @@ func TestCommandPrint(t *testing.T) {
 	fmt.Println(os.Args)
 	argv.Parse()
 	flag.Parse()
-	app = NewApplication("test", "1.0.0")
+	app = New("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
 
@@ -182,7 +182,7 @@ func TestCommandPrint(t *testing.T) {
 	fmt.Println(os.Args)
 	argv.Parse()
 	flag.Parse()
-	app = NewApplication("test", "1.0.0")
+	app = New("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
 
@@ -192,7 +192,7 @@ func TestCommandPrint(t *testing.T) {
 	fmt.Println(os.Args)
 	argv.Parse()
 	flag.Parse()
-	app = NewApplication("test", "1.0.0")
+	app = New("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
 
@@ -214,7 +214,7 @@ func TestCommandPrint(t *testing.T) {
 		Usage: "foo",
 	}
 	cmd.AddOption(opt)
-	app = NewApplication("test", "1.0.0")
+	app = New("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
 }
