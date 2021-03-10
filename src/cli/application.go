@@ -50,10 +50,9 @@ func SetDebug(debug bool) *Application {
 	return iApp.SetDebug(debug)
 }
 
-// SetErrorHandle
-func SetErrorHandle(h func(err interface{})) *Application {
-	iApp.ErrorHandle = h
-	return iApp
+// Use
+func Use(h ...HandlerFunc) *Application {
+	return iApp.Use(h...)
 }
 
 // AddCommand
@@ -77,8 +76,6 @@ type Application struct {
 	Debug bool
 	// 基础路径
 	BasePath string
-	// ErrorHandle
-	ErrorHandle func(err interface{})
 
 	// 是否单命令
 	singleton bool
@@ -86,7 +83,12 @@ type Application struct {
 	defaultCommand string
 	// 命令集合
 	commands []*Command
+	// handlers
+	handlers []HandlerFunc
 }
+
+// HandlerFunc
+type HandlerFunc func(next func())
 
 // SetName
 func (t *Application) SetName(name string) *Application {
@@ -106,9 +108,9 @@ func (t *Application) SetDebug(debug bool) *Application {
 	return t
 }
 
-// SetErrorHandle
-func (t *Application) SetErrorHandle(h func(err interface{})) *Application {
-	t.ErrorHandle = h
+// Use
+func (t *Application) Use(h ...HandlerFunc) *Application {
+	t.handlers = append(t.handlers, h...)
 	return t
 }
 
@@ -139,10 +141,7 @@ func (t *Application) Run() {
 			case *NotFoundError, *UnsupportError:
 				fmt.Println(err)
 				return
-			}
-			if t.ErrorHandle != nil {
-				t.ErrorHandle(err)
-			} else {
+			default:
 				panic(err)
 			}
 		}
@@ -225,19 +224,49 @@ func (t *Application) call() {
 	if cmd == nil {
 		panic(NewNotFoundError(fmt.Errorf("'%s' is not command, see '%s --help'.", command, argv.Program().Path)))
 	}
+	if cmd.Run == nil && cmd.RunI == nil {
+		panic(fmt.Errorf("'%s' command Run/RunI is empty", cmd.Name))
+	}
 
 	// 执行命令
-	r := cmd.Run
-	if r != nil {
-		r()
-		return
+	exec := func() {
+		r := cmd.Run
+		if r != nil {
+			r()
+			return
+		}
+		ri := cmd.RunI
+		if ri != nil {
+			ri.Main()
+			return
+		}
 	}
-	ri := cmd.RunI
-	if ri != nil {
-		ri.Main()
-		return
+	if len(t.handlers) > 0 {
+		tmp := t.handlers
+		for i, j := 0, len(tmp)-1; i < j; i, j = i+1, j-1 {
+			tmp[i], tmp[j] = tmp[j], tmp[i]
+		}
+		var next func()
+		for k, f := range tmp {
+			if k == 0 {
+				n := exec
+				c := f
+				next = func() {
+					c(n)
+				}
+			} else if len(tmp)-1 == k {
+				f(next)
+			} else {
+				n := next
+				c := f
+				next = func() {
+					c(n)
+				}
+			}
+		}
+	} else {
+		exec()
 	}
-	panic(fmt.Errorf("'%s' command Run/RunI is empty", cmd.Name))
 }
 
 // 命令行选项效验

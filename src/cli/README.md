@@ -150,9 +150,17 @@ if flag.Match("d", "daemon").Bool() {
 
 上面就实现了一个当命令行参数中带有 `-d/--daemon` 参数时，程序就在后台执行。
 
-## Error handle
+## Handle panic
 
 ```go
+h := func(next func()) {
+    defer func() {
+        if err := recover(); err != nil {
+            // handle panic
+        }
+    }()
+    next()
+}
 cmd := &cli.Command{
     Name:  "hello",
     Usage: "Echo demo",
@@ -160,29 +168,7 @@ cmd := &cli.Command{
         // do something
     },
 }
-cli.SetErrorHandle(func (err interface{}) {
-   // handle error
-})
-cli.AddCommand(cmd).Run()
-```
-
-## Catch panic
-
-```go
-cmd := &cli.Command{
-    Name:  "hello",
-    Usage: "Echo demo",
-    Run: func() {
-        go catch.Call(func() {
-            // throw panic
-            panic("error")
-        })
-    },
-}
-cli.SetErrorHandle(func (err interface{}) {
-   // handle panic
-})
-cli.AddCommand(cmd).Run()
+cli.Use(h).AddCommand(cmd).Run()
 ```
 
 ## Application
