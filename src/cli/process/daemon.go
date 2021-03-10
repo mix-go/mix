@@ -4,7 +4,7 @@ import (
     "bytes"
     "fmt"
     "github.com/mix-go/cli"
-	"os"
+    "os"
     "os/exec"
     "runtime"
     "strconv"
@@ -22,7 +22,7 @@ func Daemon() {
         ok = true
     }
     if !ok {
-        panic(cli.NewUnsupportError(fmt.Errorf("error: the current operating system does not support daemon execution")))
+        panic(cli.NewUnsupportedError(fmt.Errorf("error: the current operating system does not support daemon execution")))
     }
 
     if getgid() != 1 {

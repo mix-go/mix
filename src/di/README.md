@@ -1,10 +1,10 @@
 > OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
 
-## Mix Bean
+## Mix DI
 
-DI、IoC 容器，参考 spring bean 设计
+DI、IoC 容器
 
-DI, IoC container, reference spring bean
+DI, IoC container
 
 > 该库还有 php 版本：https://github.com/mix-php/bean
 
@@ -17,199 +17,116 @@ DI, IoC container, reference spring bean
 - 安装
 
 ```
-go get -u github.com/mix-go/bean
+go get -u github.com/mix-go/di
 ```
 
-## Usage
+## Quick start
 
-- `ConstructorArgs` 构造器注入
+通过依赖配置实例化一个单例
 
-```golang
-var definitions = []bean.Definition{
-    {
-        Name: "foo",
-        Reflect: bean.NewReflect(NewHttpClient),
-        ConstructorArgs: bean.ConstructorArgs{
-            time.Duration(time.Second * 3),
-        },
-    },
+```go
+package main
+
+import (
+    "github.com/mix-go/di"
+)
+
+type Foo struct {
 }
 
-// 必须返回指针类型
-func NewHttpClient(timeout time.Duration) *http.Client {
-    return &http.Client{
-        Timeout: timeout,
+func init() {
+    obj := &di.Object{
+        Name: "foo",
+        New: func() (interface{}, error) {
+            i := &Foo{}
+            return i, nil
+        },
+        Singleton: true,
+    }
+    if err := di.Provide(obj); err != nil {
+        panic(err)
     }
 }
 
-context := bean.NewApplicationContext(definitions)
-foo := context.Get("foo").(*http.Client) // 返回的都是指针类型
-fmt.Println(fmt.Sprintf("%+v", foo))
+func main() {
+    var foo *Foo
+    if err := di.Find("foo", &foo); err != nil {
+        panic(err)
+    }
+    // use foo
+}
 ```
 
-- `Fields` 字段注入
+## Reference
 
-```golang
-var definitions = []bean.Definition{
-    {
-        Name: "foo",
-        Reflect: bean.NewReflect(http.Client{}),
-        Fields: bean.Fields{
-            "Timeout": time.Duration(time.Second * 3),
-        },
-    },
+依赖配置中引用另一个依赖配置的实例
+
+```go
+package main
+
+import (
+    "github.com/mix-go/di"
+)
+
+type Foo struct {
+    Bar *Bar
 }
 
-context := bean.NewApplicationContext(definitions)
-foo := context.Get("foo").(*http.Client) // 返回的都是指针类型
-fmt.Println(fmt.Sprintf("%+v", foo))
-```
-
-- `ConstructorArgs + Fields` 混合使用
-
-```golang
-var definitions = []bean.Definition{
-    {
-        Name: "foo",
-        Reflect: bean.NewReflect(NewHttpClient),
-        ConstructorArgs: bean.ConstructorArgs{
-            time.Duration(time.Second * 3),
-        },
-        Fields: bean.Fields{
-            "Timeout": time.Duration(time.Second * 2),
-        },
-    },
+type Bar struct {
 }
 
-// 必须返回指针类型
-func NewHttpClient(timeout time.Duration) *http.Client {
-    return &http.Client{
-        Timeout: timeout,
+func init() {
+    objs := []*di.Object{
+        {
+            Name: "foo",
+            New: func() (interface{}, error) {
+                // reference bar
+                var bar *Bar
+                if err := di.Find("bar", &bar); err != nil {
+                    return nil, err
+                }
+
+                i := &Foo{
+                    Bar: bar,
+                }
+                return i, nil
+            },
+            Singleton: true,
+        },
+        {
+            Name: "bar",
+            New: func() (interface{}, error) {
+                i := &Bar{}
+                return i, nil
+            },
+        },
+    }
+    if err := di.Provide(objs...); err != nil {
+        panic(err)
     }
 }
 
-context := bean.NewApplicationContext(definitions)
-foo := context.Get("foo").(*http.Client) // 返回的都是指针类型
-fmt.Println(fmt.Sprintf("%+v", foo))
+func main() {
+    var foo *Foo
+    if err := di.Find("foo", &foo); err != nil {
+        panic(err)
+    }
+    // use foo
+}
 ```
 
-- `NewReference` 引用
+## Refresh singleton
 
-引用其他依赖注入
+程序执行中配置信息发生变化时，可以刷新实例
 
-```golang
-type Foo struct {
-    Client *http.Client // 引用注入的都是指针类型
+```go
+obj, err := di.Container().Object(name string)
+if err != nil {
+    panic(err)
 }
-
-var definitions = []bean.Definition{
-    {
-        Name: "foo",
-        Reflect: bean.NewReflect(Foo{}),
-        },
-        Fields: bean.Fields{
-            "Client": NewReference("bar"),
-        },
-    },
-    {
-        Name: "bar",
-        Reflect: bean.NewReflect(http.Client{}),
-        Fields: bean.Fields{
-            "Timeout": time.Duration(time.Second * 3),
-        },
-    },
+if err := obj.Refresh(); err != nil {
+    panic(err)
 }
-
-context := bean.NewApplicationContext(definitions)
-foo := context.Get("foo").(*Foo) // 返回的都是指针类型
-cli := foo.Client
-fmt.Println(fmt.Sprintf("%+v", cli))
-```
-
-- `Scope: SINGLETON` 单例
-
-定义组件为全局单例
-
-```golang
-var definitions = []bean.Definition{
-    {
-        Name: "foo",
-        Scope: bean.SINGLETON, // 这里定义了单例模式
-        Reflect: bean.NewReflect(http.Client{}),
-        Fields: bean.Fields{
-            "Timeout": time.Duration(time.Second * 3),
-        },
-    },
-}
-
-context := bean.NewApplicationContext(definitions)
-foo := context.Get("foo").(*http.Client) // 返回的都是指针类型
-fmt.Println(fmt.Sprintf("%+v", foo))
-```
-
-- `InitMethod` 初始化方法
-
-对象创建完成并且 `ConstructorArgs + Fields` 两种注入全部完成后执行该方法，用来初始化处理。
-
-```golang
-type Foo struct {
-    Bar    string
-}
-
-func (c *Foo) Init() {
-    c.Bar = "bar ..."
-    fmt.Println("init")
-}
-
-var definitions = []bean.Definition{
-    {
-        Name:       "foo",
-        InitMethod: "Init", // 这里定义了初始化方法
-        Reflect: bean.NewReflect(Foo{}),
-        Fields: bean.Fields{
-            "Bar":    "bar",
-        },
-    },
-}
-
-context := bean.NewApplicationContext(definitions)
-foo := context.Get("foo").(*Foo) // 返回的都是指针类型
-fmt.Println(fmt.Sprintf("%+v", foo))
-```
-
-- `Refresh` 动态刷新配置
-
-这个通常用于通过微服务配置中心实现动态刷新微服务配置的功能。
-
-```golang
-type Foo struct {
-    Bar    string
-}
-
-var definitions = []bean.Definition{
-    {
-        Name:       "foo",
-        Reflect: bean.NewReflect(Foo{}),
-        Fields: bean.Fields{
-            "Bar":    "bar",
-        },
-    },
-}
-
-context := bean.NewApplicationContext(definitions)
-
-// 第一次获取
-foo := context.Get("foo").(*Foo)
-fmt.Println(fmt.Sprintf("%+v", foo))
-
-// 修改配置
-bd := context.GetBeanDefinition("foo")
-bd.Fields["Bar"] = "bar2"
-bd.Refresh()
-
-// 第二次获取就是新的配置
-foo := context.Get("foo").(*Foo)
-fmt.Println(fmt.Sprintf("%+v", foo))
 ```
 
 ## License

@@ -11,7 +11,7 @@ import (
 
 var (
 	// iApp
-	iApp *Application
+	iApp *application
 	// Version
 	Version = "1.0.24"
 )
@@ -21,8 +21,8 @@ func init() {
 }
 
 // New
-func New(name, version string) *Application {
-	app := &Application{
+func New(name, version string) *application {
+	app := &application{
 		Name:    name,
 		Version: version,
 	}
@@ -31,32 +31,32 @@ func New(name, version string) *Application {
 }
 
 // App
-func App() *Application {
+func App() *application {
 	return iApp
 }
 
 // SetName
-func SetName(name string) *Application {
+func SetName(name string) *application {
 	return iApp.SetName(name)
 }
 
 // SetVersion
-func SetVersion(version string) *Application {
+func SetVersion(version string) *application {
 	return iApp.SetVersion(version)
 }
 
 // SetDebug
-func SetDebug(debug bool) *Application {
+func SetDebug(debug bool) *application {
 	return iApp.SetDebug(debug)
 }
 
 // Use
-func Use(h ...HandlerFunc) *Application {
+func Use(h ...HandlerFunc) *application {
 	return iApp.Use(h...)
 }
 
 // AddCommand
-func AddCommand(cmds ...*Command) *Application {
+func AddCommand(cmds ...*Command) *application {
 	iApp.AddCommand(cmds...)
 	return iApp
 }
@@ -66,8 +66,8 @@ func Run() {
 	iApp.Run()
 }
 
-// Application
-type Application struct {
+// application
+type application struct {
 	// 应用名称
 	Name string
 	// 应用版本
@@ -91,31 +91,31 @@ type Application struct {
 type HandlerFunc func(next func())
 
 // SetName
-func (t *Application) SetName(name string) *Application {
+func (t *application) SetName(name string) *application {
 	t.Name = name
 	return t
 }
 
 // SetVersion
-func (t *Application) SetVersion(version string) *Application {
+func (t *application) SetVersion(version string) *application {
 	t.Version = version
 	return t
 }
 
 // SetDebug
-func (t *Application) SetDebug(debug bool) *Application {
+func (t *application) SetDebug(debug bool) *application {
 	t.Debug = debug
 	return t
 }
 
 // Use
-func (t *Application) Use(h ...HandlerFunc) *Application {
+func (t *application) Use(h ...HandlerFunc) *application {
 	t.handlers = append(t.handlers, h...)
 	return t
 }
 
 // AddCommand
-func (t *Application) AddCommand(cmds ...*Command) *Application {
+func (t *application) AddCommand(cmds ...*Command) *application {
 	t.commands = append(t.commands, cmds...)
 	// init
 	for _, c := range t.commands {
@@ -134,11 +134,11 @@ func (t *Application) AddCommand(cmds ...*Command) *Application {
 }
 
 // Run 执行
-func (t *Application) Run() {
+func (t *application) Run() {
 	defer func() {
 		if err := recover(); err != nil {
 			switch err.(type) {
-			case *NotFoundError, *UnsupportError:
+			case *NotFoundError, *UnsupportedError:
 				fmt.Println(err)
 				return
 			default:
@@ -195,7 +195,7 @@ func (t *Application) Run() {
 }
 
 // 执行命令
-func (t *Application) call() {
+func (t *application) call() {
 	// 命令行选项效验
 	t.validateOptions()
 
@@ -270,7 +270,7 @@ func (t *Application) call() {
 }
 
 // 命令行选项效验
-func (t *Application) validateOptions() {
+func (t *application) validateOptions() {
 	var options []*Option
 	if !t.singleton {
 		for _, v := range t.commands {
@@ -322,7 +322,7 @@ func (t *Application) validateOptions() {
 }
 
 // 全局帮助
-func (t *Application) globalHelp() {
+func (t *application) globalHelp() {
 	program := argv.Program().Path
 	fg := ""
 	if !t.singleton {
@@ -347,7 +347,7 @@ func (t *Application) globalHelp() {
 }
 
 // 命令帮助
-func (t *Application) commandHelp() {
+func (t *application) commandHelp() {
 	program := argv.Program().Path
 	command := argv.Command()
 	fmt.Println(fmt.Sprintf("Usage: %s %s [opt...]", program, command))
@@ -357,7 +357,7 @@ func (t *Application) commandHelp() {
 }
 
 // 打印全局选项
-func (t *Application) printGlobalOptions() {
+func (t *application) printGlobalOptions() {
 	tabs := "\t"
 	fmt.Println("")
 	fmt.Println("Global Options:")
@@ -366,7 +366,7 @@ func (t *Application) printGlobalOptions() {
 }
 
 // 打印命令
-func (t *Application) printCommands() {
+func (t *application) printCommands() {
 	fmt.Println("")
 	fmt.Println("Commands:")
 	for _, v := range t.commands {
@@ -377,7 +377,7 @@ func (t *Application) printCommands() {
 }
 
 // 打印命令选项
-func (t *Application) printCommandOptions() {
+func (t *application) printCommandOptions() {
 	var options []*Option
 	if !t.singleton {
 		for _, v := range t.commands {
@@ -416,7 +416,7 @@ func (t *Application) printCommandOptions() {
 }
 
 // 版本号
-func (t *Application) version() {
+func (t *application) version() {
 	appName := t.Name
 	appVersion := t.Version
 	frameworkVersion := Version

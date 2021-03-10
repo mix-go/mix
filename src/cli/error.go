@@ -10,12 +10,12 @@ func NewNotFoundError(err error) *NotFoundError {
 	return &NotFoundError{err}
 }
 
-// UnsupportError 不支持错误
-type UnsupportError struct {
+// UnsupportedError 不支持错误
+type UnsupportedError struct {
 	error
 }
 
-// NewUnsupportError 创建不支持错误
-func NewUnsupportError(err error) *UnsupportError {
-	return &UnsupportError{err}
+// NewUnsupportedError 创建不支持错误
+func NewUnsupportedError(err error) *UnsupportedError {
+	return &UnsupportedError{err}
 }
