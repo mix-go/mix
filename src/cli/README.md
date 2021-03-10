@@ -156,13 +156,13 @@ if flag.Match("d", "daemon").Bool() {
 cmd := &cli.Command{
     Name:  "hello",
     Usage: "Echo demo",
-    ErrorHandle: func (err interface{}) {
-        // handle error
-    },
     Run: func() {
         // do something
     },
 }
+cli.SetErrorHandle(func (err interface{}) {
+   // handle error
+})
 cli.AddCommand(cmd).Run()
 ```
 
@@ -172,9 +172,6 @@ cli.AddCommand(cmd).Run()
 cmd := &cli.Command{
     Name:  "hello",
     Usage: "Echo demo",
-    ErrorHandle: func (err interface{}) {
-        // handle panic
-    },
     Run: func() {
         go catch.Call(func() {
             // throw panic
@@ -182,6 +179,9 @@ cmd := &cli.Command{
         })
     },
 }
+cli.SetErrorHandle(func (err interface{}) {
+   // handle panic
+})
 cli.AddCommand(cmd).Run()
 ```
 
@@ -191,16 +191,16 @@ cli.AddCommand(cmd).Run()
 
 ```
 // 获取基础路径(二进制所在目录路径)
-cli.App.BasePath
+cli.App().BasePath
 
 // App名称
-cli.App.Name
+cli.App().Name
 
 // App版本号
-cli.App.Version
+cli.App().Version
 
 // 是否开启debug
-cli.App.Debug
+cli.App().Debug
 ```
 
 ## License

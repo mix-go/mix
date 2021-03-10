@@ -34,8 +34,8 @@ func Call(fn interface{}, args ...interface{}) {
 
 // Error 捕获错误
 func Error(err interface{}) {
-	if cli.App == nil {
+	if cli.iApp == nil {
 		panic(err)
 	}
-	cli.App.ErrorHandle(err)
+	cli.iApp.ErrorHandle(err)
 }

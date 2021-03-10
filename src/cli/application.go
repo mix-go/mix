@@ -10,14 +10,14 @@ import (
 )
 
 var (
-	// App
-	App *Application
+	// iApp
+	iApp *Application
 	// Version
 	Version = "1.0.24"
 )
 
 func init() {
-	App = New("app", "1.0.0")
+	iApp = New("app", "1.0.0")
 }
 
 // New
@@ -30,33 +30,41 @@ func New(name, version string) *Application {
 	return app
 }
 
+// App
+func App() *Application {
+	return iApp
+}
+
 // SetName
 func SetName(name string) *Application {
-	App.Name = name
-	return App
+	return iApp.SetName(name)
 }
 
 // SetVersion
 func SetVersion(version string) *Application {
-	App.Version = version
-	return App
+	return iApp.SetVersion(version)
 }
 
 // SetDebug
 func SetDebug(debug bool) *Application {
-	App.Debug = debug
-	return App
+	return iApp.SetDebug(debug)
+}
+
+// SetErrorHandle
+func SetErrorHandle(h func(err interface{})) *Application {
+	iApp.ErrorHandle = h
+	return iApp
 }
 
 // AddCommand
 func AddCommand(cmds ...*Command) *Application {
-	App.AddCommand(cmds...)
-	return App
+	iApp.AddCommand(cmds...)
+	return iApp
 }
 
 // Run
 func Run() {
-	App.Run()
+	iApp.Run()
 }
 
 // Application
@@ -80,8 +88,32 @@ type Application struct {
 	commands []*Command
 }
 
+// SetName
+func (t *Application) SetName(name string) *Application {
+	t.Name = name
+	return t
+}
+
+// SetVersion
+func (t *Application) SetVersion(version string) *Application {
+	t.Version = version
+	return t
+}
+
+// SetDebug
+func (t *Application) SetDebug(debug bool) *Application {
+	t.Debug = debug
+	return t
+}
+
+// SetErrorHandle
+func (t *Application) SetErrorHandle(h func(err interface{})) *Application {
+	t.ErrorHandle = h
+	return t
+}
+
 // AddCommand
-func (t *Application) AddCommand(cmds ...*Command) {
+func (t *Application) AddCommand(cmds ...*Command) *Application {
 	t.commands = append(t.commands, cmds...)
 	// init
 	for _, c := range t.commands {
@@ -96,6 +128,7 @@ func (t *Application) AddCommand(cmds ...*Command) {
 		argv.Parse(true)
 		flag.Parse()
 	}
+	return t
 }
 
 // Run 执行
