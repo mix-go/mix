@@ -117,10 +117,10 @@ func main() {
 
 ## Refresh singleton
 
-程序执行中配置信息发生变化时，可以刷新实例
+程序执行中配置信息发生变化时，可以刷新单例的实例
 
 ```go
-obj, err := di.Container().Object(name string)
+obj, err := di.Container().Object("foo")
 if err != nil {
     panic(err)
 }
