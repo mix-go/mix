@@ -1,6 +1,6 @@
 > OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
 
-## xStart
+## Mix XStart
 
 A scaffold to quickly create a go project
 
