@@ -27,7 +27,7 @@ func (t *NewCommand) Main() {
 	name := flag.Arguments().First().String("hello")
 
 	prompt := promptui.Select{
-		Label: "Select project type:",
+		Label: "Select project type",
 		Items: []string{"CLI", "API", "Web (contains the websocket)", "gRPC"},
 	}
 	_, result, err := prompt.Run()
