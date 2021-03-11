@@ -1,16 +1,14 @@
 package main
 
 import (
-	"github.com/mix-go/console"
-	"github.com/mix-go/mix/devtool/manifest"
+	"github.com/mix-go/cli"
+	"github.com/mix-go/dotenv"
+	"github.com/mix-go/xstart/commands"
 )
 
-func init() {
-	// Manifest
-	manifest.Init()
-}
-
 func main() {
-	// App
-	console.NewApplication(manifest.ApplicationDefinition, "eventDispatcher", "error").Run()
+	cli.SetName("xstart").
+		SetVersion("1.1.0").
+		SetDebug(dotenv.Getenv("APP_DEBUG").Bool(false))
+	cli.AddCommand(commands.Cmds...).Run()
 }

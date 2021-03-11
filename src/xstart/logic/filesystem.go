@@ -3,7 +3,7 @@ package logic
 import (
 	"errors"
 	"fmt"
-	"github.com/mix-go/console"
+	"github.com/mix-go/cli"
 	"io"
 	"io/ioutil"
 	"os"
@@ -12,7 +12,7 @@ import (
 )
 
 func CopyPath(src, dst string) bool {
-	debug := console.App.Debug
+	debug := cli.App().Debug
 	if debug {
 		fmt.Println("")
 	}
