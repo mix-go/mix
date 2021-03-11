@@ -13,11 +13,11 @@ var (
 	// iApp
 	iApp *application
 	// Version
-	Version = "1.0.24"
+	Version = "1.1.0"
 )
 
 func init() {
-	iApp = New("app", "1.0.0")
+	iApp = New("app", "0.0.0")
 }
 
 // New
