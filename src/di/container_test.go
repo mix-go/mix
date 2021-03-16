@@ -32,7 +32,7 @@ func TestFind(t *testing.T) {
 			Name: "foo",
 			New: func() (i interface{}, e error) {
 				var hc *http.Client
-				if err := c.Find("client", &hc); err != nil {
+				if err := c.Populate("client", &hc); err != nil {
 					panic(err)
 				}
 				return &foo{
@@ -45,7 +45,7 @@ func TestFind(t *testing.T) {
 	_ = c.Provide(objs...)
 
 	var f *foo
-	_ = c.Find("foo", &f)
+	_ = c.Populate("foo", &f)
 	text := fmt.Sprintf("%#v \n", f.Client)
 
 	a.Contains(text, "Timeout:10000000000")
@@ -77,7 +77,7 @@ func TestSingletonConcurrency(t *testing.T) {
 				defer wg.Done()
 
 				var f *foo
-				_ = c.Find("foo", &f)
+				_ = c.Populate("foo", &f)
 
 				mp.Store(i, f)
 			}(wg, i)
@@ -118,7 +118,7 @@ func TestSingletonRefreshConcurrency(t *testing.T) {
 		wg := &sync.WaitGroup{}
 
 		var f *foo
-		_ = c.Find("foo", &f)
+		_ = c.Populate("foo", &f)
 		o, _ := c.Object("foo")
 		_ = o.Refresh()
 
@@ -128,7 +128,7 @@ func TestSingletonRefreshConcurrency(t *testing.T) {
 				defer wg.Done()
 
 				var f *foo
-				_ = c.Find("foo", &f)
+				_ = c.Populate("foo", &f)
 
 				mp.Store(i, f)
 			}(wg, i)

@@ -50,7 +50,7 @@ func init() {
 
 func main() {
     var foo *Foo
-    if err := di.Find("foo", &foo); err != nil {
+    if err := di.Populate("foo", &foo); err != nil {
         panic(err)
     }
     // use foo
@@ -108,7 +108,7 @@ func init() {
 
 func main() {
     var foo *Foo
-    if err := di.Find("foo", &foo); err != nil {
+    if err := di.Populate("foo", &foo); err != nil {
         panic(err)
     }
     // use foo

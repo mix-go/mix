@@ -42,7 +42,7 @@ Developed with Mix Go framework. (openmix.org/mix-go)
 ~~~
 $ xstart new hello
 Use the arrow keys to navigate: ↓ ↑ → ← 
-? Select project type:: 
+? Select project type:
   ▸ CLI
     API
     Web (contains the websocket)

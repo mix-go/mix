@@ -27,9 +27,9 @@ func Provide(objects ...*Object) error {
 	return iContainer.Provide(objects...)
 }
 
-// Find
+// Populate
 func Find(name string, ptr interface{}) error {
-	return iContainer.Find(name, ptr)
+	return iContainer.Populate(name, ptr)
 }
 
 // container
@@ -61,8 +61,8 @@ func (t *container) Object(name string) (*Object, error) {
 	return obj, nil
 }
 
-// Find
-func (t *container) Find(name string, ptr interface{}) error {
+// Populate
+func (t *container) Populate(name string, ptr interface{}) error {
 	obj, err := t.Object(name)
 	if err != nil {
 		return err
