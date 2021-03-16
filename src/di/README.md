@@ -82,7 +82,7 @@ func init() {
             New: func() (interface{}, error) {
                 // reference bar
                 var bar *Bar
-                if err := di.Find("bar", &bar); err != nil {
+                if err := di.Populate("bar", &bar); err != nil {
                     return nil, err
                 }
 

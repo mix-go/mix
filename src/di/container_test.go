@@ -14,7 +14,7 @@ type foo struct {
 	Client *http.Client
 }
 
-func TestFind(t *testing.T) {
+func TestPopulate(t *testing.T) {
 	a := assert.New(t)
 
 	c := New()

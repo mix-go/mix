@@ -28,7 +28,7 @@ func Provide(objects ...*Object) error {
 }
 
 // Populate
-func Find(name string, ptr interface{}) error {
+func Populate(name string, ptr interface{}) error {
 	return iContainer.Populate(name, ptr)
 }
 
