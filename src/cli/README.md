@@ -6,11 +6,9 @@
 
 Command line program development framework
 
-> 该库还有 php 版本：https://github.com/mix-php/console
-
 ## Overview
 
-Mix CLI 是一个命令行骨架，同时它还包括命令行参数获取、全局 panic 捕获，错误信息捕获与处理、程序后台执行等各种命令行开发常用功能，是一个完整的命令行程序开发框架。
+Mix CLI 是一个命令行骨架，同时它还包括命令行参数获取、全局 panic 捕获与处理、程序后台执行等命令行开发常用功能，是一个完整的命令行程序开发框架。
 
 ## Installation
 
