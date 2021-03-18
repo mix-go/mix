@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/manifoldco/promptui"
-	"github.com/mix-go/cli/flag"
+	"github.com/mix-go/xcli/flag"
 	"github.com/mix-go/xstart/github/loading"
 	"github.com/mix-go/xstart/logic"
 	"os"

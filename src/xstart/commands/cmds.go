@@ -1,8 +1,8 @@
 package commands
 
-import "github.com/mix-go/cli"
+import "github.com/mix-go/xcli"
 
-var Cmds = []*cli.Command{
+var Cmds = []*xcli.Command{
 	{
 		Name:  "new",
 		Usage: "\tCreate a project",
