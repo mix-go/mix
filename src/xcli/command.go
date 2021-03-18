@@ -1,4 +1,4 @@
-package cli
+package xcli
 
 // Command
 type Command struct {

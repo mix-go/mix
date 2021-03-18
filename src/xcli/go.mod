@@ -1,4 +1,4 @@
-module github.com/mix-go/cli
+module github.com/mix-go/xcli
 
 go 1.13
 

@@ -1,4 +1,4 @@
-package cli
+package xcli
 
 // NotFoundError 未找到错误
 type NotFoundError struct {

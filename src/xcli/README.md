@@ -15,7 +15,7 @@ Mix CLI 是一个命令行骨架，同时它还包括命令行参数获取、全
 - 安装
 
 ```
-go get -u github.com/mix-go/cli
+go get -u github.com/mix-go/xcli
 ```
 
 ## Quick start
@@ -24,7 +24,7 @@ go get -u github.com/mix-go/cli
 package main
 
 import (
-    "github.com/mix-go/cli"
+    "github.com/mix-go/xcli"
 )
 
 func main() {

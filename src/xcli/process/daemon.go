@@ -3,7 +3,7 @@ package process
 import (
 	"bytes"
 	"fmt"
-	"github.com/mix-go/cli"
+	"github.com/mix-go/xcli"
 	"os"
 	"os/exec"
 	"runtime"
@@ -22,7 +22,7 @@ func Daemon() {
 		ok = true
 	}
 	if !ok {
-		panic(cli.NewUnsupportedError(fmt.Errorf("error: the current operating system does not support daemon execution")))
+		panic(xcli.NewUnsupportedError(fmt.Errorf("error: the current operating system does not support daemon execution")))
 	}
 
 	if getgid() != 1 {

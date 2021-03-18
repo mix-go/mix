@@ -1,10 +1,10 @@
-package cli
+package xcli
 
 import (
 	"errors"
 	"fmt"
-	"github.com/mix-go/cli/argv"
-	"github.com/mix-go/cli/flag"
+	"github.com/mix-go/xcli/argv"
+	"github.com/mix-go/xcli/flag"
 	"os"
 	"strings"
 )

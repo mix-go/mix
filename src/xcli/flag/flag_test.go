@@ -1,7 +1,7 @@
 package flag
 
 import (
-	"github.com/mix-go/cli/argv"
+	"github.com/mix-go/xcli/argv"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
