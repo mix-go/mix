@@ -1,6 +1,6 @@
 > OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
 
-## Mix CLI
+## Mix XCLI
 
 命令行程序开发框架
 

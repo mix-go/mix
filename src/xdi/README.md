@@ -1,6 +1,6 @@
 > OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
 
-## Mix DI
+## Mix XDI
 
 DI、IoC 容器
 
