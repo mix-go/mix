@@ -1,12 +1,10 @@
 > OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
 
-## Mix Worker Pool
+## Mix XWP
 
 通用的工作池
 
 A common worker pool
-
-> 该库还有 php 版本：https://github.com/mix-php/worker-pool
 
 ## Installation
 
@@ -22,14 +20,14 @@ go get -u github.com/mix-go/xwp
 
 ~~~
 type FooWorker struct {
-    workerpool.WorkerTrait
+    xwp.WorkerTrait
 }
 
 func (t *FooWorker) Do(data interface{}) {
     // do something
 }
 
-func NewFooWorker() workerpool.Worker {
+func NewFooWorker() xwp.Worker {
     return &FooWorker{}
 }
 ~~~
@@ -38,7 +36,7 @@ func NewFooWorker() workerpool.Worker {
 
 ~~~
 jobQueue := make(chan interface{}, 200)
-d := workerpool.NewDispatcher(jobQueue, 15, NewFooWorker)
+d := xwp.NewDispatcher(jobQueue, 15, NewFooWorker)
 
 go func() {
     // 投放任务
