@@ -17,7 +17,7 @@ DI, IoC container
 - 安装
 
 ```
-go get -u github.com/mix-go/di
+go get -u github.com/mix-go/xdi
 ```
 
 ## Quick start
@@ -28,14 +28,14 @@ go get -u github.com/mix-go/di
 package main
 
 import (
-    "github.com/mix-go/di"
+    "github.com/mix-go/xdi"
 )
 
 type Foo struct {
 }
 
 func init() {
-    obj := &di.Object{
+    obj := &xdi.Object{
         Name: "foo",
         New: func() (interface{}, error) {
             i := &Foo{}
@@ -43,14 +43,14 @@ func init() {
         },
         Singleton: true,
     }
-    if err := di.Provide(obj); err != nil {
+    if err := xdi.Provide(obj); err != nil {
         panic(err)
     }
 }
 
 func main() {
     var foo *Foo
-    if err := di.Populate("foo", &foo); err != nil {
+    if err := xdi.Populate("foo", &foo); err != nil {
         panic(err)
     }
     // use foo
@@ -65,7 +65,7 @@ func main() {
 package main
 
 import (
-    "github.com/mix-go/di"
+    "github.com/mix-go/xdi"
 )
 
 type Foo struct {
@@ -76,13 +76,13 @@ type Bar struct {
 }
 
 func init() {
-    objs := []*di.Object{
+    objs := []*xdi.Object{
         {
             Name: "foo",
             New: func() (interface{}, error) {
                 // reference bar
                 var bar *Bar
-                if err := di.Populate("bar", &bar); err != nil {
+                if err := xdi.Populate("bar", &bar); err != nil {
                     return nil, err
                 }
 
@@ -101,14 +101,14 @@ func init() {
             },
         },
     }
-    if err := di.Provide(objs...); err != nil {
+    if err := xdi.Provide(objs...); err != nil {
         panic(err)
     }
 }
 
 func main() {
     var foo *Foo
-    if err := di.Populate("foo", &foo); err != nil {
+    if err := xdi.Populate("foo", &foo); err != nil {
         panic(err)
     }
     // use foo
@@ -120,7 +120,7 @@ func main() {
 程序执行中配置信息发生变化时，可以刷新单例的实例
 
 ```go
-obj, err := di.Container().Object("foo")
+obj, err := xdi.Container().Object("foo")
 if err != nil {
     panic(err)
 }

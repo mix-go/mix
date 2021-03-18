@@ -1,4 +1,4 @@
-package di
+package xdi
 
 import (
 	"fmt"

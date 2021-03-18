@@ -1,4 +1,4 @@
-module github.com/mix-go/di
+module github.com/mix-go/xdi
 
 go 1.13
 
