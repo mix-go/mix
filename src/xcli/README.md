@@ -25,6 +25,7 @@ package main
 
 import (
     "github.com/mix-go/xcli"
+    "github.com/mix-go/xcli/flag"
 )
 
 func main() {
@@ -33,6 +34,7 @@ func main() {
         Name:  "hello",
         Usage: "Echo demo",
         Run: func() {
+            name := flag.Match("n", "name").String("default")
             // do something
         },
     }
