@@ -28,20 +28,20 @@ import (
 )
 
 func main() {
-    cli.SetName("app").SetVersion("0.0.0-alpha")
-    cmd := &cli.Command{
+    xcli.SetName("app").SetVersion("0.0.0-alpha")
+    cmd := &xcli.Command{
         Name:  "hello",
         Usage: "Echo demo",
         Run: func() {
             // do something
         },
     }
-    opt := &cli.Option{
+    opt := &xcli.Option{
         Names: []string{"n", "name"},
         Usage: "Your name",
     }
     cmd.AddOption(opt)
-    cli.AddCommand(cmd).Run()
+    xcli.AddCommand(cmd).Run()
 }
 ```
 
@@ -159,14 +159,14 @@ h := func(next func()) {
     }()
     next()
 }
-cmd := &cli.Command{
+cmd := &xcli.Command{
     Name:  "hello",
     Usage: "Echo demo",
     Run: func() {
         // do something
     },
 }
-cli.Use(h).AddCommand(cmd).Run()
+xcli.Use(h).AddCommand(cmd).Run()
 ```
 
 ## Application
@@ -175,16 +175,16 @@ cli.Use(h).AddCommand(cmd).Run()
 
 ```
 // 获取基础路径(二进制所在目录路径)
-cli.App().BasePath
+xcli.App().BasePath
 
 // App名称
-cli.App().Name
+xcli.App().Name
 
 // App版本号
-cli.App().Version
+xcli.App().Version
 
 // 是否开启debug
-cli.App().Debug
+xcli.App().Debug
 ```
 
 ## License
