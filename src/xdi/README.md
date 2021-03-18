@@ -6,8 +6,6 @@ DI、IoC 容器
 
 DI, IoC container
 
-> 该库还有 php 版本：https://github.com/mix-php/bean
-
 ## Overview
 
 一个创建对象以及处理对象依赖关系的库，该库可以实现统一管理依赖，全局对象管理，动态配置刷新等。

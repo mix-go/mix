@@ -2,9 +2,9 @@
 
 ## Mix XStart
 
-A scaffold to quickly create a go project
-
 一个快速创建 go 项目的脚手架
+
+A scaffold to quickly create a go project
 
 ### Installation
 
