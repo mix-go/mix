@@ -55,33 +55,33 @@ Mix Go 是混合型高性能 Go 框架，该框架改造整合了 `gin`, `logrus
 
 - 安装开发工具
 
-~~~
+~~~go
 go get -u github.com/mix-go/mix
 ~~~
 
 - 创建 `api` 应用骨架
 
-~~~
+~~~go
 mix api --name=hello
 ~~~
 
 - 编译到骨架的 `bin` 目录
 
-~~~
+~~~bash
 cd hello
 go build -o bin/go_build_main_go main.go
 ~~~
 
 - 执行
 
-~~~
+~~~go
 cd bin
 ./go_build_main_go
 ~~~
 
 - 启动 `api`
 
-~~~
+~~~bash
 $> ./go_build_main_go api
              ___         
  ______ ___  _ /__ ___ _____ ______ 
@@ -101,7 +101,7 @@ time=2020-08-28 18:54:31 level=info msg=Server start file=api.go:58
 
 访问测试 (新开一个终端)：
 
-```
+```bash
 $> curl http://127.0.0.1:8080/hello
 {"message":"hello, world!","status":200}
 ```
@@ -117,7 +117,7 @@ $> curl http://127.0.0.1:8080/hello
 
 - 安装
 
-```
+```go
 go get -u github.com/mix-go/mix
 ```
 
@@ -125,7 +125,7 @@ go get -u github.com/mix-go/mix
 
 查看命令帮助
 
-~~~
+~~~bash
 $ mix
 Usage: mix [OPTIONS] COMMAND [opt...]
 
@@ -152,25 +152,25 @@ Developed with Mix Go framework. (openmix.org/mix-go)
 
 - console
 
-~~~
+~~~go
 mix new --name=hello
 ~~~
 
 - api
 
-~~~
+~~~go
 mix api --name=hello
 ~~~
 
 - web (含websocket)
 
-~~~
+~~~go
 mix web --name=hello
 ~~~
 
 - grpc
 
-~~~
+~~~go
 mix grpc --name=hello
 ~~~
 
