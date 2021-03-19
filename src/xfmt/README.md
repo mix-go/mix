@@ -14,7 +14,7 @@ Formatting library that can print the internal data of the nested pointer addres
 
 - 安装
 
-```
+```go
 go get -u github.com/mix-go/xfmt
 ```
 
@@ -31,7 +31,7 @@ go get -u github.com/mix-go/xfmt
 
 - 支持 `Tag` 忽略某个引用字段
 
-```
+```go
 type Foo struct {
     Bar *Bar `xfmt:"-"`
 }
@@ -41,7 +41,7 @@ type Foo struct {
 
 包含指针的结构体
 
-```
+```go
 type Level3 struct {
     Name string
 }
@@ -60,7 +60,7 @@ type Level1 struct {
 
 创建变量
 
-```
+```go
 l3 := Level3{Name: "Level3"}
 l2 := Level2{Name: "Level2", Level3: &l3}
 l1 := Level1{Name: "Level1", Level2: &l2, Level2_1: &l2}
@@ -71,21 +71,21 @@ l1 := Level1{Name: "Level1", Level2: &l2, Level2_1: &l2}
 - `fmt` 打印
 
 
-```
+```go
 fmt.Println(fmt.Sprintf("%+v", l1))
 ```
 
-```
+```go
 {Name:Level1 Level2:0xc00009c500 Level2_1:0xc00009c500}
 ```
 
 - `xfmt` 打印：其中 Level3 被定义的 tag 忽略，Level2_1 由于和 Level2 是同一个指针因此后面的忽略处理
 
-```
+```go
 fmt.Println(xfmt.Sprintf("%+v", l1))
 ```
 
-```
+```go
 {Name:Level1 Level2:0xc00009c500:&{Level3:0xc00007f030 Name:Level2} Level2_1:0xc00009c500}
 ```
 
