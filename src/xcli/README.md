@@ -2,13 +2,13 @@
 
 ## Mix XCLI
 
-命令行程序开发框架
+命令行交互指挥官
 
-Command line program development framework
+CLI Interactive Commander
 
 ## Overview
 
-Mix CLI 是一个命令行骨架，同时它还包括命令行参数获取、全局 panic 捕获与处理、程序后台执行等命令行开发常用功能，是一个完整的命令行程序开发框架。
+一个命令行交互与指挥管理工具，它可以让单个 CLI 可以执行多种功能，同时它还包括命令行参数获取、全局 panic 捕获与处理、程序后台执行等命令行开发常用功能。
 
 ## Installation
 
