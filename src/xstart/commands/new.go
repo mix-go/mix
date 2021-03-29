@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	CLI  = "console"
+	CLI  = "cli"
 	API  = "api"
 	Web  = "web"
 	gRPC = "grpc"
