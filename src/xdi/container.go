@@ -41,10 +41,9 @@ type container struct {
 
 // Provide
 func (t *container) Provide(objects ...*Object) error {
-	t.tidyObjects = sync.Map{}
 	for _, o := range objects {
 		if _, ok := t.tidyObjects.Load(o.Name); ok {
-			return fmt.Errorf("error: ")
+			return fmt.Errorf("error: object '%s' existing", o.Name)
 		}
 		t.tidyObjects.Store(o.Name, o)
 	}
