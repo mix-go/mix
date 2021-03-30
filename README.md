@@ -6,6 +6,8 @@
     <h2 align="center">Mix Go<h2>
 </p>
 
+## 
+
 Mix Go 是一个基于 Go 进行快速开发的完整系统，类似前端的 `Vue CLI`，提供：
 
 - 通过 `mix-go/xstart` 实现的交互式的项目脚手架：
