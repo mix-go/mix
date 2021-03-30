@@ -1,10 +1,10 @@
 > OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
 
 <p align="center">
+    <br>
     <img src="https://openmix.org/static/image/logo_go.png" width="120" alt="MixPHP">
+    <h2 align="center">Mix Go<h2>
 </p>
-
-## Mix Go
 
 Mix Go 是一个基于 Go 进行快速开发的完整系统，类似前端的 `Vue CLI`，提供：
 
