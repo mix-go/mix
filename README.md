@@ -32,8 +32,8 @@ Mix Go 是一个基于 Go 进行快速开发的完整系统，类似前端的 `V
 ## 第三方库
 
 - https://github.com/gin-gonic/gin
-- https://gorm.io/gorm
-- https://github.com/go-redis/redis/v8
+- https://gorm.io
+- https://github.com/go-redis/redis
 - https://github.com/jinzhu/configor
 - https://github.com/sirupsen/logrus
 - https://github.com/lestrrat-go/file-rotatelogs
