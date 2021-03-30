@@ -39,9 +39,9 @@ Mix Go 是一个基于 Go 进行快速开发的完整系统，类似前端的 `V
 - https://github.com/lestrrat-go/file-rotatelogs
 - https://github.com/go-session/session
 - https://github.com/go-session/redis
-- https://github.com/gorilla/websocket
 - https://github.com/dgrijalva/jwt-go
-- https://github.com/go-playground/validator/v10
+- https://github.com/gorilla/websocket
+- https://github.com/golang/grpc
 - https://github.com/golang/protobuf
 
 ## 快速开始
