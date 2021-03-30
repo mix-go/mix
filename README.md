@@ -3,7 +3,7 @@
 <p align="center">
     <br>
     <img src="https://openmix.org/static/image/logo_go.png" width="120" alt="MixPHP">
-    <h2 align="center">Mix Go<h2>
+    <br>
 </p>
 
 ## Mix Go
