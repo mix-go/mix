@@ -57,10 +57,10 @@ for REMOTE in $repos; do
 done
 
 # Update app version
-sed -i "" "s/Version = \".*/Version = \"${VERSION##*v}\"/g" ${BASEPATH}/console/application.go
+sed -i "" "s/Version = \".*/Version = \"${VERSION##*v}\"/g" ${BASEPATH}/xcli/application.go
 
 # Update devtool version
-sed -i "" "s/FrameworkVersion = \".*/FrameworkVersion = \"${VERSION##*v}\"/g" ${BASEPATH}/../devtool/commands/version.go
+sed -i "" "s/FrameworkVersion = \".*/FrameworkVersion = \"${VERSION##*v}\"/g" ${BASEPATH}/xstart/commands/version.go
 
 TIME=$(echo "$(date +%s) - $NOW" | bc)
 
