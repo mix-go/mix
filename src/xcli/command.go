@@ -4,7 +4,12 @@ package xcli
 type Command struct {
 	// 命令名称
 	Name string
-	// 使用描述
+	// 简短描述
+	Short string
+	// 详细描述
+	Long string
+	// 使用范例
+	// "Usage: %s %s [opt...]"
 	Usage string
 	// 选项
 	Options []*Option
@@ -31,5 +36,5 @@ type RunI interface {
 // Option
 type Option struct {
 	Names []string
-	Usage string
+	Short string
 }

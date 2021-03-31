@@ -371,7 +371,7 @@ func (t *application) printCommands() {
 	fmt.Println("Commands:")
 	for _, v := range t.commands {
 		command := v.Name
-		usage := v.Usage
+		usage := v.Short
 		fmt.Println(fmt.Sprintf("  %s\t%s", command, usage))
 	}
 }
@@ -410,7 +410,7 @@ func (t *application) printCommandOptions() {
 			}
 		}
 		fg := strings.Join(flags, ", ")
-		usage := o.Usage
+		usage := o.Short
 		fmt.Println(fmt.Sprintf("  %s\t%s", fg, usage))
 	}
 }

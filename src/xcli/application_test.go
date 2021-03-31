@@ -20,14 +20,14 @@ func TestCommandRun(t *testing.T) {
 
 	cmd := &Command{
 		Name:  "foo",
-		Usage: "bar",
+		Short: "bar",
 		Run: func() {
 			ok = true
 		},
 	}
 	opt := &Option{
 		Names: []string{"a", "bc"},
-		Usage: "foo",
+		Short: "foo",
 	}
 	cmd.AddOption(opt)
 	app := New("test", "1.0.0")
@@ -48,7 +48,7 @@ func TestSingletonCommandRun(t *testing.T) {
 
 	cmd := &Command{
 		Name:  "foo",
-		Usage: "bar",
+		Short: "bar",
 		Run: func() {
 			ok = true
 		},
@@ -73,7 +73,7 @@ func TestDefaultCommandRun(t *testing.T) {
 
 	cmd := &Command{
 		Name:  "foo",
-		Usage: "bar",
+		Short: "bar",
 		Run: func() {
 			ok = true
 		},
@@ -94,7 +94,7 @@ func TestDefaultCommandRun(t *testing.T) {
 
 	cmd = &Command{
 		Name:  "foo",
-		Usage: "bar",
+		Short: "bar",
 		Run: func() {
 			ok = true
 		},
@@ -117,7 +117,7 @@ func TestCommandNotFound(t *testing.T) {
 
 	cmd := &Command{
 		Name:  "foo",
-		Usage: "bar",
+		Short: "bar",
 		Run: func() {
 			ok = true
 		},
@@ -135,7 +135,7 @@ func TestCommandNotFound(t *testing.T) {
 
 	cmd = &Command{
 		Name:  "foo",
-		Usage: "bar",
+		Short: "bar",
 		Run: func() {
 			ok = true
 		},
@@ -153,13 +153,13 @@ func TestCommandPrint(t *testing.T) {
 	flag.Parse()
 	cmd := &Command{
 		Name:  "foo",
-		Usage: "bar",
+		Short: "bar",
 		Run: func() {
 		},
 	}
 	opt := &Option{
 		Names: []string{"a", "bc"},
-		Usage: "foo",
+		Short: "foo",
 	}
 	cmd.AddOption(opt)
 	app := New("test", "1.0.0")
@@ -204,14 +204,14 @@ func TestCommandPrint(t *testing.T) {
 	flag.Parse()
 	cmd = &Command{
 		Name:  "foo",
-		Usage: "bar",
+		Short: "bar",
 		Run: func() {
 		},
 		Singleton: true,
 	}
 	opt = &Option{
 		Names: []string{"a", "bc"},
-		Usage: "foo",
+		Short: "foo",
 	}
 	cmd.AddOption(opt)
 	app = New("test", "1.0.0")
@@ -230,7 +230,7 @@ func TestHandlers(t *testing.T) {
 
 	cmd := &Command{
 		Name:  "foo",
-		Usage: "bar",
+		Short: "bar",
 		Run: func() {
 			result = append(result, 0)
 		},
