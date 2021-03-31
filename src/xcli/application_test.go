@@ -154,6 +154,8 @@ func TestCommandPrint(t *testing.T) {
 	cmd := &Command{
 		Name:  "foo",
 		Short: "bar",
+		Long:  "bar bar",
+		Usage: "Usage: %s %s [ABC..]",
 		Run: func() {
 		},
 	}
@@ -205,6 +207,8 @@ func TestCommandPrint(t *testing.T) {
 	cmd = &Command{
 		Name:  "foo",
 		Short: "bar",
+		Long:  "bar bar",
+		Usage: "Usage: %s [ABC..]",
 		Run: func() {
 		},
 		Singleton: true,

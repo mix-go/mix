@@ -32,7 +32,7 @@ func main() {
     xcli.SetName("app").SetVersion("0.0.0-alpha")
     cmd := &xcli.Command{
         Name:  "hello",
-        Usage: "Echo demo",
+        Short: "Echo demo",
         Run: func() {
             name := flag.Match("n", "name").String("default")
             // do something
@@ -40,7 +40,7 @@ func main() {
     }
     opt := &xcli.Option{
         Names: []string{"n", "name"},
-        Usage: "Your name",
+        Short: "Your name",
     }
     cmd.AddOption(opt)
     xcli.AddCommand(cmd).Run()
@@ -163,7 +163,7 @@ h := func(next func()) {
 }
 cmd := &xcli.Command{
     Name:  "hello",
-    Usage: "Echo demo",
+    Short: "Echo demo",
     Run: func() {
         // do something
     },

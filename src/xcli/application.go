@@ -194,14 +194,8 @@ func (t *application) Run() {
 	t.call()
 }
 
-// 执行命令
-func (t *application) call() {
-	// 命令行选项效验
-	t.validateOptions()
-
-	// 提取命令
+func (t *application) getCommand(n string) *Command {
 	var cmd *Command
-	command := argv.Command()
 	if t.singleton {
 		// 单命令
 		for _, c := range t.commands {
@@ -215,12 +209,23 @@ func (t *application) call() {
 		}
 	} else {
 		for _, c := range t.commands {
-			if c.Name == command {
+			if c.Name == n {
 				cmd = c
 				break
 			}
 		}
 	}
+	return cmd
+}
+
+// 执行命令
+func (t *application) call() {
+	// 命令行选项效验
+	t.validateOptions()
+
+	// 提取命令
+	command := argv.Command()
+	cmd := t.getCommand(command)
 	if cmd == nil {
 		panic(NewNotFoundError(fmt.Errorf("'%s' is not command, see '%s --help'.", command, argv.Program().Path)))
 	}
@@ -323,12 +328,26 @@ func (t *application) validateOptions() {
 
 // 全局帮助
 func (t *application) globalHelp() {
-	program := argv.Program().Path
-	fg := ""
-	if !t.singleton {
-		fg = " [OPTIONS] COMMAND"
+	command := argv.Command()
+	cmd := t.getCommand(command)
+	if command !="" && cmd == nil {
+		panic(NewNotFoundError(fmt.Errorf("'%s' is not command, see '%s --help'.", command, argv.Program().Path)))
 	}
-	fmt.Println(fmt.Sprintf("Usage: %s%s [opt...]", program, fg))
+
+	if cmd != nil && cmd.Long != "" {
+		fmt.Println(cmd.Long)
+		fmt.Println()
+	}
+	program := argv.Program().Path
+	if !t.singleton {
+		fmt.Println(fmt.Sprintf("Usage: %s [GLOBAL OPTIONS] COMMAND [ARG...]", program))
+	} else {
+		if cmd != nil && cmd.Usage != "" {
+			fmt.Println(fmt.Sprintf(cmd.Usage, program))
+		} else {
+			fmt.Println(fmt.Sprintf("Usage: %s [ARG...]", program))
+		}
+	}
 	if !t.singleton {
 		t.printCommands()
 	} else {
@@ -336,7 +355,7 @@ func (t *application) globalHelp() {
 	}
 	t.printGlobalOptions()
 	fmt.Println("")
-	fg = ""
+	fg := ""
 	if !t.singleton {
 		fg = " COMMAND"
 	}
@@ -348,9 +367,22 @@ func (t *application) globalHelp() {
 
 // 命令帮助
 func (t *application) commandHelp() {
-	program := argv.Program().Path
 	command := argv.Command()
-	fmt.Println(fmt.Sprintf("Usage: %s %s [opt...]", program, command))
+	cmd := t.getCommand(command)
+	if cmd == nil {
+		panic(NewNotFoundError(fmt.Errorf("'%s' is not command, see '%s --help'.", command, argv.Program().Path)))
+	}
+
+	if cmd.Long != "" {
+		fmt.Println(cmd.Long)
+		fmt.Println()
+	}
+	program := argv.Program().Path
+	if cmd.Usage != "" {
+		fmt.Println(fmt.Sprintf(cmd.Usage, program, command))
+	} else {
+		fmt.Println(fmt.Sprintf("Usage: %s %s [ARG...]", program, command))
+	}
 	t.printCommandOptions()
 	fmt.Println("")
 	fmt.Println("Developed with Mix Go framework. (openmix.org/mix-go)")
@@ -371,8 +403,8 @@ func (t *application) printCommands() {
 	fmt.Println("Commands:")
 	for _, v := range t.commands {
 		command := v.Name
-		usage := v.Short
-		fmt.Println(fmt.Sprintf("  %s\t%s", command, usage))
+		short := v.Short
+		fmt.Println(fmt.Sprintf("  %s\t%s", command, short))
 	}
 }
 
@@ -410,8 +442,8 @@ func (t *application) printCommandOptions() {
 			}
 		}
 		fg := strings.Join(flags, ", ")
-		usage := o.Short
-		fmt.Println(fmt.Sprintf("  %s\t%s", fg, usage))
+		short := o.Short
+		fmt.Println(fmt.Sprintf("  %s\t%s", fg, short))
 	}
 }
 
