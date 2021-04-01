@@ -1,6 +1,6 @@
 > OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
 
-## Mix XStart
+## Mix CLI
 
 一个快速创建 go 项目的脚手架
 
@@ -11,7 +11,7 @@ A scaffold to quickly create a go project
 - 安装
 
 ```
-go get -u github.com/mix-go/xstart
+go get -u github.com/mix-go/mixcli
 ```
 
 ### Help
@@ -19,8 +19,8 @@ go get -u github.com/mix-go/xstart
 查看命令帮助
 
 ~~~
-$ xstart
-Usage: xstart [OPTIONS] COMMAND [opt...]
+$ mixcli
+Usage: mixcli [OPTIONS] COMMAND [opt...]
 
 Commands:
   new           Create a project
@@ -30,7 +30,7 @@ Global Options:
   -v, --version Print version information
 
 
-Run 'xstart COMMAND --help' for more information on a command.
+Run 'mixcli COMMAND --help' for more information on a command.
 
 Developed with Mix Go framework. (openmix.org/mix-go)
 ~~~
@@ -40,7 +40,7 @@ Developed with Mix Go framework. (openmix.org/mix-go)
 创建项目
 
 ~~~
-$ xstart new hello
+$ mixcli new hello
 Use the arrow keys to navigate: ↓ ↑ → ← 
 ? Select project type:
   ▸ CLI
