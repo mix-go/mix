@@ -60,7 +60,7 @@ done
 sed -i "" "s/Version = \".*/Version = \"${VERSION##*v}\"/g" ${BASEPATH}/xcli/application.go
 
 # Update devtool version
-sed -i "" "s/FrameworkVersion = \".*/FrameworkVersion = \"${VERSION##*v}\"/g" ${BASEPATH}/xstart/commands/version.go
+sed -i "" "s/FrameworkVersion = \".*/FrameworkVersion = \"${VERSION##*v}\"/g" ${BASEPATH}/mixcli/commands/version.go
 
 TIME=$(echo "$(date +%s) - $NOW" | bc)
 
