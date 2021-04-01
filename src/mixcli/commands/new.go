@@ -122,10 +122,13 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 				}
 				fi, err := f.Stat()
 				if err != nil {
+					f.Close()
 					continue
 				}
 				current = fi.Size()
 				bar.SetCurrent(current)
+				f.Close()
+				time.Sleep(time.Millisecond * 100)
 			}
 		}()
 		err = cmd.Run()
