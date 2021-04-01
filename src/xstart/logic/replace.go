@@ -46,3 +46,18 @@ func ReplaceMod(root string) error {
 	}
 	return nil
 }
+
+func ReplaceMain(root, old, new string) error {
+	path := fmt.Sprintf("%s/main.go", root)
+	text, err := ReadAll(path)
+	if err != nil {
+		return err
+	}
+	str := string(text)
+	reg := regexp.MustCompile(old)
+	str = reg.ReplaceAllString(str, new)
+	if err := WriteToFile(path, str); err != nil {
+		return err
+	}
+	return nil
+}
