@@ -8,7 +8,7 @@ import (
 
 func main() {
 	xcli.SetName("xstart").
-		SetVersion("1.1.1").
+		SetVersion(commands.FrameworkVersion).
 		SetDebug(dotenv.Getenv("APP_DEBUG").Bool(false))
 	xcli.AddCommand(commands.Cmds...).Run()
 }

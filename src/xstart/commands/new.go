@@ -3,9 +3,9 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"github.com/cheggaaa/pb/v3"
 	"github.com/manifoldco/promptui"
 	"github.com/mix-go/xcli/flag"
-	"github.com/mix-go/xstart/github/loading"
 	"github.com/mix-go/xstart/logic"
 	"os"
 	"os/exec"
@@ -14,10 +14,18 @@ import (
 )
 
 var (
-	CLI  = "cli"
-	API  = "api"
-	Web  = "web"
-	gRPC = "grpc"
+	CLI     = "cli"
+	API     = "api"
+	Web     = "web"
+	gRPC    = "grpc"
+	None    = "none"
+	Gorm    = "gorm"
+	Xorm    = "xorm"
+	Zap     = "zap"
+	Logrus  = "logrus"
+	GoRedis = "go-redis"
+	Yes     = "yes"
+	No      = "no"
 )
 
 type NewCommand struct {
@@ -31,6 +39,7 @@ func (t *NewCommand) Main() {
 			Label: label,
 			Items: items,
 		}
+		prompt.HideSelected = true
 		_, result, err := prompt.Run()
 		if err != nil {
 			return ""
@@ -56,35 +65,22 @@ func (t *NewCommand) Main() {
 		return
 	}
 
-	var (
-		Yes = "yes"
-		No  = "no"
-	)
-
 	useDotenv := promp("Use .env configuration file", []string{Yes, No})
-
 	useConf := promp("Use .yml, .json, .toml configuration files", []string{Yes, No})
 
-	None := "none"
-
-	var selectDb string
-	var (
-		Gorm = "gorm"
-		Xorm = "Xorm"
-	)
-	selectDb = promp("Select database library", []string{Gorm, Xorm, None})
-
 	var selectLog string
-	var (
-		Zap    = "zap"
-		Logrus = "logrus"
-	)
 	selectLog = promp("Select logger library", []string{Zap, Logrus, None})
 
-	t.NewProject(name, selectType, useDotenv, useConf, selectLog, selectDb)
+	var selectDb string
+	selectDb = promp("Select database library", []string{Gorm, Xorm, None})
+
+	var selectRedis string
+	selectRedis = promp("Select redis library", []string{GoRedis, None})
+
+	t.NewProject(name, selectType, useDotenv, useConf, selectLog, selectDb, selectRedis)
 }
 
-func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog, selectDb string) {
+func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog, selectDb, selectRedis string) {
 	ver := ""
 	switch selectType {
 	case CLI, API, Web, gRPC:
@@ -112,9 +108,34 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 	sdir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/%s-skeleton@%s", os.Getenv("GOPATH"), selectType, ver)
 	if _, err := os.Stat(sdir); err != nil {
 		cmd := exec.Command("go", "get", fmt.Sprintf("github.com/mix-go/%s-skeleton@%s", selectType, ver))
-		loader := loading.StartNew(fmt.Sprintf("Skeleton local not found, exec 'go get github.com/mix-go/%s-skeleton@%s'", selectType, ver))
+		fmt.Printf("Skeleton local not found, exec 'go get github.com/mix-go/%s-skeleton@%s'\n", selectType, ver)
+		count := 8 * 1024
+		current := int64(0)
+		bar := pb.StartNew(count)
+		go func() {
+			path := fmt.Sprintf("%s/pkg/mod/cache/download/github.com/mix-go/cli-skeleton/@v/%s.zip", os.Getenv("GOPATH"), ver)
+			for {
+				f, err := os.Open(path)
+				if err != nil {
+					continue
+				}
+				fi, err := f.Stat()
+				if err != nil {
+					continue
+				}
+				current = fi.Size()
+				bar.SetCurrent(current)
+			}
+		}()
 		err = cmd.Run()
-		loader.Stop()
+		if err == nil {
+			bar.SetTotal(current)
+			bar.SetCurrent(current)
+		} else {
+			bar.SetTotal(0)
+			bar.SetCurrent(0)
+		}
+		bar.Finish()
 		if err != nil {
 			fmt.Println(fmt.Sprintf("Exec failed: %s", err.Error()))
 			fmt.Println("Please try again, or manually execute 'go get ***'")
@@ -137,22 +158,13 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 	}
 	fmt.Println(" > ok")
 
-	fmt.Print(" - Processing package name")
-	if err := logic.ReplaceName(dest, fmt.Sprintf("github.com/mix-go/%s-skeleton", selectType), name); err != nil {
-		panic(errors.New("Replace failed"))
-	}
-	if err := logic.ReplaceMod(dest); err != nil {
-		panic(errors.New("Replace go.mod failed"))
-	}
-	fmt.Println(" > ok")
-
 	if useDotenv == "no" {
 		fmt.Print(" - Processing .env")
 		if err := logic.ReplaceMain(dest, `_ "github.com/mix-go/cli-skeleton/dotenv"`, ""); err != nil {
 			panic(errors.New("Replace failed"))
 		}
-		_ = os.Remove(fmt.Sprintf("%s/dotenv", dest))
-		_ = os.Remove(fmt.Sprintf("%s/.env", dest))
+		_ = os.RemoveAll(fmt.Sprintf("%s/dotenv", dest))
+		_ = os.RemoveAll(fmt.Sprintf("%s/.env", dest))
 		fmt.Println(" > ok")
 	}
 
@@ -161,36 +173,53 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		if err := logic.ReplaceMain(dest, `_ "github.com/mix-go/cli-skeleton/configor"`, ""); err != nil {
 			panic(errors.New("Replace failed"))
 		}
-		_ = os.Remove(fmt.Sprintf("%s/configor", dest))
-		_ = os.Remove(fmt.Sprintf("%s/conf", dest))
+		_ = os.RemoveAll(fmt.Sprintf("%s/configor", dest))
+		_ = os.RemoveAll(fmt.Sprintf("%s/conf", dest))
 		fmt.Println(" > ok")
 	}
 
 	switch selectLog {
-	case "zap":
+	case Zap:
 		_ = os.Remove(fmt.Sprintf("%s/di/logrus.go", dest))
 		break
-	case "logrus":
+	case Logrus:
 		_ = os.Remove(fmt.Sprintf("%s/di/zap.go", dest))
 		break
-	case "none":
+	case None:
 		_ = os.Remove(fmt.Sprintf("%s/di/logrus.go", dest))
 		_ = os.Remove(fmt.Sprintf("%s/di/zap.go", dest))
 		break
 	}
 
 	switch selectDb {
-	case "gorm":
+	case Gorm:
 		_ = os.Remove(fmt.Sprintf("%s/di/xorm.go", dest))
 		break
-	case "xorm":
+	case Xorm:
 		_ = os.Remove(fmt.Sprintf("%s/di/gorm.go", dest))
 		break
-	case "none":
+	case None:
 		_ = os.Remove(fmt.Sprintf("%s/di/gorm.go", dest))
 		_ = os.Remove(fmt.Sprintf("%s/di/xorm.go", dest))
 		break
 	}
+
+	switch selectRedis {
+	case GoRedis:
+		break
+	case None:
+		_ = os.Remove(fmt.Sprintf("%s/di/goredis.go", dest))
+		break
+	}
+
+	fmt.Print(" - Processing package name")
+	if err := logic.ReplaceName(dest, fmt.Sprintf("github.com/mix-go/%s-skeleton", selectType), name); err != nil {
+		panic(errors.New("Replace failed"))
+	}
+	if err := logic.ReplaceMod(dest); err != nil {
+		panic(errors.New("Replace go.mod failed"))
+	}
+	fmt.Println(" > ok")
 
 	fmt.Println(fmt.Sprintf("Project '%s' is generated", name))
 }
