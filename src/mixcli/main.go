@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/mix-go/xcli"
 	"github.com/mix-go/dotenv"
-	"github.com/mix-go/xstart/commands"
+	"github.com/mix-go/mixcli/commands"
 )
 
 func main() {

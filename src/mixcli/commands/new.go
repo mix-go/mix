@@ -6,7 +6,7 @@ import (
 	"github.com/cheggaaa/pb/v3"
 	"github.com/manifoldco/promptui"
 	"github.com/mix-go/xcli/flag"
-	"github.com/mix-go/xstart/logic"
+	"github.com/mix-go/mixcli/logic"
 	"os"
 	"os/exec"
 	"runtime"

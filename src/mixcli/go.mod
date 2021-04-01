@@ -1,4 +1,4 @@
-module github.com/mix-go/xstart
+module github.com/mix-go/mixcli
 
 go 1.13
 
