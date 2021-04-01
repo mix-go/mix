@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"github.com/cheggaaa/pb/v3"
 	"github.com/manifoldco/promptui"
-	"github.com/mix-go/xcli/flag"
 	"github.com/mix-go/mixcli/logic"
+	"github.com/mix-go/xcli/flag"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
+	"time"
 )
 
 var (
@@ -141,6 +142,7 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 			fmt.Println("Please try again, or manually execute 'go get ***'")
 			return
 		}
+		time.Sleep(2 * time.Second) // 等待一会，让 gomod 完成解压
 		_ = os.Remove(fmt.Sprintf("%s/bin/%s-skeleton", os.Getenv("GOPATH"), selectType))
 		fmt.Println(fmt.Sprintf("Skeleton 'github.com/mix-go/%s-skeleton@%s' download is completed", selectType, ver))
 	} else {
