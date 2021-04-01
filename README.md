@@ -10,11 +10,11 @@
 
 Mix Go 是一个基于 Go 进行快速开发的完整系统，类似前端的 `Vue CLI`，提供：
 
-- 通过 `mix-go/xstart` 实现的交互式的项目脚手架：
+- 通过 `mix-go/mixcli` 实现的交互式的项目脚手架：
   - 可以生成 `cli`, `api`, `web`, `grpc` 多种项目代码
   - 生成的代码开箱即用
   - 可选择是否需要 `.env` 环境配置
-  - 可选择是否需要 `YAML`, `JSON`, `TOML` 等独立配置
+  - 可选择是否需要 `.yal`, `.json`, `.toml` 等独立配置
   - 可选择使用 `gorm`, `xorm` 的数据库
   - 可选择使用 `logrus`, `zap` 的日志库
 - 通过 `mix-go/xcli` 实现的命令行原型开发。
@@ -22,7 +22,7 @@ Mix Go 是一个基于 Go 进行快速开发的完整系统，类似前端的 `V
 
 ## 官方库
 
-- https://github.com/mix-go/xstart
+- https://github.com/mix-go/mixcli
 - https://github.com/mix-go/xcli
 - https://github.com/mix-go/xdi
 - https://github.com/mix-go/xwp
@@ -35,7 +35,9 @@ Mix Go 是一个基于 Go 进行快速开发的完整系统，类似前端的 `V
 - https://gorm.io
 - https://github.com/go-redis/redis
 - https://github.com/jinzhu/configor
+- https://github.com/uber-go/zap
 - https://github.com/sirupsen/logrus
+- https://github.com/natefinch/lumberjack
 - https://github.com/lestrrat-go/file-rotatelogs
 - https://github.com/go-session/session
 - https://github.com/go-session/redis
@@ -47,11 +49,11 @@ Mix Go 是一个基于 Go 进行快速开发的完整系统，类似前端的 `V
 ## 快速开始
 
 ```
-go get -u github.com/mix-go/xstart
+go get -u github.com/mix-go/mixcli
 ```
 
 ~~~
-$ xstart new hello
+$ mixcli new hello
 Use the arrow keys to navigate: ↓ ↑ → ← 
 ? Select project type:
   ▸ CLI
