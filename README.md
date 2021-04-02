@@ -40,6 +40,12 @@ Use the arrow keys to navigate: ↓ ↑ → ←
     gRPC
 ~~~
 
+## 技术交流
+
+知乎：https://www.zhihu.com/people/onanying   
+微博：http://weibo.com/onanying    
+官方QQ群：[284806582](https://shang.qq.com/wpa/qunwpa?idkey=b3a8618d3977cda4fed2363a666b081a31d89e3d31ab164497f53b72cf49968a), [825122875](http://shang.qq.com/wpa/qunwpa?idkey=d2908b0c7095fc7ec63a2391fa4b39a8c5cb16952f6cfc3f2ce4c9726edeaf20)，敲门暗号：goer
+
 ## 编写一个 CLI 程序
 
 ## 编写一个 API 服务
@@ -51,12 +57,6 @@ Use the arrow keys to navigate: ↓ ↑ → ←
 ## 编写一个 gRPC 服务、客户端
 
 ## 编写一个 Worker Pool 队列消费
-
-## 技术交流
-
-知乎：https://www.zhihu.com/people/onanying   
-微博：http://weibo.com/onanying    
-官方QQ群：[284806582](https://shang.qq.com/wpa/qunwpa?idkey=b3a8618d3977cda4fed2363a666b081a31d89e3d31ab164497f53b72cf49968a), [825122875](http://shang.qq.com/wpa/qunwpa?idkey=d2908b0c7095fc7ec63a2391fa4b39a8c5cb16952f6cfc3f2ce4c9726edeaf20)，敲门暗号：goer
 
 ## 依赖
 
