@@ -69,7 +69,6 @@ func (t *NewCommand) Main() {
 	useDotenv := promp("Use .env configuration file", []string{Yes, No})
 	useConf := promp("Use .yml, .json, .toml configuration files", []string{Yes, No})
 
-	// 只有 CLI 可以不使用 Logger
 	var selectLog string
 	var selectLogItems []string
 	if selectType == CLI {
@@ -80,7 +79,13 @@ func (t *NewCommand) Main() {
 	selectLog = promp("Select logger library", selectLogItems)
 
 	var selectDb string
-	selectDb = promp("Select database library", []string{Gorm, Xorm, None})
+	var selectDbItems []string
+	if selectType == API || selectType == Web {
+		selectDbItems = []string{Gorm, Xorm}
+	} else {
+		selectDbItems = []string{Gorm, Xorm, None}
+	}
+	selectDb = promp("Select database library", selectDbItems)
 
 	var selectRedis string
 	selectRedis = promp("Select redis library", []string{GoRedis, None})
