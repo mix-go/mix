@@ -69,8 +69,15 @@ func (t *NewCommand) Main() {
 	useDotenv := promp("Use .env configuration file", []string{Yes, No})
 	useConf := promp("Use .yml, .json, .toml configuration files", []string{Yes, No})
 
+	// 只有 CLI 可以不使用 Logger
 	var selectLog string
-	selectLog = promp("Select logger library", []string{Zap, Logrus, None})
+	var selectLogItems []string
+	if selectType == CLI {
+		selectLogItems = []string{Zap, Logrus, None}
+	} else {
+		selectLogItems = []string{Zap, Logrus}
+	}
+	selectLog = promp("Select logger library", selectLogItems)
 
 	var selectDb string
 	selectDb = promp("Select database library", []string{Gorm, Xorm, None})
@@ -122,12 +129,12 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 				}
 				fi, err := f.Stat()
 				if err != nil {
-					f.Close()
+					_ = f.Close()
 					continue
 				}
 				current = fi.Size()
 				bar.SetCurrent(current)
-				f.Close()
+				_ = f.Close()
 				time.Sleep(time.Millisecond * 100)
 			}
 		}()
@@ -185,6 +192,9 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 
 	switch selectLog {
 	case Zap:
+		if err := logic.ReplaceAll(dest, `logger := di.Logrus()`, `logger := di.Zap()`); err != nil {
+			panic(errors.New("Replace failed"))
+		}
 		_ = os.Remove(fmt.Sprintf("%s/di/logrus.go", dest))
 		break
 	case Logrus:
@@ -218,7 +228,7 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 	}
 
 	fmt.Print(" - Processing package name")
-	if err := logic.ReplaceName(dest, fmt.Sprintf("github.com/mix-go/%s-skeleton", selectType), name); err != nil {
+	if err := logic.ReplaceAll(dest, fmt.Sprintf("github.com/mix-go/%s-skeleton", selectType), name); err != nil {
 		panic(errors.New("Replace failed"))
 	}
 	if err := logic.ReplaceMod(dest); err != nil {
