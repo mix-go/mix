@@ -330,7 +330,7 @@ func (t *application) validateOptions() {
 func (t *application) globalHelp() {
 	command := argv.Command()
 	cmd := t.getCommand(command)
-	if command !="" && cmd == nil {
+	if command != "" && cmd == nil {
 		panic(NewNotFoundError(fmt.Errorf("'%s' is not command, see '%s --help'.", command, argv.Program().Path)))
 	}
 
@@ -342,8 +342,8 @@ func (t *application) globalHelp() {
 	if !t.singleton {
 		fmt.Println(fmt.Sprintf("Usage: %s [GLOBAL OPTIONS] COMMAND [ARG...]", program))
 	} else {
-		if cmd != nil && cmd.Usage != "" {
-			fmt.Println(fmt.Sprintf(cmd.Usage, program))
+		if cmd != nil && cmd.UsageF != "" {
+			fmt.Println(fmt.Sprintf(cmd.UsageF, program))
 		} else {
 			fmt.Println(fmt.Sprintf("Usage: %s [ARG...]", program))
 		}
@@ -378,8 +378,8 @@ func (t *application) commandHelp() {
 		fmt.Println()
 	}
 	program := argv.Program().Path
-	if cmd.Usage != "" {
-		fmt.Println(fmt.Sprintf(cmd.Usage, program, command))
+	if cmd.UsageF != "" {
+		fmt.Println(fmt.Sprintf(cmd.UsageF, program, command))
 	} else {
 		fmt.Println(fmt.Sprintf("Usage: %s %s [ARG...]", program, command))
 	}
@@ -442,8 +442,7 @@ func (t *application) printCommandOptions() {
 			}
 		}
 		fg := strings.Join(flags, ", ")
-		short := o.Short
-		fmt.Println(fmt.Sprintf("  %s\t%s", fg, short))
+		fmt.Println(fmt.Sprintf("  %s\t%s", fg, o.Usage))
 	}
 }
 

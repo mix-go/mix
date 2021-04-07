@@ -27,7 +27,7 @@ func TestCommandRun(t *testing.T) {
 	}
 	opt := &Option{
 		Names: []string{"a", "bc"},
-		Short: "foo",
+		Usage: "foo",
 	}
 	cmd.AddOption(opt)
 	app := New("test", "1.0.0")
@@ -152,16 +152,16 @@ func TestCommandPrint(t *testing.T) {
 	argv.Parse()
 	flag.Parse()
 	cmd := &Command{
-		Name:  "foo",
-		Short: "bar",
-		Long:  "bar bar",
-		Usage: "Usage: %s %s [ABC..]",
+		Name:   "foo",
+		Short:  "bar",
+		Long:   "bar bar",
+		UsageF: "UsageF: %s %s [ABC..]",
 		Run: func() {
 		},
 	}
 	opt := &Option{
 		Names: []string{"a", "bc"},
-		Short: "foo",
+		Usage: "foo",
 	}
 	cmd.AddOption(opt)
 	app := New("test", "1.0.0")
@@ -205,17 +205,17 @@ func TestCommandPrint(t *testing.T) {
 	argv.Parse()
 	flag.Parse()
 	cmd = &Command{
-		Name:  "foo",
-		Short: "bar",
-		Long:  "bar bar",
-		Usage: "Usage: %s [ABC..]",
+		Name:   "foo",
+		Short:  "bar",
+		Long:   "bar bar",
+		UsageF: "UsageF: %s [ABC..]",
 		Run: func() {
 		},
 		Singleton: true,
 	}
 	opt = &Option{
 		Names: []string{"a", "bc"},
-		Short: "foo",
+		Usage: "foo",
 	}
 	cmd.AddOption(opt)
 	app = New("test", "1.0.0")

@@ -12,9 +12,9 @@ type Command struct {
 	Long string
 
 	// 使用范例
-	// 单命令："Usage: %s [ARG...]"
 	// 子命令："Usage: %s %s [ARG...]"
-	Usage string
+	// 单命令："Usage: %s [ARG...]"
+	UsageF string
 
 	// 选项
 	Options []*Option
@@ -44,5 +44,5 @@ type RunI interface {
 // Option
 type Option struct {
 	Names []string
-	Short string
+	Usage string
 }
