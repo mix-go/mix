@@ -48,10 +48,16 @@ Use the arrow keys to navigate: ↓ ↑ → ←
 
 ## 编写一个 CLI 程序
 
-首先我们使用 `mixcli` 命令创建一个 Console 项目骨架：
+首先我们使用 `mixcli` 命令创建一个项目骨架：
 
 ~~~
-mixcli new hello
+$> mixcli new hello
+Use the arrow keys to navigate: ↓ ↑ → ← 
+? Select project type:
+  ▸ CLI
+    API
+    Web (contains the websocket)
+    gRPC
 ~~~
 
 生成骨架目录结构如下：
@@ -131,7 +137,7 @@ var Commands = []*xcli.Command{
 
 业务代码写在该结构体的 `main` 方法中
 
-- 代码中可以使用 `flag` 获取命令行参数，，[查看更多](https://github.com/mix-go/xcli#flag)
+- 代码中可以使用 `flag` 获取命令行参数，[查看更多](https://github.com/mix-go/xcli#flag)
 
 ```go
 package commands
