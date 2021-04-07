@@ -133,7 +133,7 @@ var Commands = []*xcli.Command{
 }
 ```
 
-`HelloCommand` 文件：
+`commands/hello.go` 文件：
 
 业务代码写在该结构体的 `main` 方法中
 
