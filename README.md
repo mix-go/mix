@@ -157,6 +157,26 @@ func (t *HelloCommand) Main() {
 }
 ```
 
+- 代码中如果需要使用 `di` 容器中定义的对象，比如：`gorm`
+
+```go
+package commands
+
+import (
+	"github.com/mix-go/cli-skeleton/di"
+	"time"
+)
+
+type HelloCommand struct {
+}
+
+func (t *HelloCommand) Main() {
+	db := di.Gorm()
+	user := User{Name: "Jinzhu", Age: 18, Birthday: time.Now()}
+	result := db.Create(&user)
+}
+```
+
 接下来我们编译上面的程序：
 
 ~~~
