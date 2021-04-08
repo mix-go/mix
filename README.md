@@ -103,7 +103,7 @@ func main() {
 
 `commands/main.go` 文件：
 
-我们可以在这里编辑命令，[查看更多](https://github.com/mix-go/xcli)
+我们可以在这里自定义命令，[查看更多](https://github.com/mix-go/xcli)
 
 - `RunI` 定义了 `hello` 命令执行的接口，也可以使用 `Run` 设定一个匿名函数
 
@@ -270,7 +270,7 @@ func main() {
 
 `commands/main.go` 文件：
 
-我们可以在这里编辑命令，[查看更多](https://github.com/mix-go/xcli)
+我们可以在这里自定义命令，[查看更多](https://github.com/mix-go/xcli)
 
 - `RunI` 指定了命令执行的接口，也可以使用 `Run` 设定一个匿名函数
 
@@ -522,7 +522,7 @@ func main() {
 
 `commands/main.go` 文件：
 
-我们可以在这里编辑命令，[查看更多](https://github.com/mix-go/xcli)
+我们可以在这里自定义命令，[查看更多](https://github.com/mix-go/xcli)
 
 - 定义了 `grpc:server`、`grpc:client` 两个子命令
 - `RunI` 指定了命令执行的接口，也可以使用 `Run` 设定一个匿名函数
