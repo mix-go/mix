@@ -465,8 +465,6 @@ time=2020-09-16 20:24:41.515 level=info msg=Server start file=api.go:58
 
 ## 编写一个 gRPC 服务、客户端
 
-## 编写一个 gRPC 服务
-
 首先我们使用 `mixcli` 命令创建一个项目骨架：
 
 ~~~
@@ -778,7 +776,7 @@ time=2020-11-09 15:08:17.544 level=info msg=Server run :8080 file=server.go:46
 
 ~~~
 $ bin/go_build_main_go grpc:client
-Add User: 1200
+Add User: 10001
 ~~~
 
 ## 编写一个 Worker Pool 队列消费
