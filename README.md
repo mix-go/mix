@@ -427,6 +427,40 @@ func SetRoutes(router *gin.Engine) {
 }
 ~~~
 
+接下来我们编译上面的程序：
+
+- linux & macOS
+
+~~~
+go build -o bin/go_build_main_go main.go
+~~~
+
+- win
+
+~~~
+go build -o bin/go_build_main_go.exe main.go
+~~~
+
+启动服务器
+
+~~~
+$ bin/go_build_main_go api
+             ___         
+ ______ ___  _ /__ ___ _____ ______ 
+  / __ `__ \/ /\ \/ /__  __ `/  __ \
+ / / / / / / / /\ \/ _  /_/ // /_/ /
+/_/ /_/ /_/_/ /_/\_\  \__, / \____/ 
+                     /____/
+
+
+Server      Name:      mix-api
+Listen      Addr:      :8080
+System      Name:      darwin
+Go          Version:   1.13.4
+Framework   Version:   1.0.9
+time=2020-09-16 20:24:41.515 level=info msg=Server start file=api.go:58
+~~~
+
 ## 编写一个 Web 服务
 
 ## 编写一个 WebSocket 服务
