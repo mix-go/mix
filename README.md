@@ -600,6 +600,10 @@ protoc --go_out=plugins=grpc:. user.proto
 
 服务端代码写在 `GrpcServerCommand` 结构体的 `main` 方法中，生成的代码中已经包含了：
 
+- 监听信号停止服务
+- 可选的后台守护执行
+- `pb.RegisterUserServer` 注册了一个默认服务，用户只需要扩展自己的服务即可
+
 ~~~go
 package commands
 
@@ -662,9 +666,42 @@ func (t *GrpcServerCommand) Main() {
 }
 ~~~
 
+`services/user.go` 文件：
+
+服务端代码中注册的 `services.UserService{}` 服务代码如下：
+
+只需要填充业务逻辑即可
+
+```go
+package services
+
+import (
+	"context"
+	pb "github.com/mix-go/grpc-skeleton/protos"
+)
+
+type UserService struct {
+}
+
+func (t *UserService) Add(ctx context.Context, in *pb.AddRequest) (*pb.AddResponse, error) {
+	// 执行数据库操作
+	// ...
+
+	resp := pb.AddResponse{
+		ErrorCode:    0,
+		ErrorMessage: "",
+		UserId:       10001,
+	}
+	return &resp, nil
+}
+```
+
 `commands/client.go` 文件：
 
 客户端代码写在 `GrpcClientCommand` 结构体的 `main` 方法中，生成的代码中已经包含了：
+
+- 通过环境配置获取服务端连接地址
+- 设定了 `5s` 的执行超时时间
 
 ~~~go
 package commands
@@ -754,14 +791,14 @@ Add User: 1200
 
 可以在代码的任意位置使用，但是为了可以使用到环境变量和自定义配置，通常我们在 `xcli.Command` 结构体定义的 `Run`、`RunI` 中使用。
 
-- 使用日志，比如：`logrus`
+- 使用日志，比如：`logrus`、`zap`
 
 ```go
 logger := di.Logrus()
 logger.Info("test")
 ```
 
-- 使用数据库，比如：`gorm`
+- 使用数据库，比如：`gorm`、`xorm`
 
 ```go
 db := di.Gorm()
