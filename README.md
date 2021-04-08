@@ -121,11 +121,11 @@ var Commands = []*xcli.Command{
 		Options: []*xcli.Option{
 			{
 				Names: []string{"n", "name"},
-				Short: "Your name",
+				Usage: "Your name",
 			},
 			{
 				Names: []string{"say"},
-				Short: "\tSay ...",
+				Usage: "\tSay ...",
 			},
 		},
 		RunI: &HelloCommand{},
@@ -154,26 +154,6 @@ func (t *HelloCommand) Main() {
 	name := flag.Match("n", "name").String("OpenMix")
 	say := flag.Match("say").String("Hello, World!")
 	fmt.Printf("%s: %s\n", name, say)
-}
-```
-
-- 代码中如果需要使用 `di` 容器中定义的对象，比如：`gorm`
-
-```go
-package commands
-
-import (
-	"github.com/mix-go/cli-skeleton/di"
-	"time"
-)
-
-type HelloCommand struct {
-}
-
-func (t *HelloCommand) Main() {
-	db := di.Gorm()
-	user := User{Name: "Jinzhu", Age: 18, Birthday: time.Now()}
-	result := db.Create(&user)
 }
 ```
 
@@ -235,6 +215,41 @@ liujian: hello
 ## 编写一个 gRPC 服务、客户端
 
 ## 编写一个 Worker Pool 队列消费
+
+## 如何使用 DI 容器中的 Logger、Database、Redis 等组件
+
+项目中要使用的公共组件，都定义在 `di` 目录，框架默认生成了一些常用的组件，用户也可以定义自己的组件，[查看更多](https://github.com/mix-go/xdi)
+
+- 可以在哪里使用
+
+可以在代码的任意位置使用，但是为了可以使用到环境变量和自定义配置，通常我们在 `xcli.Command` 结构体定义的 `Run`、`RunI` 中使用。
+
+- 使用日志，比如：`zap`
+
+```go
+logger := di.Zap()
+logger.Info("test")
+```
+
+- 使用数据库，比如：`gorm`
+
+```go
+db := di.Gorm()
+user := User{Name: "Jinzhu", Age: 18, Birthday: time.Now()}
+result := db.Create(&user)
+fmt.Println(result)
+```
+
+- 使用 Redis，比如：`go-redis`
+
+```go
+rdb := di.GoRedis()
+val, err := rdb.Get(ctx, "key").Result()
+if err != nil {
+    panic(err)
+}
+fmt.Println("key", val)
+```
 
 ## 依赖
 

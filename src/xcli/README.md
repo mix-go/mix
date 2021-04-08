@@ -40,7 +40,7 @@ func main() {
     }
     opt := &xcli.Option{
         Names: []string{"n", "name"},
-        Short: "Your name",
+        Usage: "Your name",
     }
     cmd.AddOption(opt)
     xcli.AddCommand(cmd).Run()
