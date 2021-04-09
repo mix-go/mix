@@ -12,10 +12,8 @@ DI, IoC container
 
 ## Installation
 
-- 安装
-
 ```
-go get -u github.com/mix-go/xdi
+go get github.com/mix-go/xdi
 ```
 
 ## Quick start
@@ -39,7 +37,6 @@ func init() {
             i := &Foo{}
             return i, nil
         },
-        Singleton: true,
     }
     if err := xdi.Provide(obj); err != nil {
         panic(err)
@@ -89,7 +86,6 @@ func init() {
                 }
                 return i, nil
             },
-            Singleton: true,
         },
         {
             Name: "bar",
@@ -97,6 +93,7 @@ func init() {
                 i := &Bar{}
                 return i, nil
             },
+            NewEveryTime: true,
         },
     }
     if err := xdi.Provide(objs...); err != nil {

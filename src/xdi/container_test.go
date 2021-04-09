@@ -63,7 +63,6 @@ func TestSingletonConcurrency(t *testing.T) {
 					Bar: "",
 				}, nil
 			},
-			Singleton: true,
 		},
 	}
 	_ = c.Provide(objs...)
@@ -108,7 +107,6 @@ func TestSingletonRefreshConcurrency(t *testing.T) {
 					Bar: "",
 				}, nil
 			},
-			Singleton: true,
 		},
 	}
 	_ = c.Provide(objs...)

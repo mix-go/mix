@@ -7,9 +7,11 @@ import (
 
 // Object
 type Object struct {
-	Name      string
-	New       func() (interface{}, error)
-	Singleton bool
+	Name string
+	// 创建对象的闭包
+	New func() (interface{}, error)
+	// 每次都创建新的对象
+	NewEveryTime bool
 
 	refresher refresher
 }
@@ -44,8 +46,8 @@ func (t *refresher) invoke(f func()) {
 }
 
 func (t *Object) Refresh() error {
-	if !t.Singleton {
-		return fmt.Errorf("error: '%s' not a singleton, unable to refresh", t.Name)
+	if t.NewEveryTime {
+		return fmt.Errorf("error: '%s' is NewEveryTime, unable to refresh", t.Name)
 	}
 	t.refresher.on()
 	return nil
