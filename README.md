@@ -704,7 +704,7 @@ go build -o bin/go_build_main_go main.go
 go build -o bin/go_build_main_go.exe main.go
 ~~~
 
-首先在命令行启动 `web` 服务器：
+命令行启动 `web` 服务器：
 
 ~~~
 $ bin/go_build_main_go web
@@ -735,6 +735,179 @@ time=2020-09-16 20:24:41.515 level=info msg=Server start file=web.go:58
 ![](https://git.kancloud.cn/repos/onanying/mixgo1/raw/4f39803852f2155004172761ae95633f4666a3e5/images/user-add.png?access-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MTc5OTU4NjEsImlhdCI6MTYxNzk1MjY2MSwicmVwb3NpdG9yeSI6Im9uYW55aW5nXC9taXhnbzEiLCJ1c2VyIjp7InVzZXJuYW1lIjoib25hbnlpbmciLCJuYW1lIjoiXHU2NGI4XHU0ZWUzXHU3ODAxXHU3Njg0XHU0ZTYxXHU0ZTBiXHU0ZWJhIiwiZW1haWwiOiJjb2Rlci5saXVAcXEuY29tIiwidG9rZW4iOiIxODk5ZjEwODIzZWYwMmUxNzQ1MTgzMjk4YjhjNzFkMyIsImF1dGhvcml6ZSI6eyJwdWxsIjp0cnVlLCJwdXNoIjp0cnVlLCJhZG1pbiI6dHJ1ZX19fQ.sia533vNsLqbVetvwvttysxgWdRbbz0vfmN6jBNdl2g)
 
 ### 编写一个 WebSocket 服务
+
+WebSocket 是基于 http 协议完成握手的，因此我们编写代码时，也是和编写 Web 项目是差不多的，差别就是请求过来后，我们需要使用一个 WebSocket 的升级器，将请求升级为 WebSocket 连接，接下来就是针对连接的逻辑处理，从这个部分开始就和传统的 Socket 操作一致了。
+
+`routes/main.go` 文件已经定义了一个 WebSocket 的路由：
+
+~~~go
+router.GET("websocket",
+    func(ctx *gin.Context) {
+        ws := controllers.WebSocketController{}
+        ws.Index(ctx)
+    },
+)
+~~~
+
+`controllers/ws.go` 文件：
+
+- 创建了一个 `upgrader` 的升级器，当请求过来时将会升级为 WebSocket 连接
+- 定义了一个 `WebSocketSession` 的结构体负责管理连接的整个生命周期
+- `session.Start()` 中启动了两个协程，分别处理消息的读和写
+- 在消息读取的协程中，启动了 `WebSocketHandler` 结构体的 `Index` 方法来处理消息，在实际项目中我们可以根据不同的消息内容使用不同的结构体来处理，实现 Web 项目那种控制器的功能
+
+~~~go
+package controllers
+
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	"github.com/mix-go/web-skeleton/di"
+	"github.com/mix-go/xcli"
+	"net/http"
+)
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+type WebSocketController struct {
+}
+
+func (t *WebSocketController) Index(c *gin.Context) {
+	logger := di.Logrus()
+	if xcli.App().Debug {
+		upgrader.CheckOrigin = func(r *http.Request) bool {
+			return true
+		}
+	}
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		logger.Error(err)
+		c.Status(http.StatusInternalServerError)
+		c.Abort()
+		return
+	}
+
+	session := WebSocketSession{
+		Conn:   conn,
+		Header: c.Request.Header,
+		Send:   make(chan []byte, 100),
+	}
+	session.Start()
+
+	server := di.Server()
+	server.RegisterOnShutdown(func() {
+		session.Stop()
+	})
+
+	logger.Infof("Upgrade: %s", c.Request.UserAgent())
+}
+
+type WebSocketSession struct {
+	Conn   *websocket.Conn
+	Header http.Header
+	Send   chan []byte
+}
+
+func (t *WebSocketSession) Start() {
+	go func() {
+		logger := di.Logrus()
+		for {
+			msgType, msg, err := t.Conn.ReadMessage()
+			if err != nil {
+				if !websocket.IsCloseError(err, 1001, 1006) {
+					logger.Error(err)
+				}
+				t.Stop()
+				return
+			}
+			if msgType != websocket.TextMessage {
+				continue
+			}
+
+			handler := WebSocketHandler{
+				Session: t,
+			}
+			handler.Index(msg)
+		}
+	}()
+	go func() {
+		logger := di.Logrus()
+		for {
+			msg, ok := <-t.Send
+			if !ok {
+				return
+			}
+			if err := t.Conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+				logger.Error(err)
+				t.Stop()
+				return
+			}
+		}
+	}()
+}
+
+func (t *WebSocketSession) Stop() {
+	defer func() {
+		if err := recover(); err != nil {
+			logger := di.Logrus()
+			logger.Error(err)
+		}
+	}()
+	close(t.Send)
+	_ = t.Conn.Close()
+}
+
+type WebSocketHandler struct {
+	Session *WebSocketSession
+}
+
+func (t *WebSocketHandler) Index(msg []byte) {
+	t.Session.Send <- []byte("hello, world!")
+}
+~~~
+
+接下来我们编译上面的程序：
+
+- linux & macOS
+
+~~~
+go build -o bin/go_build_main_go main.go
+~~~
+
+- win
+
+~~~
+go build -o bin/go_build_main_go.exe main.go
+~~~
+
+在命令行启动 `web` 服务器：
+
+~~~
+$ bin/go_build_main_go web
+             ___         
+ ______ ___  _ /__ ___ _____ ______ 
+  / __ `__ \/ /\ \/ /__  __ `/  __ \
+ / / / / / / / /\ \/ _  /_/ // /_/ /
+/_/ /_/ /_/_/ /_/\_\  \__, / \____/ 
+                     /____/
+
+
+Server      Name:      mix-web
+Listen      Addr:      :8080
+System      Name:      darwin
+Go          Version:   1.13.4
+Framework   Version:   1.0.9
+time=2020-09-16 20:24:41.515 level=info msg=Server start file=web.go:58
+~~~
+
+浏览器测试:
+
+- 我们使用现成的工具测试：http://www.easyswoole.com/wstool.html
+
+![](https://git.kancloud.cn/repos/onanying/mixgo1/raw/4f39803852f2155004172761ae95633f4666a3e5/images/websocket_test.png?access-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MTc5OTU4NjEsImlhdCI6MTYxNzk1MjY2MSwicmVwb3NpdG9yeSI6Im9uYW55aW5nXC9taXhnbzEiLCJ1c2VyIjp7InVzZXJuYW1lIjoib25hbnlpbmciLCJuYW1lIjoiXHU2NGI4XHU0ZWUzXHU3ODAxXHU3Njg0XHU0ZTYxXHU0ZTBiXHU0ZWJhIiwiZW1haWwiOiJjb2Rlci5saXVAcXEuY29tIiwidG9rZW4iOiIxODk5ZjEwODIzZWYwMmUxNzQ1MTgzMjk4YjhjNzFkMyIsImF1dGhvcml6ZSI6eyJwdWxsIjp0cnVlLCJwdXNoIjp0cnVlLCJhZG1pbiI6dHJ1ZX19fQ.sia533vNsLqbVetvwvttysxgWdRbbz0vfmN6jBNdl2g)
 
 ## 编写一个 gRPC 服务、客户端
 
