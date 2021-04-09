@@ -8,5 +8,5 @@ require (
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mix-go/api-skeleton v1.1.4 // indirect
 	github.com/mix-go/dotenv v1.0.22
-	github.com/mix-go/xcli v1.1.4
+	github.com/mix-go/xcli v1.1.5
 )
