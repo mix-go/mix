@@ -69,7 +69,7 @@ func (t *container) Populate(name string, ptr interface{}) error {
 	ptrCopy := func(to, from interface{}) {
 		reflect.ValueOf(to).Elem().Set(reflect.ValueOf(from))
 	}
-	if !obj.NewEveryTime {
+	if !obj.NewEverytime {
 		refresher := &obj.refresher
 		if p, ok := t.instances.Load(name); ok && !refresher.status() {
 			ptrCopy(ptr, p)

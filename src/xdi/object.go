@@ -11,7 +11,7 @@ type Object struct {
 	// 创建对象的闭包
 	New func() (interface{}, error)
 	// 每次都创建新的对象
-	NewEveryTime bool
+	NewEverytime bool
 
 	refresher refresher
 }
@@ -46,8 +46,8 @@ func (t *refresher) invoke(f func()) {
 }
 
 func (t *Object) Refresh() error {
-	if t.NewEveryTime {
-		return fmt.Errorf("error: '%s' is NewEveryTime, unable to refresh", t.Name)
+	if t.NewEverytime {
+		return fmt.Errorf("error: '%s' is NewEverytime, unable to refresh", t.Name)
 	}
 	t.refresher.on()
 	return nil

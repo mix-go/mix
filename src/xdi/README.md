@@ -93,7 +93,7 @@ func init() {
                 i := &Bar{}
                 return i, nil
             },
-            NewEveryTime: true,
+            NewEverytime: true,
         },
     }
     if err := xdi.Provide(objs...); err != nil {
