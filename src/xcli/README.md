@@ -12,10 +12,8 @@ CLI Interactive Commander
 
 ## Installation
 
-- 安装
-
 ```
-go get -u github.com/mix-go/xcli
+go get github.com/mix-go/xcli
 ```
 
 ## Quick start

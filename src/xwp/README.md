@@ -8,17 +8,15 @@ A common worker pool
 
 ## Installation
 
-- 安装
-
 ```
-go get -u github.com/mix-go/xwp
+go get github.com/mix-go/xwp
 ```
 
 ## Usage
 
 先创建一个 Worker 结构体
 
-~~~
+~~~go
 type FooWorker struct {
     xwp.WorkerTrait
 }
@@ -34,7 +32,7 @@ func NewFooWorker() xwp.Worker {
 
 调度任务
 
-~~~
+~~~go
 jobQueue := make(chan interface{}, 200)
 d := xwp.NewDispatcher(jobQueue, 15, NewFooWorker)
 
@@ -53,7 +51,7 @@ d.Run() // 阻塞代码，直到任务全部执行完成并且全部 Worker 停�
 
 异常处理：`Do` 方法中执行的代码，可能会出现 `panic` 异常，我们可以通过 `recover` 获取异常信息记录到日志或者执行其他处理
 
-~~~
+~~~go
 func (t *FooWorker) Do(data interface{}) {
     defer func() {
         if err := recover(); err != nil {

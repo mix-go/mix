@@ -14,8 +14,8 @@ Formatting library that can print the internal data of the nested pointer addres
 
 - 安装
 
-```go
-go get -u github.com/mix-go/xfmt
+```
+go get github.com/mix-go/xfmt
 ```
 
 ## Usage
@@ -75,7 +75,7 @@ l1 := Level1{Name: "Level1", Level2: &l2, Level2_1: &l2}
 fmt.Println(fmt.Sprintf("%+v", l1))
 ```
 
-```go
+```
 {Name:Level1 Level2:0xc00009c500 Level2_1:0xc00009c500}
 ```
 
@@ -85,7 +85,7 @@ fmt.Println(fmt.Sprintf("%+v", l1))
 fmt.Println(xfmt.Sprintf("%+v", l1))
 ```
 
-```go
+```
 {Name:Level1 Level2:0xc00009c500:&{Level3:0xc00007f030 Name:Level2} Level2_1:0xc00009c500}
 ```
 
