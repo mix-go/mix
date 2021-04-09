@@ -210,6 +210,92 @@ $ ./go_build_main_go hello --name=liujian --say=hello
 liujian: hello
 ~~~
 
+### 编写一个 Worker Pool 队列消费
+
+队列消费是高并发系统中最常用的异步处理模型，通常我们是编写一个 CLI 命令行程序在后台执行 Redis、RabbitMQ 等 MQ 的队列消费，并将处理结果落地到 mysql 等数据库中，由于这类需求的标准化比较容易，因此我们开发了 [mix-go/xwp](https://github.com/mix-go/xwp) 库来处理这类需求，基本上大部分异步处理类需求都可使用。
+
+新建 `commands/workerpool.go` 文件：
+
+- `workerpool.NewDispatcher(jobQueue, 15, NewWorker)` 创建了一个调度器
+- `NewWorker` 负责初始化执行任务的工作协程
+- 任务数据会在 `worker.Do` 方法中触发，我们只需要将我们的业务逻辑写到该方法中即可
+- 当程序接收到进程退出信号时，调度器能平滑控制所有的 Worker 在执行完队列里全部的任务后再退出调度，保证数据的完整性
+
+~~~go
+package commands
+
+import (
+    "context"
+    "fmt"
+    "github.com/mix-go/cli-skeleton/di"
+    "github.com/mix-go/xwp"
+    "os"
+    "os/signal"
+    "strings"
+    "syscall"
+    "time"
+)
+
+type worker struct {
+    xwp.WorkerTrait
+}
+
+func (t *worker) Do(data interface{}) {
+    defer func() {
+        if err := recover(); err != nil {
+            logger := di.Logrus()
+            logger.Error(err)
+        }
+    }()
+
+    // 执行业务处理
+    // ...
+    
+    // 将处理结果落地到数据库
+    // ...
+}
+
+func NewWorker() xwp.Worker {
+    return &worker{}
+}
+
+type WorkerPoolDaemonCommand struct {
+}
+
+func (t *WorkerPoolDaemonCommand) Main() {
+    redis := globals.Redis()
+    jobQueue := make(chan interface{}, 50)
+    d := xwp.NewDispatcher(jobQueue, 15, NewWorker)
+
+    ch := make(chan os.Signal)
+    signal.Notify(ch, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
+    go func() {
+        <-ch
+        d.Stop()
+    }()
+
+    go func() {
+        for {
+            res, err := redis.BRPop(context.Background(), 3*time.Second, "foo").Result()
+            if err != nil {
+                if strings.Contains(err.Error(), "redis: nil") {
+                    continue
+                }
+                fmt.Println(fmt.Sprintf("Redis Error: %s", err))
+                d.Stop();
+                return
+            }
+            // brPop命令最后一个键才是值
+            jobQueue <- res[1]
+        }
+    }()
+
+    d.Run() // 阻塞代码，直到任务全部执行完成并且全部 Worker 停止
+}
+~~~
+
+接下来只需要把这个命令通过 `xcli.AddCommand` 注册到 CLI 中即可。
+
 ## 编写一个 API 服务
 
 首先我们使用 `mixcli` 命令创建一个项目骨架：
@@ -1224,8 +1310,6 @@ time=2020-11-09 15:08:17.544 level=info msg=Server run :8080 file=server.go:46
 $ bin/go_build_main_go grpc:client
 Add User: 10001
 ~~~
-
-## 编写一个 Worker Pool 队列消费
 
 ## 如何使用 DI 容器中的 Logger、Database、Redis 等组件
 
