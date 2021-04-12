@@ -126,7 +126,7 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		current := int64(0)
 		bar := pb.StartNew(count)
 		go func() {
-			path := fmt.Sprintf("%s/pkg/mod/cache/download/github.com/mix-go/cli-skeleton/@v/%s.zip", os.Getenv("GOPATH"), ver)
+			path := fmt.Sprintf("%s/pkg/mod/cache/download/github.com/mix-go/%s-skeleton/@v/%s.zip", os.Getenv("GOPATH"), selectType, ver)
 			for {
 				f, err := os.Open(path)
 				if err != nil {
