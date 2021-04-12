@@ -13,7 +13,7 @@ var (
 	// iApp
 	iApp *application
 	// Version
-	Version = "1.1.5"
+	Version = "1.1.6"
 )
 
 func init() {
