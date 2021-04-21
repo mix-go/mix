@@ -188,7 +188,7 @@ xcli.App().Debug
 
 ## Singleton 单命令
 
-当我们的 cli 只有一个命令时，只需要配置一下 `Singleton`：
+当我们的 CLI 只有一个命令时，只需要配置一下 `Singleton`：
 
 ~~~go
 cmd := &xcli.Command{
@@ -201,7 +201,7 @@ cmd := &xcli.Command{
 }
 ~~~
 
-子命令的 Options 将会在 `-h/--help` 中打印
+命令的 Options 将会在 `-h/--help` 中打印
 
 ~~~
 $ ./go_build_main_go 
@@ -221,7 +221,7 @@ Developed with Mix Go framework. (openmix.org/mix-go)
 
 ## Default 默认执行
 
-当我们的 cli 有 CUI 时，需要实现点击后默认启动 UI 界面，只需要配置一下 `Default`：
+当我们的 CLI 有 CUI 时，需要实现点击后默认启动 UI 界面，只需要配置一下 `Default`：
 
 ~~~go
 cmd := &xcli.Command{
