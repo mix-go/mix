@@ -89,7 +89,7 @@ Developed with Mix Go framework. (openmix.org/mix-go)
 $ ./go_build_main_go hello 
 ```
 
-## Flag 
+## Flag 参数获取
 
 > 该 flag 比 golang 自带的更加好用，不需要 Parse 操作
 
@@ -130,7 +130,7 @@ for k, v := range flag.Arguments().Values() {
 }
 ```
 
-## Daemon
+## Daemon 后台执行
 
 将命令行程序变为后台执行，该方法只可在 Main 协程中使用。
 
@@ -148,7 +148,7 @@ if flag.Match("d", "daemon").Bool() {
 
 上面就实现了一个当命令行参数中带有 `-d/--daemon` 参数时，程序就在后台执行。
 
-## Handle panic
+## Handle panic 错误处理
 
 ```go
 h := func(next func()) {
@@ -186,6 +186,55 @@ xcli.App().Version
 // 是否开启debug
 xcli.App().Debug
 ```
+
+## Singleton 单命令
+
+当我们的 cli 只有一个命令时，只需要配置一下 `Singleton`：
+
+~~~go
+cmd := &xcli.Command{
+    Name:  "hello",
+    Short: "Echo demo",
+    Run: func() {
+        // do something
+    },
+    Singleton: true,
+}
+~~~
+
+子命令的 Options 将会在 `-h/--help` 中打印
+
+~~~
+$ ./go_build_main_go 
+Usage: ./go_build_main_go [OPTIONS] COMMAND [opt...]
+
+Global Options:
+  -h, --help    Print usage
+  -v, --version Print version information
+
+Command Options:
+  -n, --name    Your name
+
+
+Run './go_build_main_go --help' for more information on a command.
+
+Developed with Mix Go framework. (openmix.org/mix-go)
+~~~
+
+## Default 默认执行
+
+当我们的 cli 有 CUI 时，需要实现点击后默认启动 UI 界面，只需要配置一下 `Default`：
+
+~~~go
+cmd := &xcli.Command{
+    Name:  "hello",
+    Short: "Echo demo",
+    Run: func() {
+        // do something
+    },
+    Default: true,
+}
+~~~
 
 ## License
 
