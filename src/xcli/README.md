@@ -51,13 +51,12 @@ func main() {
 $ ./go_build_main_go 
 Usage: ./go_build_main_go [OPTIONS] COMMAND [opt...]
 
-Global Options:
-  -h, --help    Print usage
-  -v, --version Print version information
-
 Commands:
   hello         Echo demo
 
+Global Options:
+  -h, --help    Print usage
+  -v, --version Print version information
 
 Run './go_build_main_go COMMAND --help' for more information on a command.
 
@@ -208,13 +207,12 @@ cmd := &xcli.Command{
 $ ./go_build_main_go 
 Usage: ./go_build_main_go [OPTIONS] COMMAND [opt...]
 
-Global Options:
-  -h, --help    Print usage
-  -v, --version Print version information
-
 Command Options:
   -n, --name    Your name
 
+Global Options:
+  -h, --help    Print usage
+  -v, --version Print version information
 
 Run './go_build_main_go --help' for more information on a command.
 
