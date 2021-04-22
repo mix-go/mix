@@ -336,7 +336,7 @@ func (t *application) globalHelp() {
 
 	if cmd != nil && cmd.Long != "" {
 		fmt.Println(cmd.Long)
-		fmt.Println()
+		fmt.Println("")
 	}
 	program := argv.Program().Path
 	if !t.singleton {
@@ -375,7 +375,7 @@ func (t *application) commandHelp() {
 
 	if cmd.Long != "" {
 		fmt.Println(cmd.Long)
-		fmt.Println()
+		fmt.Println("")
 	}
 	program := argv.Program().Path
 	if cmd.UsageF != "" {
