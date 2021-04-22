@@ -359,7 +359,6 @@ func (t *application) globalHelp() {
 	if !t.singleton {
 		fg = " COMMAND"
 	}
-	fmt.Println("")
 	fmt.Println(fmt.Sprintf("Run '%s%s --help' for more information on a command.", program, fg))
 	fmt.Println("")
 	fmt.Println("Developed with Mix Go framework. (openmix.org/mix-go)")

@@ -146,6 +146,47 @@ func TestCommandNotFound(t *testing.T) {
 	app.Run()
 }
 
+func TestHandlers(t *testing.T) {
+	a := assert.New(t)
+
+	os.Args = []string{os.Args[0], "foo"}
+	argv.Parse()
+	flag.Parse()
+
+	var result []int
+
+	cmd := &Command{
+		Name:  "foo",
+		Short: "bar",
+		Run: func() {
+			result = append(result, 0)
+		},
+	}
+	h := func(next func()) {
+		defer func() {
+			if err := recover(); err != nil {
+				fmt.Println(err)
+			}
+		}()
+		result = append(result, 1)
+		next()
+	}
+	h1 := func(next func()) {
+		result = append(result, 2)
+		next()
+	}
+	h2 := func(next func()) {
+		result = append(result, 3)
+		next()
+	}
+	app := New("test", "1.0.0")
+	app.Use(h, h1, h2)
+	app.AddCommand(cmd)
+	app.Run()
+
+	a.Equal(result, []int{1, 2, 3, 0})
+}
+
 func TestCommandPrint(t *testing.T) {
 	os.Args = []string{os.Args[0]}
 	fmt.Println(os.Args)
@@ -221,45 +262,4 @@ func TestCommandPrint(t *testing.T) {
 	app = New("test", "1.0.0")
 	app.AddCommand(cmd)
 	app.Run()
-}
-
-func TestHandlers(t *testing.T) {
-	a := assert.New(t)
-
-	os.Args = []string{os.Args[0], "foo"}
-	argv.Parse()
-	flag.Parse()
-
-	var result []int
-
-	cmd := &Command{
-		Name:  "foo",
-		Short: "bar",
-		Run: func() {
-			result = append(result, 0)
-		},
-	}
-	h := func(next func()) {
-		defer func() {
-			if err := recover(); err != nil {
-				fmt.Println(err)
-			}
-		}()
-		result = append(result, 1)
-		next()
-	}
-	h1 := func(next func()) {
-		result = append(result, 2)
-		next()
-	}
-	h2 := func(next func()) {
-		result = append(result, 3)
-		next()
-	}
-	app := New("test", "1.0.0")
-	app.Use(h, h1, h2)
-	app.AddCommand(cmd)
-	app.Run()
-
-	a.Equal(result, []int{1, 2, 3, 0})
 }

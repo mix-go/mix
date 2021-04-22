@@ -58,7 +58,6 @@ Global Options:
   -h, --help    Print usage
   -v, --version Print version information
 
-
 Run './go_build_main_go COMMAND --help' for more information on a command.
 
 Developed with Mix Go framework. (openmix.org/mix-go)
@@ -79,7 +78,6 @@ Usage: ./go_build_main_go hello [opt...]
 
 Command Options:
   -n, --name    Your name
-
 
 Developed with Mix Go framework. (openmix.org/mix-go)
 ```
@@ -215,7 +213,6 @@ Command Options:
 Global Options:
   -h, --help    Print usage
   -v, --version Print version information
-
 
 Run './go_build_main_go --help' for more information on a command.
 
