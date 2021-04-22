@@ -104,8 +104,12 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		return
 	}
 
+	echo := "echo $GOPATH"
+	if runtime.GOOS == "windows" {
+		echo = "echo %PATH%"
+	}
 	if os.Getenv("GOPATH") == "" {
-		fmt.Println("$GOPATH is not configured, see 'echo $GOPATH'")
+		fmt.Printf("$GOPATH is not configured, see '%s'\n", echo)
 		return
 	}
 
@@ -114,7 +118,7 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		dr = ";"
 	}
 	if strings.Contains(os.Getenv("GOPATH"), dr) {
-		fmt.Println("$GOPATH cannot have multiple directories, see 'echo $GOPATH'")
+		fmt.Printf("$GOPATH cannot have multiple directories, see '%s'\n", echo)
 		return
 	}
 
