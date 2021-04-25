@@ -14,7 +14,7 @@ var (
 )
 
 type worker struct {
-	WorkerTrait
+	Worker
 }
 
 func (t *worker) Do(data interface{}) {
