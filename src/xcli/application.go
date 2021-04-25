@@ -230,7 +230,7 @@ func (t *application) call() {
 		panic(NewNotFoundError(fmt.Errorf("'%s' is not command, see '%s --help'.", command, argv.Program().Path)))
 	}
 	if cmd.Run == nil && cmd.RunI == nil {
-		panic(fmt.Errorf("'%s' command Run/RunI is empty", cmd.Name))
+		panic(fmt.Errorf("'%s' command Run & RunI field is empty", cmd.Name))
 	}
 
 	// 执行命令
