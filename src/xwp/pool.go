@@ -3,6 +3,7 @@ package xwp
 import (
 	"fmt"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -27,10 +28,11 @@ type WorkerPool struct {
 	WorkerRun  func(data interface{})
 	WorkerRunI RunI
 
-	workers    *sync.Map
-	workerPool chan JobQueue
-	wg         *sync.WaitGroup
-	quit       chan bool
+	workers     *sync.Map
+	workerCount int64
+	workerPool  chan JobQueue
+	wg          *sync.WaitGroup
+	quit        chan bool
 }
 
 // Run 执行
@@ -89,7 +91,7 @@ func (t *WorkerPool) Start() {
 					case ch := <-t.workerPool:
 						ch <- data
 					default:
-						if len(t.workerPool) < t.MaxWorkers {
+						if atomic.LoadInt64(&t.workerCount) < int64(t.MaxWorkers) {
 							NewWorker(t).Run()
 						} else {
 							timer.Reset(10 * time.Millisecond)
@@ -121,17 +123,19 @@ func (t *WorkerPool) Wait() {
 	t.wg.Wait()
 }
 
-type PoolStat struct {
+type Statistic struct {
 	Active int `json:"active"`
 	Idle   int `json:"idle"`
 	Total  int `json:"total"`
 }
 
-// Wait 等待执行完成
-func (t *WorkerPool) Stat() *PoolStat {
-	return &PoolStat{
-		Active: 0,
-		Idle:   0,
-		Total:  0,
+// Stat 统计
+func (t *WorkerPool) Stat() *Statistic {
+	total := int(t.workerCount)
+	idle := len(t.workerPool)
+	return &Statistic{
+		Active: total - idle,
+		Idle:   idle,
+		Total:  total,
 	}
 }

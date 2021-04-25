@@ -2,6 +2,7 @@ package xwp
 
 import (
 	"fmt"
+	"sync/atomic"
 )
 
 // Handler 处理器
@@ -36,7 +37,9 @@ func NewWorker(p *WorkerPool) *Worker {
 func (t *Worker) Run() {
 	t.pool.wg.Add(1)
 	go func() {
+		atomic.AddInt64(&t.pool.workerCount, 1)
 		defer func() {
+			atomic.AddInt64(&t.pool.workerCount, -1)
 			t.pool.workers.Delete(fmt.Sprintf("%p", t))
 			t.pool.wg.Done()
 		}()
