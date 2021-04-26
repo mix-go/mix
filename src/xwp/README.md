@@ -71,7 +71,7 @@ func (t *Foo) Do(data interface{}) {
 
 ```go
 go func() {
-    ticker := time.NewTicker(100 * time.Millisecond)
+    ticker := time.NewTicker(1000 * time.Millisecond)
     for {
         <-ticker.C
         log.Printf("%+v", p.Stat()) // 2021/04/26 14:32:53 &{Active:5 Idle:95 Total:100}
