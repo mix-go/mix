@@ -24,7 +24,7 @@ type WorkerPool struct {
 	MaxWorkers int
 	// default == MaxWorkers
 	InitWorkers int
-	// default == MaxWorkers
+	// default == InitWorkers
 	MaxIdleWorkers int
 
 	RunF func(data interface{})
@@ -52,7 +52,7 @@ func (t *WorkerPool) init() {
 		t.InitWorkers = t.MaxWorkers
 	}
 	if t.MaxIdleWorkers == 0 {
-		t.MaxIdleWorkers = t.MaxWorkers
+		t.MaxIdleWorkers = t.InitWorkers
 	}
 
 	t.workers = &sync.Map{}

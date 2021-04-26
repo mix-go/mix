@@ -2,13 +2,14 @@ package xwp
 
 import (
 	"github.com/stretchr/testify/assert"
+	"log"
 	"sync/atomic"
 	"testing"
 	"time"
 )
 
 var (
-	count     int64
+	count int64
 )
 
 type TestWorker struct {
@@ -22,22 +23,32 @@ func TestOnceRun(t *testing.T) {
 	a := assert.New(t)
 
 	jobQueue := make(chan interface{}, 200)
+	num := 100000
 	p := &WorkerPool{
-		JobQueue:   jobQueue,
-		MaxWorkers: 10,
-		RunI:       &TestWorker{},
+		JobQueue:    jobQueue,
+		MaxWorkers:  1000,
+		InitWorkers: 100,
+		RunI:        &TestWorker{},
 	}
 
 	go func() {
-		for i := 0; i < 10000; i++ {
+		for i := 0; i < num; i++ {
 			jobQueue <- i
 		}
 		p.Stop()
 	}()
 
+	go func() {
+		ticker := time.NewTicker(100 * time.Millisecond)
+		for {
+			<-ticker.C
+			log.Printf("%+v", p.Stat())
+		}
+	}()
+
 	p.Run()
 
-	a.Equal(count, int64(10000))
+	a.Equal(count, int64(num))
 }
 
 func TestStop(t *testing.T) {
