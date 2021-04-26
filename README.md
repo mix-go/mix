@@ -2,11 +2,13 @@
 
 <p align="center">
     <br>
+    <br>
     <img src="https://openmix.org/static/image/logo_go.png" width="120" alt="MixPHP">
+    <br>
     <br>
 </p>
 
-## Mix Go
+<h1 align="center">Mix Go</h1>
 
 Mix Go 是一个基于 Go 进行快速开发的完整系统，类似前端的 `Vue CLI`，提供：
 
