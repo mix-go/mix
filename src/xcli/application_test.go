@@ -196,7 +196,7 @@ func TestCommandPrint(t *testing.T) {
 		Name:   "foo",
 		Short:  "bar",
 		Long:   "bar bar",
-		UsageF: "UsageF: %s %s [ABC..]",
+		UsageF: "Usage: %s %s [ABC..]",
 		RunF: func() {
 		},
 	}
@@ -249,7 +249,7 @@ func TestCommandPrint(t *testing.T) {
 		Name:   "foo",
 		Short:  "bar",
 		Long:   "bar bar",
-		UsageF: "UsageF: %s [ABC..]",
+		UsageF: "Usage: %s [ABC..]",
 		RunF: func() {
 		},
 		Singleton: true,
