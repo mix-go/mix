@@ -14,19 +14,14 @@ go get github.com/mix-go/xwp
 
 ## Usage
 
-先创建一个 Worker 结构体
+先创建一个结构体处理任务，使用类型断言 `i := data.(int)` 转换任务数据类型
 
 ~~~go
-type FooWorker struct {
-    xwp.WorkerTrait
+type Foo struct {
 }
 
-func (t *FooWorker) Do(data interface{}) {
+func (t *Foo) Do(data interface{}) {
     // do something
-}
-
-func NewFooWorker() xwp.Worker {
-    return &FooWorker{}
 }
 ~~~
 
@@ -34,7 +29,14 @@ func NewFooWorker() xwp.Worker {
 
 ~~~go
 jobQueue := make(chan interface{}, 200)
-d := xwp.NewDispatcher(jobQueue, 15, NewFooWorker)
+
+p := &xwp.WorkerPool{
+    JobQueue:       jobQueue,
+    MaxWorkers:     1000,
+    InitWorkers:    100,
+    MaxIdleWorkers: 100,
+    RunI:           &Foo{},
+}
 
 go func() {
     // 投放任务
@@ -43,16 +45,16 @@ go func() {
     }
 
     // 投放完停止调度
-    d.Stop()
+    p.Stop()
 }()
 
-d.Run() // 阻塞代码，直到任务全部执行完成并且全部 Worker 停止
+p.Run() // 阻塞等待
 ~~~
 
 异常处理：`Do` 方法中执行的代码，可能会出现 `panic` 异常，我们可以通过 `recover` 获取异常信息记录到日志或者执行其他处理
 
 ~~~go
-func (t *FooWorker) Do(data interface{}) {
+func (t *Foo) Do(data interface{}) {
     defer func() {
         if err := recover(); err != nil {
             // handle error

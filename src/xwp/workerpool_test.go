@@ -25,10 +25,11 @@ func TestOnceRun(t *testing.T) {
 	jobQueue := make(chan interface{}, 200)
 	num := 10000000
 	p := &WorkerPool{
-		JobQueue:    jobQueue,
-		MaxWorkers:  1000,
-		InitWorkers: 100,
-		RunI:        &TestWorker{},
+		JobQueue:       jobQueue,
+		MaxWorkers:     1000,
+		InitWorkers:    100,
+		MaxIdleWorkers: 100,
+		RunI:           &TestWorker{},
 	}
 
 	go func() {
