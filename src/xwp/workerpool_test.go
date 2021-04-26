@@ -2,7 +2,6 @@ package xwp
 
 import (
 	"github.com/stretchr/testify/assert"
-	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -10,50 +9,47 @@ import (
 
 var (
 	count     int64
-	workerMap sync.Map
 )
 
-type worker struct {
-	Worker
+type TestWorker struct {
 }
 
-func (t *worker) Do(data interface{}) {
+func (t *TestWorker) Do(data interface{}) {
 	atomic.AddInt64(&count, 1)
-	workerMap.Store(t.WorkerID, 1)
-}
-
-func newWorker() Worker {
-	return &worker{}
 }
 
 func TestOnceRun(t *testing.T) {
 	a := assert.New(t)
 
 	jobQueue := make(chan interface{}, 200)
-	d := NewDispatcher(jobQueue, 15, newWorker)
+	p := &WorkerPool{
+		JobQueue:   jobQueue,
+		MaxWorkers: 10,
+		RunI:       &TestWorker{},
+	}
 
 	go func() {
 		for i := 0; i < 10000; i++ {
 			jobQueue <- i
 		}
-		d.Stop()
+		p.Stop()
 	}()
 
-	d.Run()
+	p.Run()
 
 	a.Equal(count, int64(10000))
-	workerNum := 0
-	workerMap.Range(func(key, value interface{}) bool {
-		workerNum++
-		return true
-	})
-	a.Equal(workerNum, 15)
 }
 
 func TestStop(t *testing.T) {
 	a := assert.New(t)
+
 	jobQueue := make(chan interface{}, 200)
-	d := NewDispatcher(jobQueue, 15, newWorker)
+	p := &WorkerPool{
+		JobQueue:   jobQueue,
+		MaxWorkers: 10,
+		RunI:       &TestWorker{},
+	}
+
 	go func() {
 		defer func() {
 			err := recover()
@@ -64,9 +60,11 @@ func TestStop(t *testing.T) {
 			}{}
 		}
 	}()
+
 	go func() {
 		time.Sleep(100 * time.Millisecond)
-		d.Stop()
+		p.Stop()
 	}()
-	d.Run()
+
+	p.Run()
 }

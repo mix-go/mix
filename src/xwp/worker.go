@@ -21,10 +21,10 @@ func NewWorker(p *WorkerPool) *Worker {
 	return &Worker{
 		pool: p,
 		handler: func(data interface{}) {
-			if p.WorkerRun != nil {
-				p.WorkerRun(data)
-			} else if p.WorkerRunI != nil {
-				i := p.WorkerRunI
+			if p.RunF != nil {
+				p.RunF(data)
+			} else if p.RunI != nil {
+				i := p.RunI
 				i.Do(data)
 			}
 		},
@@ -35,21 +35,23 @@ func NewWorker(p *WorkerPool) *Worker {
 
 // Run 执行
 func (t *Worker) Run() {
+	// 先注册
+	select {
+	case t.pool.workerQueuePool <- t.jobChan:
+		atomic.AddInt64(&t.pool.workerCount, 1)
+		t.pool.workers.Store(fmt.Sprintf("%p", t), t)
+	default:
+		return
+	}
+
 	t.pool.wg.Add(1)
 	go func() {
-		atomic.AddInt64(&t.pool.workerCount, 1)
 		defer func() {
 			atomic.AddInt64(&t.pool.workerCount, -1)
 			t.pool.workers.Delete(fmt.Sprintf("%p", t))
 			t.pool.wg.Done()
 		}()
 
-		select {
-		case t.pool.workerPool <- t.jobChan:
-			t.pool.workers.Store(fmt.Sprintf("%p", t), t)
-		default:
-			return
-		}
 		for {
 			select {
 			case data := <-t.jobChan:
@@ -58,7 +60,7 @@ func (t *Worker) Run() {
 				}
 				t.handler(data)
 				select {
-				case t.pool.workerPool <- t.jobChan:
+				case t.pool.workerQueuePool <- t.jobChan:
 				default:
 					return
 				}

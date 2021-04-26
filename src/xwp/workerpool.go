@@ -2,6 +2,7 @@ package xwp
 
 import (
 	"fmt"
+	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -19,20 +20,21 @@ type RunI interface {
 type WorkerPool struct {
 	JobQueue JobQueue
 
+	// default == runtime.NumCPU()
 	MaxWorkers int
 	// default == MaxWorkers
 	InitWorkers int
 	// default == MaxWorkers
 	MaxIdleWorkers int
 
-	WorkerRun  func(data interface{})
-	WorkerRunI RunI
+	RunF func(data interface{})
+	RunI RunI
 
-	workers     *sync.Map
-	workerCount int64
-	workerPool  chan JobQueue
-	wg          *sync.WaitGroup
-	quit        chan bool
+	workers         *sync.Map
+	workerCount     int64
+	workerQueuePool chan JobQueue
+	wg              *sync.WaitGroup
+	quit            chan bool
 }
 
 // Run 执行
@@ -43,25 +45,24 @@ func (t *WorkerPool) Run() {
 
 // init
 func (t *WorkerPool) init() {
-	t.workerPool = make(chan JobQueue, t.MaxIdleWorkers)
-	t.wg = &sync.WaitGroup{}
-	t.quit = make(chan bool)
-
-	if t.WorkerRun == nil && t.WorkerRunI == nil {
-		panic(fmt.Errorf("xwp.WorkerPool WorkerRun & WorkerRunI field is empty"))
+	if t.MaxWorkers == 0 {
+		t.MaxWorkers = runtime.NumCPU()
 	}
-
 	if t.InitWorkers == 0 {
 		t.InitWorkers = t.MaxWorkers
 	}
 	if t.MaxIdleWorkers == 0 {
 		t.MaxIdleWorkers = t.MaxWorkers
 	}
-}
 
-func (t *WorkerPool) addWorker() {
-	w := NewWorker(t)
-	w.Run()
+	t.workers = &sync.Map{}
+	t.workerQueuePool = make(chan JobQueue, t.MaxIdleWorkers)
+	t.wg = &sync.WaitGroup{}
+	t.quit = make(chan bool)
+
+	if t.RunF == nil && t.RunI == nil {
+		panic(fmt.Errorf("xwp.WorkerPool RunF & RunI field is empty"))
+	}
 }
 
 // Start 启动
@@ -80,30 +81,34 @@ func (t *WorkerPool) Start() {
 			case data := <-t.JobQueue:
 				if data == nil {
 					t.workers.Range(func(key, value interface{}) bool {
-						w := value.(Worker)
+						w := value.(*Worker)
 						w.Stop()
 						return true
 					})
 					return
 				}
-				for {
-					select {
-					case ch := <-t.workerPool:
-						ch <- data
-					default:
-						if atomic.LoadInt64(&t.workerCount) < int64(t.MaxWorkers) {
-							NewWorker(t).Run()
-						} else {
-							timer.Reset(10 * time.Millisecond)
-							select {
-							case ch := <-t.workerPool:
-								timer.Stop()
-								ch <- data
-							case <-timer.C:
+				func() {
+					for {
+						select {
+						case ch := <-t.workerQueuePool:
+							ch <- data
+						default:
+							if atomic.LoadInt64(&t.workerCount) < int64(t.MaxWorkers) {
+								NewWorker(t).Run()
+							} else {
+								// 设定时间的监听
+								timer.Reset(10 * time.Millisecond)
+								select {
+								case ch := <-t.workerQueuePool:
+									timer.Stop()
+									ch <- data
+								case <-timer.C:
+								}
 							}
 						}
+						return
 					}
-				}
+				}()
 			case <-t.quit:
 				close(t.JobQueue)
 			}
@@ -132,7 +137,7 @@ type Statistic struct {
 // Stat 统计
 func (t *WorkerPool) Stat() *Statistic {
 	total := int(t.workerCount)
-	idle := len(t.workerPool)
+	idle := len(t.workerQueuePool)
 	return &Statistic{
 		Active: total - idle,
 		Idle:   idle,
