@@ -67,6 +67,18 @@ func (t *Foo) Do(data interface{}) {
 }
 ~~~
 
+查看执行统计：通常可以使用一个定时器，定时打印调度器的执行情况
+
+```go
+go func() {
+    ticker := time.NewTicker(100 * time.Millisecond)
+    for {
+        <-ticker.C
+        log.Printf("%+v", p.Stat()) // 2021/04/26 14:32:53 &{Active:5 Idle:95 Total:100}
+    }
+}()
+```
+
 ## License
 
 Apache License Version 2.0, http://www.apache.org/licenses/
