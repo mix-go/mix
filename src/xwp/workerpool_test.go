@@ -23,7 +23,7 @@ func TestOnceRun(t *testing.T) {
 	a := assert.New(t)
 
 	jobQueue := make(chan interface{}, 200)
-	num := 100000
+	num := 10000000
 	p := &WorkerPool{
 		JobQueue:    jobQueue,
 		MaxWorkers:  1000,

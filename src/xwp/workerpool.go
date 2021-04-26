@@ -95,6 +95,7 @@ func (t *WorkerPool) Start() {
 						default:
 							if atomic.LoadInt64(&t.workerCount) < int64(t.MaxWorkers) {
 								NewWorker(t).Run()
+								continue
 							} else {
 								// 设定时间的监听
 								timer.Reset(10 * time.Millisecond)
@@ -103,6 +104,7 @@ func (t *WorkerPool) Start() {
 									timer.Stop()
 									ch <- data
 								case <-timer.C:
+									continue
 								}
 							}
 						}
