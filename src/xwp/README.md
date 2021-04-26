@@ -14,7 +14,7 @@ go get github.com/mix-go/xwp
 
 ## Usage
 
-先创建一个结构体处理任务，使用类型断言 `i := data.(int)` 转换任务数据类型
+先创建一个结构体用来处理任务，使用类型断言转换任务数据类型，例如：`i := data.(int)` 
 
 ~~~go
 type Foo struct {
@@ -26,6 +26,8 @@ func (t *Foo) Do(data interface{}) {
 ~~~
 
 调度任务
+
+- 也可以使用 `RunF` 采用闭包来处理任务
 
 ~~~go
 jobQueue := make(chan interface{}, 200)

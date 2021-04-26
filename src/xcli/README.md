@@ -190,6 +190,8 @@ xcli.App().Debug
 
 当我们的 CLI 只有一个命令时，只需要配置一下 `Singleton`：
 
+- 也可以使用 `RunI` 执行一个结构体
+
 ~~~go
 cmd := &xcli.Command{
     Name:  "hello",
