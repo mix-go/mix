@@ -28,6 +28,7 @@ func (t *Foo) Do(data interface{}) {
 调度任务
 
 - 也可以使用 `RunF` 采用闭包来处理任务
+- 如果不想阻塞执行，可以使用 `p.Start()` 启动
 
 ~~~go
 jobQueue := make(chan interface{}, 200)
