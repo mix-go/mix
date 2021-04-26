@@ -31,7 +31,7 @@ func main() {
     cmd := &xcli.Command{
         Name:  "hello",
         Short: "Echo demo",
-        Run: func() {
+        RunF: func() {
             name := flag.Match("n", "name").String("default")
             // do something
         },
@@ -161,7 +161,7 @@ h := func(next func()) {
 cmd := &xcli.Command{
     Name:  "hello",
     Short: "Echo demo",
-    Run: func() {
+    RunF: func() {
         // do something
     },
 }
@@ -194,7 +194,7 @@ xcli.App().Debug
 cmd := &xcli.Command{
     Name:  "hello",
     Short: "Echo demo",
-    Run: func() {
+    RunF: func() {
         // do something
     },
     Singleton: true,
@@ -227,7 +227,7 @@ Developed with Mix Go framework. (openmix.org/mix-go)
 cmd := &xcli.Command{
     Name:  "hello",
     Short: "Echo demo",
-    Run: func() {
+    RunF: func() {
         // do something
     },
     Default: true,

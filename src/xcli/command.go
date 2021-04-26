@@ -20,7 +20,7 @@ type Command struct {
 	Options []*Option
 
 	// 执行
-	Run  func()
+	RunF func()
 	RunI RunI
 
 	// 是否单命令

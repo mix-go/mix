@@ -21,7 +21,7 @@ func TestCommandRun(t *testing.T) {
 	cmd := &Command{
 		Name:  "foo",
 		Short: "bar",
-		Run: func() {
+		RunF: func() {
 			ok = true
 		},
 	}
@@ -49,7 +49,7 @@ func TestSingletonCommandRun(t *testing.T) {
 	cmd := &Command{
 		Name:  "foo",
 		Short: "bar",
-		Run: func() {
+		RunF: func() {
 			ok = true
 		},
 		Singleton: true,
@@ -74,7 +74,7 @@ func TestDefaultCommandRun(t *testing.T) {
 	cmd := &Command{
 		Name:  "foo",
 		Short: "bar",
-		Run: func() {
+		RunF: func() {
 			ok = true
 		},
 		Default: true,
@@ -95,7 +95,7 @@ func TestDefaultCommandRun(t *testing.T) {
 	cmd = &Command{
 		Name:  "foo",
 		Short: "bar",
-		Run: func() {
+		RunF: func() {
 			ok = true
 		},
 		Singleton: true,
@@ -118,7 +118,7 @@ func TestCommandNotFound(t *testing.T) {
 	cmd := &Command{
 		Name:  "foo",
 		Short: "bar",
-		Run: func() {
+		RunF: func() {
 			ok = true
 		},
 	}
@@ -136,7 +136,7 @@ func TestCommandNotFound(t *testing.T) {
 	cmd = &Command{
 		Name:  "foo",
 		Short: "bar",
-		Run: func() {
+		RunF: func() {
 			ok = true
 		},
 		Default: true,
@@ -158,7 +158,7 @@ func TestHandlers(t *testing.T) {
 	cmd := &Command{
 		Name:  "foo",
 		Short: "bar",
-		Run: func() {
+		RunF: func() {
 			result = append(result, 0)
 		},
 	}
@@ -197,7 +197,7 @@ func TestCommandPrint(t *testing.T) {
 		Short:  "bar",
 		Long:   "bar bar",
 		UsageF: "UsageF: %s %s [ABC..]",
-		Run: func() {
+		RunF: func() {
 		},
 	}
 	opt := &Option{
@@ -250,7 +250,7 @@ func TestCommandPrint(t *testing.T) {
 		Short:  "bar",
 		Long:   "bar bar",
 		UsageF: "UsageF: %s [ABC..]",
-		Run: func() {
+		RunF: func() {
 		},
 		Singleton: true,
 	}

@@ -229,15 +229,15 @@ func (t *application) call() {
 	if cmd == nil {
 		panic(NewNotFoundError(fmt.Errorf("'%s' is not command, see '%s --help'.", command, argv.Program().Path)))
 	}
-	if cmd.Run == nil && cmd.RunI == nil {
-		panic(fmt.Errorf("'%s' command Run & RunI field is empty", cmd.Name))
+	if cmd.RunF == nil && cmd.RunI == nil {
+		panic(fmt.Errorf("'%s' command RunF & RunI field is empty", cmd.Name))
 	}
 
 	// 执行命令
 	exec := func() {
-		r := cmd.Run
-		if r != nil {
-			r()
+		rf := cmd.RunF
+		if rf != nil {
+			rf()
 			return
 		}
 		ri := cmd.RunI
