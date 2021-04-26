@@ -2,7 +2,7 @@
 
 ## Mix XWP
 
-通用的工作池
+通用动态工作池、协程池
 
 A common worker pool
 
