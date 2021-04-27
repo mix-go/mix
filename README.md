@@ -259,7 +259,7 @@ type WorkerPoolDaemonCommand struct {
 }
 
 func (t *WorkerPoolDaemonCommand) Main() {
-    redis := globals.Redis()
+    redis := di.GoRedis()
     jobQueue := make(chan interface{}, 50)
     p := &xwp.WorkerPool{
         JobQueue:       jobQueue,
