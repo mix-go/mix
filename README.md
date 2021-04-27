@@ -218,10 +218,9 @@ liujian: hello
 
 新建 `commands/workerpool.go` 文件：
 
-- `workerpool.NewDispatcher(jobQueue, 15, NewWorker)` 创建了一个调度器
-- `NewWorker` 负责初始化执行任务的工作协程
-- 任务数据会在 `worker.Do` 方法中触发，我们只需要将我们的业务逻辑写到该方法中即可
-- 当程序接收到进程退出信号时，调度器能平滑控制所有的 Worker 在执行完队列里全部的任务后再退出调度，保证数据的完整性
+- `Foo` 结构体负责任务的执行处理，任务数据会在 `Do` 方法中触发，我们只需要将我们的业务逻辑写到该方法中即可
+- `p := &xwp.WorkerPool` 创建了一个协程池
+- 当程序接收到进程退出信号时，协程池 `p.Stop()` 能平滑控制所有的 Worker 在执行完队列里全部的任务后再退出，保证数据的完整性
 
 ~~~go
 package commands
@@ -238,11 +237,10 @@ import (
     "time"
 )
 
-type worker struct {
-    xwp.WorkerTrait
+type Foo struct {
 }
 
-func (t *worker) Do(data interface{}) {
+func (t *Foo) Do(data interface{}) {
     defer func() {
         if err := recover(); err != nil {
             logger := di.Logrus()
@@ -257,23 +255,25 @@ func (t *worker) Do(data interface{}) {
     // ...
 }
 
-func NewWorker() xwp.Worker {
-    return &worker{}
-}
-
 type WorkerPoolDaemonCommand struct {
 }
 
 func (t *WorkerPoolDaemonCommand) Main() {
     redis := globals.Redis()
     jobQueue := make(chan interface{}, 50)
-    d := xwp.NewDispatcher(jobQueue, 15, NewWorker)
+    p := &xwp.WorkerPool{
+        JobQueue:       jobQueue,
+        MaxWorkers:     1000,
+        InitWorkers:    100,
+        MaxIdleWorkers: 100,
+        RunI:           &Foo{},
+    }
 
     ch := make(chan os.Signal)
     signal.Notify(ch, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
     go func() {
         <-ch
-        d.Stop()
+        p.Stop()
     }()
 
     go func() {
@@ -284,7 +284,7 @@ func (t *WorkerPoolDaemonCommand) Main() {
                     continue
                 }
                 fmt.Println(fmt.Sprintf("Redis Error: %s", err))
-                d.Stop();
+                p.Stop()
                 return
             }
             // brPop命令最后一个键才是值
@@ -292,7 +292,7 @@ func (t *WorkerPoolDaemonCommand) Main() {
         }
     }()
 
-    d.Run() // 阻塞代码，直到任务全部执行完成并且全部 Worker 停止
+    p.Run() // 阻塞等待
 }
 ~~~
 
