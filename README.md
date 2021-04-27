@@ -247,6 +247,8 @@ func (t *Foo) Do(data interface{}) {
             logger.Error(err)
         }
     }()
+    
+    // 类型断言 str := data.(string)
 
     // 执行业务处理
     // ...
