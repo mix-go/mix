@@ -107,7 +107,7 @@ func main() {
 
 我们可以在这里自定义命令，[查看更多](https://github.com/mix-go/xcli)
 
-- `RunI` 定义了 `hello` 命令执行的接口，也可以使用 `Run` 设定一个匿名函数
+- `RunI` 定义了 `hello` 命令执行的接口，也可以使用 `RunF` 设定一个匿名函数
 
 ```go
 package commands
@@ -218,7 +218,7 @@ liujian: hello
 
 新建 `commands/workerpool.go` 文件：
 
-- `Foo` 结构体负责任务的执行处理，任务数据会在 `Do` 方法中触发，我们只需要将我们的业务逻辑写到该方法中即可
+- `Foo` 结构体负责任务的执行处理，任务数据会在 `Do` 方法中触发，只需将我们的业务逻辑写到该方法中即可
 - `p := &xwp.WorkerPool` 创建了一个协程池
 - 当程序接收到进程退出信号时，协程池 `p.Stop()` 能平滑控制所有的 Worker 在执行完队列里全部的任务后再退出，保证数据的完整性
 
@@ -362,7 +362,7 @@ func main() {
 
 我们可以在这里自定义命令，[查看更多](https://github.com/mix-go/xcli)
 
-- `RunI` 指定了命令执行的接口，也可以使用 `Run` 设定一个匿名函数
+- `RunI` 指定了命令执行的接口，也可以使用 `RunF` 设定一个匿名函数
 
 ```go
 package commands
@@ -613,7 +613,7 @@ func main() {
 
 我们可以在这里自定义命令，[查看更多](https://github.com/mix-go/xcli)
 
-- `RunI` 指定了命令执行的接口，也可以使用 `Run` 设定一个匿名函数
+- `RunI` 指定了命令执行的接口，也可以使用 `RunF` 设定一个匿名函数
 
 ~~~go
 package commands
@@ -1061,7 +1061,7 @@ func main() {
 我们可以在这里自定义命令，[查看更多](https://github.com/mix-go/xcli)
 
 - 定义了 `grpc:server`、`grpc:client` 两个子命令
-- `RunI` 指定了命令执行的接口，也可以使用 `Run` 设定一个匿名函数
+- `RunI` 指定了命令执行的接口，也可以使用 `RunF` 设定一个匿名函数
 
 ```go
 package commands
@@ -1321,7 +1321,7 @@ Add User: 10001
 
 - 可以在哪里使用
 
-可以在代码的任意位置使用，但是为了可以使用到环境变量和自定义配置，通常我们在 `xcli.Command` 结构体定义的 `Run`、`RunI` 中使用。
+可以在代码的任意位置使用，但是为了可以使用到环境变量和自定义配置，通常我们在 `xcli.Command` 结构体定义的 `RunF`、`RunI` 中使用。
 
 - 使用日志，比如：`logrus`、`zap`
 
