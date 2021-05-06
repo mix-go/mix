@@ -181,7 +181,7 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 
 	if useDotenv == "no" {
 		fmt.Print(" - Processing .env")
-		if err := logic.ReplaceMain(dest, `_ "github.com/mix-go/cli-skeleton/dotenv"`, ""); err != nil {
+		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/dotenv"`, selectType), ""); err != nil {
 			panic(errors.New("Replace failed"))
 		}
 		_ = os.RemoveAll(fmt.Sprintf("%s/dotenv", dest))
@@ -191,7 +191,7 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 
 	if useConf == "no" {
 		fmt.Print(" - Processing conf")
-		if err := logic.ReplaceMain(dest, `_ "github.com/mix-go/cli-skeleton/configor"`, ""); err != nil {
+		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/configor"`, selectType), ""); err != nil {
 			panic(errors.New("Replace failed"))
 		}
 		_ = os.RemoveAll(fmt.Sprintf("%s/configor", dest))
