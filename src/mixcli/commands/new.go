@@ -126,19 +126,19 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 	if _, err := os.Stat(srcDir); err != nil {
 		cmd := exec.Command("go", "get", fmt.Sprintf("github.com/mix-go/%s-skeleton@%s", selectType, ver))
 		fmt.Printf("Skeleton local not found, exec 'go get github.com/mix-go/%s-skeleton@%s'\n", selectType, ver)
-		count := 0
+		total := 0
 		switch selectType {
 		case CLI:
-			count = 7695
+			total = 7695
 		case API:
-			count = 13834
+			total = 13834
 		case Web:
-			count = 17705
+			total = 17705
 		case gRPC:
-			count = 15659
+			total = 15659
 		}
 		current := int64(0)
-		bar := pb.StartNew(count)
+		bar := pb.StartNew(total)
 		go func() {
 			path := fmt.Sprintf("%s/pkg/mod/cache/download/github.com/mix-go/%s-skeleton/@v/%s.zip", os.Getenv("GOPATH"), selectType, ver)
 			for {
