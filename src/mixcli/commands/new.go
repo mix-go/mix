@@ -48,7 +48,7 @@ func (t *NewCommand) Main() {
 		return result
 	}
 
-	selectType := CLI
+	var selectType string
 	switch promp("Select project type", []string{"CLI", "API", "Web (contains the websocket)", "gRPC"}) {
 	case "CLI":
 		selectType = CLI
@@ -122,11 +122,21 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		return
 	}
 
-	sdir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/%s-skeleton@%s", os.Getenv("GOPATH"), selectType, ver)
-	if _, err := os.Stat(sdir); err != nil {
+	srcDir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/%s-skeleton@%s", os.Getenv("GOPATH"), selectType, ver)
+	if _, err := os.Stat(srcDir); err != nil {
 		cmd := exec.Command("go", "get", fmt.Sprintf("github.com/mix-go/%s-skeleton@%s", selectType, ver))
 		fmt.Printf("Skeleton local not found, exec 'go get github.com/mix-go/%s-skeleton@%s'\n", selectType, ver)
-		count := 8 * 1024
+		count := 0
+		switch selectType {
+		case CLI:
+			count = 7695
+		case API:
+			count = 13834
+		case Web:
+			count = 17705
+		case gRPC:
+			count = 15659
+		}
 		current := int64(0)
 		bar := pb.StartNew(count)
 		go func() {
@@ -174,7 +184,7 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		panic(err)
 	}
 	dest := fmt.Sprintf("%s/%s", pwd, name)
-	if !logic.CopyPath(sdir, dest) {
+	if !logic.CopyPath(srcDir, dest) {
 		panic(errors.New("Copy dir failed"))
 	}
 	fmt.Println(" > ok")
