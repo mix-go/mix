@@ -112,7 +112,7 @@ func main() {
 
 ## Refresh singleton
 
-程序执行中配置信息发生变化时，可以刷新单例的实例
+程序执行中配置信息发生变化时，`Refresh()` 可以刷新单例的实例来切换使用新的配置，通常在微服务配置中心中使用。
 
 ```go
 obj, err := xdi.Container().Object("foo")
