@@ -4,7 +4,7 @@
 
 通用动态工作池、协程池
 
-A common worker pool
+A dynamic golang worker pool, coroutine pool
 
 ## Installation
 
