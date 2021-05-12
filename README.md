@@ -1100,7 +1100,7 @@ var Commands = []*xcli.Command{
 syntax = "proto3";
 
 package go.micro.grpc.user;
-option go_package = ".;protos";
+option go_package = "./;protos";
 
 service User {
     rpc Add(AddRequest) returns (AddResponse) {}
@@ -1156,7 +1156,7 @@ import (
 	"syscall"
 )
 
-var listener net.Listener
+var netListener net.Listener
 
 type GrpcServerCommand struct {
 }
@@ -1174,7 +1174,7 @@ func (t *GrpcServerCommand) Main() {
 	if err != nil {
 		panic(err)
 	}
-	listener = listener
+	netListener = listener
 
 	// signal
 	ch := make(chan os.Signal)
