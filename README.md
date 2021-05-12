@@ -1253,7 +1253,7 @@ type GrpcClientCommand struct {
 }
 
 func (t *GrpcClientCommand) Main() {
-	addr := dotenv.Getenv("GIN_ADDR").String(":8080")
+    addr := dotenv.Getenv("GIN_ADDR").String(":8080")
     ctx, _ := context.WithTimeout(context.Background(), time.Duration(5)*time.Second)
     conn, err := grpc.DialContext(ctx, addr, grpc.WithInsecure(), grpc.WithBlock())
     if err != nil {
