@@ -6,15 +6,13 @@
 
 A scaffold to quickly create a go project
 
-### Installation
-
-- 安装
+## Installation
 
 ```
-go get -u github.com/mix-go/mixcli
+go get github.com/mix-go/mixcli
 ```
 
-### Help
+## Help
 
 查看命令帮助
 
@@ -35,7 +33,7 @@ Run 'mixcli COMMAND --help' for more information on a command.
 Developed with Mix Go framework. (openmix.org/mix-go)
 ~~~
 
-### New 
+## New 
 
 创建项目
 
