@@ -16,7 +16,7 @@ go get -u github.com/mix-go/dotenv
 
 - 使用
 
-~~~
+~~~go
 _ = dotenv.Load(".env")
 
 i := dotenv.Getenv("key").String()
