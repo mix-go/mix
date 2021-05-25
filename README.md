@@ -48,6 +48,10 @@ Use the arrow keys to navigate: ↓ ↑ → ←
 微博：http://weibo.com/onanying    
 官方QQ群：[284806582](https://shang.qq.com/wpa/qunwpa?idkey=b3a8618d3977cda4fed2363a666b081a31d89e3d31ab164497f53b72cf49968a), [825122875](http://shang.qq.com/wpa/qunwpa?idkey=d2908b0c7095fc7ec63a2391fa4b39a8c5cb16952f6cfc3f2ce4c9726edeaf20)，敲门暗号：goer
 
+## 视频教程
+
+[![从 PHP 转 Go 的基础知识对比视频讲解](https://openstr.com/cover/41e9dc609cb8f9a4530fe8f7a37f1130.jpg?size=small&share=true)](https://openstr.com/watch/41e9dc609cb8f9a4530fe8f7a37f1130)
+
 ## 编写一个 CLI 程序
 
 首先我们使用 `mixcli` 命令创建一个项目骨架：
