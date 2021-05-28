@@ -249,6 +249,12 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		break
 	}
 
+	if selectLog == None && selectDb == None && selectRedis == None {
+		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/di"`, selectType), ""); err != nil {
+			panic(errors.New("Replace failed"))
+		}
+	}
+
 	fmt.Print(" - Processing package name")
 	if err := logic.ReplaceAll(dest, fmt.Sprintf("github.com/mix-go/%s-skeleton", selectType), name); err != nil {
 		panic(errors.New("Replace failed"))
