@@ -104,12 +104,16 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		return
 	}
 
-	echo := "echo $GOPATH"
-	if runtime.GOOS == "windows" {
-		echo = "echo %PATH%"
+	envCmd := "go env GOPATH"
+	cmd := exec.Command("go", "env", "GOPATH")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("Exec error: %v\n", err)
+		return
 	}
-	if os.Getenv("GOPATH") == "" {
-		fmt.Printf("$GOPATH is not configured, see '%s'\n", echo)
+	goPath := string(out[:len(out)-1])
+	if goPath == "" {
+		fmt.Printf("$GOPATH is not configured, see '%s'\n", envCmd)
 		return
 	}
 
@@ -117,12 +121,12 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 	if runtime.GOOS == "windows" {
 		dr = ";"
 	}
-	if strings.Contains(os.Getenv("GOPATH"), dr) {
-		fmt.Printf("$GOPATH cannot have multiple directories, see '%s'\n", echo)
+	if strings.Contains(goPath, dr) {
+		fmt.Printf("$GOPATH cannot have multiple directories, see '%s'\n", envCmd)
 		return
 	}
 
-	srcDir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/%s-skeleton@%s", os.Getenv("GOPATH"), selectType, ver)
+	srcDir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/%s-skeleton@%s", goPath, selectType, ver)
 	if _, err := os.Stat(srcDir); err != nil {
 		cmd := exec.Command("go", "get", fmt.Sprintf("github.com/mix-go/%s-skeleton@%s", selectType, ver))
 		fmt.Printf("Skeleton local not found, exec 'go get github.com/mix-go/%s-skeleton@%s'\n", selectType, ver)
@@ -140,7 +144,7 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		current := int64(0)
 		bar := pb.StartNew(total)
 		go func() {
-			path := fmt.Sprintf("%s/pkg/mod/cache/download/github.com/mix-go/%s-skeleton/@v/%s.zip", os.Getenv("GOPATH"), selectType, ver)
+			path := fmt.Sprintf("%s/pkg/mod/cache/download/github.com/mix-go/%s-skeleton/@v/%s.zip", goPath, selectType, ver)
 			for {
 				f, err := os.Open(path)
 				if err != nil {
@@ -172,7 +176,7 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 			return
 		}
 		time.Sleep(2 * time.Second) // 等待一会，让 gomod 完成解压
-		_ = os.Remove(fmt.Sprintf("%s/bin/%s-skeleton", os.Getenv("GOPATH"), selectType))
+		_ = os.Remove(fmt.Sprintf("%s/bin/%s-skeleton", goPath, selectType))
 		fmt.Println(fmt.Sprintf("Skeleton 'github.com/mix-go/%s-skeleton@%s' download is completed", selectType, ver))
 	} else {
 		fmt.Println(fmt.Sprintf("Skeleton 'github.com/mix-go/%s-skeleton@%s' local found", selectType, ver))
