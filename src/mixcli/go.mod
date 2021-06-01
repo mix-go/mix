@@ -6,5 +6,5 @@ require (
 	github.com/cheggaaa/pb/v3 v3.0.8
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mix-go/dotenv v1.1.11
-	github.com/mix-go/xcli v1.1.10
+	github.com/mix-go/xcli v1.1.11
 )
