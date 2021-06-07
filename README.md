@@ -42,6 +42,12 @@ Use the arrow keys to navigate: ↓ ↑ → ←
     gRPC
 ~~~
 
+如果编译时报错，整理一下依赖
+
+~~~
+go mod tidy
+~~~
+
 ## 技术交流
 
 知乎：https://www.zhihu.com/people/onanying   
