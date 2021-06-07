@@ -218,7 +218,7 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		if err := logic.ReplaceAll(dest, `logger := di.Logrus`, `logger := di.Zap`); err != nil {
 			panic(errors.New("Replace failed"))
 		}
-		if err := logic.ReplaceAll(dest, `Output: logger.Writer()`, `Output: &di.ZapOutput{Logger: logger}`); err != nil {
+		if err := logic.ReplaceAll(dest, `Output: logger.Writer\(\)`, `Output: &di.ZapOutput{Logger: logger}`); err != nil {
 			panic(errors.New("Replace failed"))
 		}
 		_ = os.Remove(fmt.Sprintf("%s/di/logrus.go", dest))
