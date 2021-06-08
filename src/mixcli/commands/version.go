@@ -1,5 +1,5 @@
 package commands
 
 var (
-	FrameworkVersion = "1.1.12"
+	FrameworkVersion = "1.1.13"
 )
