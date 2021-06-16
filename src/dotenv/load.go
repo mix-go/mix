@@ -6,3 +6,8 @@ import "github.com/joho/godotenv"
 func Load(filenames ...string) (err error) {
 	return godotenv.Load(filenames...)
 }
+
+// Overload will read your env file(s) and load them into ENV for this process.
+func Overload(filenames ...string) (err error) {
+	return godotenv.Overload(filenames...)
+}
