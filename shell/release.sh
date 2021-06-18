@@ -22,7 +22,7 @@ if [[ $VERSION != v* ]]; then
 fi
 
 repos=$(ls $BASEPATH)
-repos=(${repos[@]} cli-skeleton web-skeleton api-skeleton grpc-skeleton mix)
+repos="$repos cli-skeleton web-skeleton api-skeleton grpc-skeleton mix"
 
 for REMOTE in $repos; do
   echo ""
