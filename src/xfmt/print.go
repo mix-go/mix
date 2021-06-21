@@ -8,6 +8,16 @@ import (
 
 const varFormat = "%v"
 
+var status = true
+
+func Enable() {
+	status = true
+}
+
+func Disable() {
+	status = false
+}
+
 type value struct {
 	Arg  interface{}
 	Flag string
@@ -47,6 +57,11 @@ func Sprintln(args ...interface{}) string {
 // Sprintf 格式化并返回
 func Sprintf(format string, args ...interface{}) string {
 	str := fmt.Sprintf(format, args...) // 放在第一行可以起到效验的作用
+
+	// 停用
+	if !status {
+		return str
+	}
 
 	pointers := []pointer{}
 	for _, v := range values(format, args...) {

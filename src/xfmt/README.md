@@ -70,7 +70,6 @@ l1 := Level1{Name: "Level1", Level2: &l2, Level2_1: &l2}
 
 - `fmt` 打印
 
-
 ```go
 fmt.Println(fmt.Sprintf("%+v", l1))
 ```
@@ -87,6 +86,13 @@ fmt.Println(xfmt.Sprintf("%+v", l1))
 
 ```
 {Name:Level1 Level2:0xc00009c500:&{Level3:0xc00007f030 Name:Level2} Level2_1:0xc00009c500}
+```
+
+动态停用和启用
+
+```go
+xfmt.Disable() // 停用后xfmt等同于fmt
+xfmt.Enable()
 ```
 
 ## License
