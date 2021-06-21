@@ -9,21 +9,23 @@ import (
 )
 
 type Watcher struct {
-	Ptr    interface{}
-	Last   map[string]string
-	Nodes  map[string]func()
-	Ticker *time.Ticker
+	Ptr      interface{}
+	Interval time.Duration
+	Last     map[string]string
+	Nodes    map[string]func()
+	Ticker   *time.Ticker
 }
 
-func NewWatcher(ptr interface{}) (*Watcher, error) {
+func NewWatcher(ptr interface{}, interval time.Duration) (*Watcher, error) {
 	val := reflect.ValueOf(ptr)
 	if val.Kind() != reflect.Ptr {
 		return nil, fmt.Errorf("node are not pointer type")
 	}
 	return &Watcher{
-		Ptr:   ptr,
-		Last:  make(map[string]string),
-		Nodes: make(map[string]func()),
+		Ptr:      ptr,
+		Interval: interval,
+		Last:     make(map[string]string),
+		Nodes:    make(map[string]func()),
 	}, nil
 }
 
@@ -32,11 +34,11 @@ func (t *Watcher) Watch(tag string, f func()) error {
 	return nil
 }
 
-func (t *Watcher) Run(interval time.Duration) error {
+func (t *Watcher) Run() error {
 	if t.Ticker != nil {
 		return fmt.Errorf("cannot repeat execution")
 	}
-	t.Ticker = time.NewTicker(interval)
+	t.Ticker = time.NewTicker(t.Interval)
 	go func() {
 		for {
 			<-t.Ticker.C

@@ -22,21 +22,20 @@ var Config struct {
 func TestNewWatcher(t *testing.T) {
 	a := assert.New(t)
 
-	w, err := NewWatcher(&Config)
+	w, err := NewWatcher(&Config, 100*time.Millisecond)
 	if err != nil {
 		panic(err)
 	}
-	err = w.Watch("logger", func() {
+	_ = w.Watch("logger", func() {
 		a.Equal(Config.Logger.Level, "debug")
 	})
-	err = w.Watch("database", func() {
+	_ = w.Watch("database", func() {
 		a.Equal(Config.Database.MaxOpen, 100)
 		a.Equal(Config.Database.MaxIdle, 50)
 	})
-	if err != nil {
+	if err := w.Run(); err != nil {
 		panic(err)
 	}
-	w.Run(100 * time.Millisecond)
 
 	go func() {
 		time.Sleep(1 * time.Second)

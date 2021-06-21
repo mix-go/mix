@@ -38,7 +38,7 @@ err := viper.Unmarshal(&Config)
  - 然后采用以下代码执行监听逻辑
 
 ```go
-w, err := NewWatcher(&Config)
+w, err := NewWatcher(&Config, 10 * time.Second)
 if err != nil {
     panic(err)
 }
@@ -50,7 +50,7 @@ if err = w.Watch("logger", func() {
 }); err != nil {
     panic(err)
 }
-if err := w.Run(10 * time.Second); err != nil {
+if err := w.Run(); err != nil {
     panic(err)
 }
 ```
