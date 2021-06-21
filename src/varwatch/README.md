@@ -13,7 +13,9 @@ go get github.com/mix-go/varwatch
 ```
 ## Usage
 
-当你采用 [spf13/viper](https://github.com/spf13/viper) [jinzhu/configor](https://github.com/jinzhu/configor) 库动态更新配置信息
+当采用 [spf13/viper](https://github.com/spf13/viper) [jinzhu/configor](https://github.com/jinzhu/configor) 这种绑定变量的配置库来动态更新配置信息
+
+> 任何采用 &Config 指针绑定数据的配置库都可以
 
 ~~~go
 var Config struct {
