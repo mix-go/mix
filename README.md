@@ -1370,6 +1370,7 @@ fmt.Println("key", val)
 - https://github.com/mix-go/xdi
 - https://github.com/mix-go/xwp
 - https://github.com/mix-go/xfmt
+- https://github.com/mix-go/varwatch
 - https://github.com/mix-go/dotenv
 
 第三方库
