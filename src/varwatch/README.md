@@ -32,7 +32,7 @@ var Config struct {
 err := viper.Unmarshal(&Config)
 ~~~
 
-当 `Config.Logger.Level` 发生变化时我们需要执行一些代码修改日志的级别
+以动态修改日志级别举例：当 `Config.Logger.Level` 发生变化时我们需要执行一些代码修改日志的级别
 
  - 首先将 Logger 节点配置 `varwatch:"logger"` 标签信息
  - 然后采用以下代码执行监听逻辑
@@ -54,6 +54,8 @@ if err := w.Run(10 * time.Second); err != nil {
     panic(err)
 }
 ```
+
+需要动态修改连接池信息，或者数据库账号密码都可以通过上面的范例实现。
 
 ## License
 
