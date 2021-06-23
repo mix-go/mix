@@ -227,6 +227,12 @@ liujian: hello
 
 队列消费是高并发系统中最常用的异步处理模型，通常我们是编写一个 CLI 命令行程序在后台执行 Redis、RabbitMQ 等 MQ 的队列消费，并将处理结果落地到 mysql 等数据库中，由于这类需求的标准化比较容易，因此我们开发了 [mix-go/xwp](https://github.com/mix-go/xwp) 库来处理这类需求，基本上大部分异步处理类需求都可使用。
 
+首先我们需要安装 [mix-go/xwp](https://github.com/mix-go/xwp)，因为这是一个独立库没有包含在骨架中：
+
+```
+go get github.com/mix-go/xwp
+```
+
 新建 `commands/workerpool.go` 文件：
 
 - `Foo` 结构体负责任务的执行处理，任务数据会在 `Do` 方法中触发，只需将我们的业务逻辑写到该方法中即可
