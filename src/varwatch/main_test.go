@@ -28,8 +28,7 @@ func TestNewWatcher(t *testing.T) {
 	}
 	w.Watch("logger", func() {
 		a.Equal(Config.Logger.Level, "debug")
-	})
-	w.Watch("database", func() {
+	}).Watch("database", func() {
 		a.Equal(Config.Database.MaxOpen, 100)
 		a.Equal(Config.Database.MaxIdle, 50)
 	})

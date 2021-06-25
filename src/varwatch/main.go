@@ -31,8 +31,9 @@ func NewWatcher(v interface{}, interval time.Duration) (*Watcher, error) {
 	return w, nil
 }
 
-func (t *Watcher) Watch(tag string, f func()) {
+func (t *Watcher) Watch(tag string, f func()) *Watcher {
 	t.nodes[tag] = f
+	return t
 }
 
 func (t *Watcher) run() {
