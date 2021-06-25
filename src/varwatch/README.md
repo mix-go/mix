@@ -44,17 +44,12 @@ w, err := varwatch.NewWatcher(&Config, 10 * time.Second)
 if err != nil {
     panic(err)
 }
-if err = w.Watch("logger", func() {
+w.Watch("logger", func() {
     // 获取变化后的值
     lv := Config.Logger.Level
     // 修改 logrus 的日志级别
     logrus.SetLevel(logrus.Level(uint32(lv)))
-}); err != nil {
-    panic(err)
-}
-if err := w.Run(); err != nil {
-    panic(err)
-}
+})
 ```
 
 需要动态修改连接池信息，或者数据库账号密码都可以通过上面的范例实现。

@@ -26,16 +26,13 @@ func TestNewWatcher(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	_ = w.Watch("logger", func() {
+	w.Watch("logger", func() {
 		a.Equal(Config.Logger.Level, "debug")
 	})
-	_ = w.Watch("database", func() {
+	w.Watch("database", func() {
 		a.Equal(Config.Database.MaxOpen, 100)
 		a.Equal(Config.Database.MaxIdle, 50)
 	})
-	if err := w.Run(); err != nil {
-		panic(err)
-	}
 
 	go func() {
 		time.Sleep(1 * time.Second)

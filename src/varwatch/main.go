@@ -9,70 +9,67 @@ import (
 )
 
 type Watcher struct {
-	Ptr      interface{}
-	Interval time.Duration
-	Last     map[string]string
-	Nodes    map[string]func()
-	Ticker   *time.Ticker
+	ptr      interface{}
+	interval time.Duration
+	last     map[string]string
+	nodes    map[string]func()
+	ticker   *time.Ticker
 }
 
-func NewWatcher(ptr interface{}, interval time.Duration) (*Watcher, error) {
-	val := reflect.ValueOf(ptr)
+func NewWatcher(v interface{}, interval time.Duration) (*Watcher, error) {
+	val := reflect.ValueOf(v)
 	if val.Kind() != reflect.Ptr {
 		return nil, fmt.Errorf("node are not pointer type")
 	}
-	return &Watcher{
-		Ptr:      ptr,
-		Interval: interval,
-		Last:     make(map[string]string),
-		Nodes:    make(map[string]func()),
-	}, nil
-}
-
-func (t *Watcher) Watch(tag string, f func()) error {
-	t.Nodes[tag] = f
-	return nil
-}
-
-func (t *Watcher) Run() error {
-	if t.Ticker != nil {
-		return fmt.Errorf("cannot repeat execution")
+	w := &Watcher{
+		ptr:      v,
+		interval: interval,
+		last:     make(map[string]string),
+		nodes:    make(map[string]func()),
 	}
-	t.Ticker = time.NewTicker(t.Interval)
+	w.run()
+	return w, nil
+}
+
+func (t *Watcher) Watch(tag string, f func()) {
+	t.nodes[tag] = f
+}
+
+func (t *Watcher) run() {
+	t.ticker = time.NewTicker(t.interval)
 	go func() {
 		for {
-			<-t.Ticker.C
+			<-t.ticker.C
 			t.do()
 		}
 	}()
-	return nil
 }
 
 func (t *Watcher) Stop() {
-	if t.Ticker == nil {
+	if t.ticker == nil {
 		return
 	}
-	t.Ticker.Stop()
+	t.ticker.Stop()
 }
 
 func (t *Watcher) trigger(tag string) {
-	if f, ok := t.Nodes[tag]; ok {
+	if f, ok := t.nodes[tag]; ok {
 		f()
 	}
 }
 
 func (t *Watcher) do() {
 	data := make(map[string]string)
-	extract(reflect.ValueOf(t.Ptr), data)
+	extract(reflect.ValueOf(t.ptr), data)
 	for k, v := range data {
-		if _, ok := t.Last[k]; !ok {
+		if _, ok := t.last[k]; !ok {
 			continue
 		}
-		if v != t.Last[k] {
+		if v != t.last[k] {
 			t.trigger(k)
 		}
 	}
-	t.Last = data
+	t.last = data
 }
 
 func extract(val reflect.Value, data map[string]string) {
