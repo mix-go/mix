@@ -247,7 +247,7 @@ func (t *application) call() {
 		}
 	}
 	if len(t.handlers) > 0 {
-		tmp := t.handlers
+		tmp := append(t.handlers, cmd.handlers...)
 		for i, j := 0, len(tmp)-1; i < j; i, j = i+1, j-1 {
 			tmp[i], tmp[j] = tmp[j], tmp[i]
 		}
