@@ -259,6 +259,9 @@ func (t *application) call() {
 				next = func() {
 					c(n)
 				}
+				if len(tmp) == 1 {
+					f(next)
+				}
 			} else if len(tmp)-1 == k {
 				f(next)
 			} else {
