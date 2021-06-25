@@ -260,7 +260,7 @@ func (t *application) call() {
 					c(n)
 				}
 				if len(tmp) == 1 {
-					f(next)
+					c(n)
 				}
 			} else if len(tmp)-1 == k {
 				f(next)
