@@ -22,10 +22,7 @@ var Config struct {
 func TestNewWatcher(t *testing.T) {
 	a := assert.New(t)
 
-	w, err := NewWatcher(&Config, 100*time.Millisecond)
-	if err != nil {
-		panic(err)
-	}
+	w := NewWatcher(&Config, 100*time.Millisecond)
 	w.Watch("logger", func() {
 		a.Equal(Config.Logger.Level, "debug")
 	}).Watch("database", func() {

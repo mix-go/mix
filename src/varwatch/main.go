@@ -16,11 +16,7 @@ type Watcher struct {
 	ticker   *time.Ticker
 }
 
-func NewWatcher(v interface{}, interval time.Duration) (*Watcher, error) {
-	val := reflect.ValueOf(v)
-	if val.Kind() != reflect.Ptr {
-		return nil, fmt.Errorf("node are not pointer type")
-	}
+func NewWatcher(v interface{}, interval time.Duration) *Watcher {
 	w := &Watcher{
 		ptr:      v,
 		interval: interval,
@@ -28,7 +24,7 @@ func NewWatcher(v interface{}, interval time.Duration) (*Watcher, error) {
 		nodes:    make(map[string]func()),
 	}
 	w.run()
-	return w, nil
+	return w
 }
 
 func (t *Watcher) Watch(tag string, f func()) *Watcher {
