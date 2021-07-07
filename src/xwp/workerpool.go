@@ -136,8 +136,8 @@ type Statistic struct {
 	Total  int `json:"total"`
 }
 
-// Stat 统计
-func (t *WorkerPool) Stat() *Statistic {
+// Stats 统计
+func (t *WorkerPool) Stats() *Statistic {
 	total := int(t.workerCount)
 	idle := len(t.workerQueuePool)
 	return &Statistic{

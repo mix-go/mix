@@ -114,14 +114,14 @@ func (t *Foo) Do(data interface{}) {
 
 ## 执行状态
 
-`Stat()` 可以返回 `Workers` 实时执行状态，通常可以使用一个定时器，定时打印或者告警处理
+`Stats()` 可以返回 `Workers` 实时执行状态，通常可以使用一个定时器，定时打印或者告警处理
 
 ```go
 go func() {
     ticker := time.NewTicker(1000 * time.Millisecond)
     for {
         <-ticker.C
-        log.Printf("%+v", p.Stat()) // 2021/04/26 14:32:53 &{Active:5 Idle:95 Total:100}
+        log.Printf("%+v", p.Stats()) // 2021/04/26 14:32:53 &{Active:5 Idle:95 Total:100}
     }
 }()
 ```
