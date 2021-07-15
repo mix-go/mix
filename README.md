@@ -90,7 +90,7 @@ Use the arrow keys to navigate: ↓ ↑ → ←
 └── main.go
 ~~~
 
-`mian.go` 文件：
+`main.go` 文件：
 
 - `xcli.AddCommand` 方法传入的 `commands.Commands` 定义了全部的命令
 
@@ -351,7 +351,7 @@ Use the arrow keys to navigate: ↓ ↑ → ←
 └── runtime
 ~~~
 
-`mian.go` 文件：
+`main.go` 文件：
 
 - `xcli.AddCommand` 方法传入的 `commands.Commands` 定义了全部的命令
 
@@ -602,7 +602,7 @@ Use the arrow keys to navigate: ↓ ↑ → ←
 └── templates
 ~~~
 
-`mian.go` 文件：
+`main.go` 文件：
 
 - `xcli.AddCommand` 方法传入的 `commands.Commands` 定义了全部的命令
 
@@ -1049,7 +1049,7 @@ Use the arrow keys to navigate: ↓ ↑ → ←
 └── services
 ~~~
 
-`mian.go` 文件：
+`main.go` 文件：
 
 - `xcli.AddCommand` 方法传入的 `commands.Commands` 定义了全部的命令
 
