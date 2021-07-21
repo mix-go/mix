@@ -2,7 +2,7 @@
 
 ## Mix CLI
 
-一个快速创建 go 项目的脚手架
+一个快速创建 Go 项目的脚手架
 
 A scaffold to quickly create a go project
 
@@ -12,28 +12,7 @@ A scaffold to quickly create a go project
 go get github.com/mix-go/mixcli
 ```
 
-## Help
-
-查看命令帮助
-
-~~~
-$ mixcli
-Usage: mixcli [OPTIONS] COMMAND [opt...]
-
-Commands:
-  new           Create a project
-
-Global Options:
-  -h, --help    Print usage
-  -v, --version Print version information
-
-
-Run 'mixcli COMMAND --help' for more information on a command.
-
-Developed with Mix Go framework. (openmix.org/mix-go)
-~~~
-
-## New 
+## New Project
 
 创建项目
 
