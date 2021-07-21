@@ -3,6 +3,7 @@ package xwp
 import (
 	"fmt"
 	"sync/atomic"
+	"time"
 )
 
 // Handler 处理器
@@ -59,9 +60,10 @@ func (t *Worker) Run() {
 					return
 				}
 				t.handler(data)
+				tr := time.NewTimer(5 * time.Second)
 				select {
 				case t.pool.workerQueuePool <- t.jobChan:
-				default:
+				case <-tr.C:
 					return
 				}
 			case <-t.quit:

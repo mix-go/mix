@@ -43,7 +43,7 @@ func TestOnceRun(t *testing.T) {
 		ticker := time.NewTicker(100 * time.Millisecond)
 		for {
 			<-ticker.C
-			log.Printf("%+v", p.Stat())
+			log.Printf("%+v", p.Stats())
 		}
 	}()
 
