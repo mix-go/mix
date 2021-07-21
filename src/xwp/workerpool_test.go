@@ -3,6 +3,7 @@ package xwp
 import (
 	"github.com/stretchr/testify/assert"
 	"log"
+	"math/rand"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -17,6 +18,7 @@ type TestWorker struct {
 
 func (t *TestWorker) Do(data interface{}) {
 	atomic.AddInt64(&count, 1)
+	time.Sleep(time.Millisecond * time.Duration(rand.Intn(10)))
 }
 
 func TestOnceRun(t *testing.T) {
