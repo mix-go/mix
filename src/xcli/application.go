@@ -204,9 +204,6 @@ func (t *application) getCommand(n string) *Command {
 				break
 			}
 		}
-		if cmd == nil {
-			panic(errors.New("singleton command not found"))
-		}
 	} else {
 		for _, c := range t.commands {
 			if c.Name == n {
@@ -279,22 +276,12 @@ func (t *application) call() {
 
 // 命令行选项效验
 func (t *application) validateOptions() {
-	var options []*Option
-	if !t.singleton {
-		for _, v := range t.commands {
-			if v.Name == argv.Command() {
-				options = v.Options
-				break
-			}
-		}
-	} else {
-		for _, v := range t.commands {
-			if v.Singleton {
-				options = v.Options
-				break
-			}
-		}
+	command := argv.Command()
+	cmd := t.getCommand(command)
+	if cmd == nil {
+		return
 	}
+	options := cmd.Options
 	if len(options) == 0 {
 		return
 	}
@@ -412,22 +399,12 @@ func (t *application) printCommands() {
 
 // 打印命令选项
 func (t *application) printCommandOptions() {
-	var options []*Option
-	if !t.singleton {
-		for _, v := range t.commands {
-			if v.Name == argv.Command() {
-				options = v.Options
-				break
-			}
-		}
-	} else {
-		for _, v := range t.commands {
-			if v.Singleton {
-				options = v.Options
-				break
-			}
-		}
+	command := argv.Command()
+	cmd := t.getCommand(command)
+	if cmd == nil {
+		return
 	}
+	options := cmd.Options
 	if len(options) == 0 {
 		return
 	}
