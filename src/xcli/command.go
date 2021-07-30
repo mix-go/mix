@@ -11,7 +11,7 @@ type Command struct {
 	// 使用范例
 	// 子命令："Usage: %s %s [ARG...]"
 	// 单命令："Usage: %s [ARG...]"
-	UsageF string
+	UsageFormat string
 	// 选项
 	Options []*Option
 	// 执行

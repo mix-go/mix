@@ -330,8 +330,8 @@ func (t *application) globalHelp() {
 	if !t.singleton {
 		fmt.Println(fmt.Sprintf("Usage: %s [GLOBAL OPTIONS] COMMAND [ARG...]", program))
 	} else {
-		if cmd != nil && cmd.UsageF != "" {
-			fmt.Println(fmt.Sprintf(cmd.UsageF, program))
+		if cmd != nil && cmd.UsageFormat != "" {
+			fmt.Println(fmt.Sprintf(cmd.UsageFormat, program))
 		} else {
 			fmt.Println(fmt.Sprintf("Usage: %s [ARG...]", program))
 		}
@@ -365,8 +365,8 @@ func (t *application) commandHelp() {
 		fmt.Println("")
 	}
 	program := argv.Program().Path
-	if cmd.UsageF != "" {
-		fmt.Println(fmt.Sprintf(cmd.UsageF, program, command))
+	if cmd.UsageFormat != "" {
+		fmt.Println(fmt.Sprintf(cmd.UsageFormat, program, command))
 	} else {
 		fmt.Println(fmt.Sprintf("Usage: %s %s [ARG...]", program, command))
 	}

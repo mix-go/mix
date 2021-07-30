@@ -193,10 +193,10 @@ func TestCommandPrint(t *testing.T) {
 	argv.Parse()
 	flag.Parse()
 	cmd := &Command{
-		Name:   "foo",
-		Short:  "bar",
-		Long:   "bar bar",
-		UsageF: "Usage: %s %s [ABC..]",
+		Name:        "foo",
+		Short:       "bar",
+		Long:        "bar bar",
+		UsageFormat: "Usage: %s %s [ABC..]",
 		RunF: func() {
 		},
 	}
@@ -246,10 +246,10 @@ func TestCommandPrint(t *testing.T) {
 	argv.Parse()
 	flag.Parse()
 	cmd = &Command{
-		Name:   "foo",
-		Short:  "bar",
-		Long:   "bar bar",
-		UsageF: "Usage: %s [ABC..]",
+		Name:        "foo",
+		Short:       "bar",
+		Long:        "bar bar",
+		UsageFormat: "Usage: %s [ABC..]",
 		RunF: func() {
 		},
 		Singleton: true,
