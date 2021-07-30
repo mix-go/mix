@@ -10,10 +10,8 @@ import (
 )
 
 var (
-	// iApp
+	// App
 	iApp *application
-	// Version
-	Version = "1.1.15"
 )
 
 func init() {
@@ -427,8 +425,5 @@ func (t *application) printCommandOptions() {
 
 // 版本号
 func (t *application) version() {
-	appName := t.Name
-	appVersion := t.Version
-	frameworkVersion := Version
-	fmt.Println(fmt.Sprintf("%s %s, framework %s", appName, appVersion, frameworkVersion))
+	fmt.Println(fmt.Sprintf("%s %s", t.Name, t.Version))
 }
