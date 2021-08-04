@@ -67,7 +67,7 @@ Developed with Mix Go framework. (openmix.org/mix-go)
 
 ```
 $ ./go_build_main_go -v
-app 0.0.0-alpha, framework 1.0.9
+app 0.0.0-alpha
 ```
 
 查看 `hello` 命令的帮助
@@ -148,6 +148,8 @@ if flag.Match("d", "daemon").Bool() {
 上面就实现了一个当命令行参数中带有 `-d/--daemon` 参数时，程序就在后台执行。
 
 ## Handle panic 错误处理
+
+使用中间件处理异常，也可以单独对某个命令配置中间件
 
 ```go
 h := func(next func()) {
