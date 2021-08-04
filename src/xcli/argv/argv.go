@@ -12,25 +12,6 @@ var (
 	cmd  string
 )
 
-// 初始化
-func init() {
-	Parse()
-}
-
-// Parse 解析命令行参数
-func Parse(singleton ...bool) {
-	var s bool
-	switch len(singleton) {
-	case 0:
-		s = false
-	default:
-		s = singleton[0]
-	}
-
-	prog = newProgram()
-	cmd = newCommand(s)
-}
-
 // Program 返回命令行程序信息
 func Program() *program {
 	return &prog

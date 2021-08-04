@@ -8,7 +8,7 @@ import (
 // Match 匹配参数名称
 func Match(names ...string) *flagValue {
 	for _, name := range names {
-		v, exist := value(name)
+		v, exist := find(name)
 		if exist {
 			return &flagValue{v, exist}
 		}
@@ -17,7 +17,7 @@ func Match(names ...string) *flagValue {
 }
 
 // 获取指定参数的值
-func value(name string) (string, bool) {
+func find(name string) (string, bool) {
 	key := ""
 	if len(name) == 1 {
 		key = fmt.Sprintf("-%s", name)
@@ -86,7 +86,6 @@ func (t *flagValue) Int64(val ...int64) int64 {
 
 // Float64 转换为浮点
 func (t *flagValue) Float64(val ...float64) float64 {
-
 	d := float64(0)
 	if len(val) >= 1 {
 		d = val[0]
