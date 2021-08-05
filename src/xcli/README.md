@@ -8,7 +8,7 @@ CLI Interactive Commander
 
 ## Overview
 
-一个命令行交互与指挥管理工具，它可以让单个 CLI 可以执行多种功能，同时它还包括命令行参数获取、全局 panic 捕获与处理、程序后台执行等命令行开发常用功能。
+一个命令行交互与指挥管理工具，它可以让单个 CLI 可执行多种功能，同时它还包括命令行参数获取、全局 panic 捕获与处理、程序后台执行等命令行开发常用功能。
 
 ## Installation
 
@@ -31,7 +31,7 @@ func main() {
     cmd := &xcli.Command{
         Name:  "hello",
         Short: "Echo demo",
-        RunF: func() {
+        RunF:  func() {
             name := flag.Match("n", "name").String("default")
             // do something
         },
@@ -42,6 +42,21 @@ func main() {
     }
     cmd.AddOption(opt)
     xcli.AddCommand(cmd).Run()
+}
+```
+
+上面是采用闭包，也可以使用对象
+
+```go
+type FooCommand struct {
+}
+func (t *FooCommand) Main() {
+    // do something
+}
+cmd := &xcli.Command{
+    Name:  "hello",
+    Short: "Echo demo",
+    RunI:  &FooCommand{},
 }
 ```
 
@@ -163,7 +178,7 @@ h := func(next func()) {
 cmd := &xcli.Command{
     Name:  "hello",
     Short: "Echo demo",
-    RunF: func() {
+    RunF:  func() {
         // do something
     },
 }
@@ -192,13 +207,11 @@ xcli.App().Debug
 
 当我们的 CLI 只有一个命令时，只需要配置一下 `Singleton`：
 
-- 也可以使用 `RunI` 执行一个结构体
-
 ~~~go
 cmd := &xcli.Command{
     Name:  "hello",
     Short: "Echo demo",
-    RunF: func() {
+    RunF:  func() {
         // do something
     },
     Singleton: true,
@@ -231,7 +244,7 @@ Developed with Mix Go framework. (openmix.org/mix-go)
 cmd := &xcli.Command{
     Name:  "hello",
     Short: "Echo demo",
-    RunF: func() {
+    RunF:  func() {
         // do something
     },
     Default: true,
