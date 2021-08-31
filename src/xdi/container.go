@@ -75,16 +75,23 @@ func (t *container) Populate(name string, ptr interface{}) error {
 			ptrCopy(ptr, p)
 			return nil
 		}
-		v, err := obj.New()
-		if err != nil {
-			return err
-		}
-		refresher.invoke(func() {
+		// 处理并发穿透
+		var e error
+		obj.once.Do(func() {
+			v, err := obj.New()
+			if err != nil {
+				e = err
+				return
+			}
 			t.instances.Store(name, v)
+			refresher.off()
 		})
-		p, _ := t.instances.LoadOrStore(name, v) // LoadOrStore 处理并发穿透
+		if e != nil {
+			return e
+		}
+		p, _ := t.instances.Load(name)
 		ptrCopy(ptr, p)
-		return nil
+		return e
 	} else {
 		v, err := obj.New()
 		if err != nil {
