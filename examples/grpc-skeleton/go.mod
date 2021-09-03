@@ -3,9 +3,9 @@ module github.com/mix-go/grpc-skeleton
 go 1.13
 
 replace (
-	github.com/mix-go/dotenv => ../mix/src/dotenv
-	github.com/mix-go/xcli => ../mix/src/xcli
-	github.com/mix-go/xdi => ../mix/src/xdi
+	github.com/mix-go/dotenv => ../../src/dotenv
+	github.com/mix-go/xcli => ../../src/xcli
+	github.com/mix-go/xdi => ../../src/xdi
 )
 
 require (

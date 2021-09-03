@@ -3,9 +3,9 @@ module github.com/mix-go/cli-skeleton
 go 1.14
 
 replace (
-	github.com/mix-go/dotenv => ../mix/src/dotenv
-	github.com/mix-go/xcli => ../mix/src/xcli
-	github.com/mix-go/xdi => ../mix/src/xdi
+	github.com/mix-go/dotenv => ../../src/dotenv
+	github.com/mix-go/xcli => ../../src/xcli
+	github.com/mix-go/xdi => ../../src/xdi
 )
 
 require (
