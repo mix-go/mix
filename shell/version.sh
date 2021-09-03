@@ -56,9 +56,6 @@ for REMOTE in $repos; do
   )
 done
 
-# Update app version
-sed -i "" "s/Version = \".*/Version = \"${VERSION##*v}\"/g" ${BASEPATH}/xcli/application.go
-
 # Update devtool version
 sed -i "" "s/FrameworkVersion = \".*/FrameworkVersion = \"${VERSION##*v}\"/g" ${BASEPATH}/mixcli/commands/version.go
 
