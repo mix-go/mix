@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package micro.grpc.user;
+option php_metadata_namespace = "Micro/Grpc/User/GPBMetadata";
+option go_package = "/;protos";
+
+service User {
+    rpc Add(AddRequest) returns (AddResponse) {}
+}
+
+message AddRequest {
+    string Name = 1;
+}
+
+message AddResponse {
+    int32 error_code = 1;
+    string error_message = 2;
+    int64 user_id = 3;
+}

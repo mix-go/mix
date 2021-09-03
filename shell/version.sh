@@ -63,5 +63,4 @@ sed -i "" "s/Version = \".*/Version = \"${VERSION##*v}\"/g" ${BASEPATH}/xcli/app
 sed -i "" "s/FrameworkVersion = \".*/FrameworkVersion = \"${VERSION##*v}\"/g" ${BASEPATH}/mixcli/commands/version.go
 
 TIME=$(echo "$(date +%s) - $NOW" | bc)
-
 printf "Execution time: %f seconds\n" $TIME

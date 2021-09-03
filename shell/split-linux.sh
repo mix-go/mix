@@ -3,6 +3,9 @@
 set -e
 set -x
 
+NOW=$(date +%s)
+TOKEN=""
+WORKDIR="src"
 CURRENT_BRANCH="master"
 BASEPATH=$(
   cd $(dirname $0)
@@ -27,7 +30,10 @@ if [[ $# -eq 0 ]]; then
 fi
 
 for REPO in $REPOS; do
-  remote $REPO https://github.com/mix-go/$REPO.git
+  remote $REPO https://$TOKEN@github.com/mix-go/$REPO.git
 
-  split "src/$REPO" $REPO
+  split "$WORKDIR/$REPO" $REPO
 done
+
+TIME=$(echo "$(date +%s) - $NOW" | bc)
+printf "Execution time: %f seconds\n" $TIME

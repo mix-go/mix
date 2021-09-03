@@ -49,5 +49,4 @@ for REMOTE in $repos; do
 done
 
 TIME=$(echo "$(date +%s) - $NOW" | bc)
-
 printf "Execution time: %f seconds\n" $TIME
