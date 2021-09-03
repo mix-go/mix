@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/mix-go/cli-skeleton/commands"
-	_ "github.com/mix-go/cli-skeleton/configor"
+	_ "github.com/mix-go/cli-skeleton/config/configor"
+	_ "github.com/mix-go/cli-skeleton/config/dotenv"
 	_ "github.com/mix-go/cli-skeleton/di"
-	_ "github.com/mix-go/cli-skeleton/dotenv"
 	"github.com/mix-go/dotenv"
 	"github.com/mix-go/xcli"
 )

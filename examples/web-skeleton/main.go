@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/mix-go/web-skeleton/commands"
-	_ "github.com/mix-go/web-skeleton/configor"
-	_ "github.com/mix-go/web-skeleton/di"
-	_ "github.com/mix-go/web-skeleton/dotenv"
 	"github.com/mix-go/dotenv"
+	"github.com/mix-go/web-skeleton/commands"
+	_ "github.com/mix-go/web-skeleton/config/configor"
+	_ "github.com/mix-go/web-skeleton/config/dotenv"
+	_ "github.com/mix-go/web-skeleton/di"
 	"github.com/mix-go/xcli"
 )
 
