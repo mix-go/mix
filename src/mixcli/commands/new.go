@@ -15,18 +15,19 @@ import (
 )
 
 var (
-	CLI     = "cli"
-	API     = "api"
-	Web     = "web"
-	gRPC    = "grpc"
-	None    = "none"
-	Gorm    = "gorm"
-	Xorm    = "xorm"
-	Zap     = "zap"
-	Logrus  = "logrus"
-	GoRedis = "go-redis"
-	Yes     = "yes"
-	No      = "no"
+	None     = "none"
+	CLI      = "cli"
+	API      = "api"
+	Web      = "web"
+	gRPC     = "grpc"
+	Gorm     = "gorm"
+	Xorm     = "xorm"
+	Zap      = "zap"
+	Logrus   = "logrus"
+	GoRedis  = "go-redis"
+	DotEnv   = "dotenv"
+	Configor = "configor"
+	Viper    = "viper"
 )
 
 type NewCommand struct {
@@ -66,8 +67,8 @@ func (t *NewCommand) Main() {
 		return
 	}
 
-	useDotenv := promp("Use .env configuration file", []string{Yes, No})
-	useConf := promp("Use .yml, .json, .toml configuration files", []string{Yes, No})
+	selectEnv := promp("Select .env configuration file library", []string{DotEnv, None})
+	selectConf := promp("Select .yml, .json, .toml configuration files library", []string{Configor, Viper, None})
 
 	var selectLog string
 	var selectLogItems []string
@@ -90,10 +91,10 @@ func (t *NewCommand) Main() {
 	var selectRedis string
 	selectRedis = promp("Select redis library", []string{GoRedis, None})
 
-	t.NewProject(name, selectType, useDotenv, useConf, selectLog, selectDb, selectRedis)
+	t.NewProject(name, selectType, selectEnv, selectConf, selectLog, selectDb, selectRedis)
 }
 
-func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog, selectDb, selectRedis string) {
+func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectLog, selectDb, selectRedis string) {
 	ver := ""
 	switch selectType {
 	case CLI, API, Web, gRPC:
@@ -193,26 +194,35 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 	}
 	fmt.Println(" > ok")
 
-	if useDotenv == "no" {
-		fmt.Print(" - Processing .env")
-		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/dotenv"`, selectType), ""); err != nil {
+	fmt.Print(" - Processing .env")
+	if selectEnv == None {
+		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/dotenv"`, selectType), ""); err != nil {
 			panic(errors.New("Replace failed"))
 		}
-		_ = os.RemoveAll(fmt.Sprintf("%s/dotenv", dest))
+		_ = os.RemoveAll(fmt.Sprintf("%s/config/dotenv", dest))
 		_ = os.RemoveAll(fmt.Sprintf("%s/.env", dest))
-		fmt.Println(" > ok")
 	}
+	fmt.Println(" > ok")
 
-	if useConf == "no" {
-		fmt.Print(" - Processing conf")
-		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/configor"`, selectType), ""); err != nil {
+	fmt.Print(" - Processing conf")
+	switch selectConf {
+	case Configor:
+		_ = os.RemoveAll(fmt.Sprintf("%s/config/viper", dest))
+		break
+	case Viper:
+		_ = os.RemoveAll(fmt.Sprintf("%s/config/configor", dest))
+		break
+	default:
+		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/configor"`, selectType), ""); err != nil {
 			panic(errors.New("Replace failed"))
 		}
-		_ = os.RemoveAll(fmt.Sprintf("%s/configor", dest))
+		_ = os.RemoveAll(fmt.Sprintf("%s/config/configor", dest))
+		_ = os.RemoveAll(fmt.Sprintf("%s/config/viper", dest))
 		_ = os.RemoveAll(fmt.Sprintf("%s/conf", dest))
-		fmt.Println(" > ok")
 	}
+	fmt.Println(" > ok")
 
+	fmt.Print(" - Processing logger")
 	switch selectLog {
 	case Zap:
 		if err := logic.ReplaceAll(dest, `logger := di.Logrus`, `logger := di.Zap`); err != nil {
@@ -231,7 +241,9 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		_ = os.Remove(fmt.Sprintf("%s/di/zap.go", dest))
 		break
 	}
+	fmt.Println(" > ok")
 
+	fmt.Print(" - Processing database")
 	switch selectDb {
 	case Gorm:
 		_ = os.Remove(fmt.Sprintf("%s/di/xorm.go", dest))
@@ -244,7 +256,9 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		_ = os.Remove(fmt.Sprintf("%s/di/xorm.go", dest))
 		break
 	}
+	fmt.Println(" > ok")
 
+	fmt.Print(" - Processing redis")
 	switch selectRedis {
 	case GoRedis:
 		break
@@ -252,7 +266,9 @@ func (t *NewCommand) NewProject(name, selectType, useDotenv, useConf, selectLog,
 		_ = os.Remove(fmt.Sprintf("%s/di/goredis.go", dest))
 		break
 	}
+	fmt.Println(" > ok")
 
+	// 都没有选
 	if selectLog == None && selectDb == None && selectRedis == None {
 		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/di"`, selectType), ""); err != nil {
 			panic(errors.New("Replace failed"))
