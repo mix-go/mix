@@ -17,7 +17,7 @@ BASEPATH=$(
 )
 ROOTPATH=$(
   cd $(dirname $0)
-  cd ../../
+  cd ../
   pwd
 )
 
