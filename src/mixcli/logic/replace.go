@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 )
 
 func ReplaceAll(root, old, new string) error {
@@ -22,7 +21,6 @@ func ReplaceAll(root, old, new string) error {
 			}
 			str := string(text)
 			reg := regexp.MustCompile(old)
-			new = strings.ReplaceAll(new, ".", "\\.")
 			str = reg.ReplaceAllString(str, new)
 			if err := WriteToFile(path, str); err != nil {
 				return err
