@@ -35,6 +35,7 @@ type NewCommand struct {
 
 func (t *NewCommand) Main() {
 	name := flag.Arguments().First().String("hello")
+	name = strings.ReplaceAll(name, " ", "")
 
 	promp := func(label string, items []string) string {
 		prompt := promptui.Select{
