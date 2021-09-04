@@ -99,7 +99,7 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 	ver := ""
 	switch selectType {
 	case CLI, API, Web, gRPC:
-		ver = fmt.Sprintf("v%s", FrameworkVersion)
+		ver = fmt.Sprintf("v%s", SkeletonVersion)
 		break
 	default:
 		fmt.Println("Type error, only be console, api, web, grpc")

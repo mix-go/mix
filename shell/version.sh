@@ -57,6 +57,7 @@ for REMOTE in $repos; do
 done
 
 # Update devtool version
+sed -i "" "s/SkeletonVersion = \".*/SkeletonVersion = \"${VERSION##*v}\"/g" ${BASEPATH}/mixcli/commands/version.go
 sed -i "" "s/FrameworkVersion = \".*/FrameworkVersion = \"${VERSION##*v}\"/g" ${BASEPATH}/mixcli/commands/version.go
 
 TIME=$(echo "$(date +%s) - $NOW" | bc)
