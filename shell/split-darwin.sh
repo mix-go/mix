@@ -5,11 +5,11 @@ set -x
 
 NOW=$(date +%s)
 TOKEN=""
-WORKDIR="src"
+WORKDIR="examples" # examples
 CURRENT_BRANCH="master"
 BASEPATH=$(
   cd $(dirname $0)
-  cd ../src/
+  cd ../$WORKDIR/
   pwd
 )
 REPOS=$@
