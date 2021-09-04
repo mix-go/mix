@@ -9,7 +9,7 @@ WORKDIR="src"
 CURRENT_BRANCH="master"
 BASEPATH=$(
   cd $(dirname $0)
-  cd ../src/
+  cd ../$WORKDIR/
   pwd
 )
 REPOS=$@
