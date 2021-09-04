@@ -16,24 +16,24 @@ MixGo 是一个 Go 快速开发标准工具包；内部模块高度解耦，整�
 
 核心模块全部可独立使用。
 
-- [mix-go/mixcli](https://github.com/mix-go/mixcli) 快速创建 Go 项目的脚手架，类似前端界的 Vue CLI
-- [mix-go/xcli](https://github.com/mix-go/xcli) 命令行交互与指挥管理工具，同时它还包括命令行参数获取、中间件、程序守护等。
-- [mix-go/xdi](https://github.com/mix-go/xdi) 处理对象依赖关系的 IoC、DI 库，可以实现统一管理依赖，全局对象管理，动态配置刷新等。
-- [mix-go/xwp](https://github.com/mix-go/xwp) 一个通用工作池、协程池，可动态扩容缩容。
-- [mix-go/xfmt](https://github.com/mix-go/xfmt) 可以打印结构体嵌套指针地址内部数据的格式化库
-- [mix-go/varwatch](https://github.com/mix-go/varwatch) 监视配置结构体变量的数据变化并执行一些任务
-- [mix-go/dotenv](https://github.com/mix-go/dotenv) 具有类型转换功能的 DotEnv 环境配置库
+- [mix-go/mixcli](src/mixcli) 快速创建 Go 项目的脚手架，类似前端界的 Vue CLI
+- [mix-go/xcli](src/xcli) 命令行交互与指挥管理工具，同时它还包括命令行参数获取、中间件、程序守护等。
+- [mix-go/xdi](src/xdi) 处理对象依赖关系的 IoC、DI 库，可以实现统一管理依赖，全局对象管理，动态配置刷新等。
+- [mix-go/xwp](src/xwp) 一个通用工作池、协程池，可动态扩容缩容。
+- [mix-go/xfmt](src/xfmt) 可以打印结构体嵌套指针地址内部数据的格式化库
+- [mix-go/varwatch](src/varwatch) 监视配置结构体变量的数据变化并执行一些任务
+- [mix-go/dotenv](src/dotenv) 具有类型转换功能的 DotEnv 环境配置库
 
 ## 快速开始
 
 提供了现成的脚手架工具，快速创建项目，立即产出。
 
-- [编写一个 CLI 程序](https://github.com/mix-go/cli-skeleton#readme)
-  - [编写一个 Worker Pool 队列消费](https://github.com/mix-go/cli-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-worker-pool-%E9%98%9F%E5%88%97%E6%B6%88%E8%B4%B9)
-- [编写一个 API 服务](https://github.com/mix-go/api-skeleton#readme)
-- [编写一个 Web 服务](https://github.com/mix-go/web-skeleton#readme)
-  - [编写一个 WebSocket 服务](https://github.com/mix-go/web-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-WebSocket-%E6%9C%8D%E5%8A%A1)
-- [编写一个 gRPC 服务、客户端](https://github.com/mix-go/grpc-skeleton#readme)
+- [编写一个 CLI 程序](examples/cli-skeleton#readme)
+  - [编写一个 Worker Pool 队列消费](examples/cli-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-worker-pool-%E9%98%9F%E5%88%97%E6%B6%88%E8%B4%B9)
+- [编写一个 API 服务](examples/api-skeleton#readme)
+- [编写一个 Web 服务](examples/web-skeleton#readme)
+  - [编写一个 WebSocket 服务](examples/web-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-WebSocket-%E6%9C%8D%E5%8A%A1)
+- [编写一个 gRPC 服务、客户端](examples/grpc-skeleton#readme)
 
 ```
 go get github.com/mix-go/mixcli
