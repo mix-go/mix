@@ -207,18 +207,27 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 
 	fmt.Print(" - Processing conf")
 	switch selectConf {
-	case Configor:
-		_ = os.RemoveAll(fmt.Sprintf("%s/config/viper", dest))
-		break
 	case Viper:
-		_ = os.RemoveAll(fmt.Sprintf("%s/config/configor", dest))
-		break
-	default:
 		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/configor"`, selectType), ""); err != nil {
 			panic(errors.New("Replace failed"))
 		}
 		_ = os.RemoveAll(fmt.Sprintf("%s/config/configor", dest))
+		break
+	case Configor:
+		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/viper"`, selectType), ""); err != nil {
+			panic(errors.New("Replace failed"))
+		}
 		_ = os.RemoveAll(fmt.Sprintf("%s/config/viper", dest))
+		break
+	default:
+		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/viper"`, selectType), ""); err != nil {
+			panic(errors.New("Replace failed"))
+		}
+		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/configor"`, selectType), ""); err != nil {
+			panic(errors.New("Replace failed"))
+		}
+		_ = os.RemoveAll(fmt.Sprintf("%s/config/viper", dest))
+		_ = os.RemoveAll(fmt.Sprintf("%s/config/configor", dest))
 		_ = os.RemoveAll(fmt.Sprintf("%s/conf", dest))
 	}
 	fmt.Println(" > ok")
