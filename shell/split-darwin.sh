@@ -5,7 +5,7 @@ set -x
 
 NOW=$(date +%s)
 TOKEN=""
-WORKDIR="examples" # examples
+WORKDIR="src"
 CURRENT_BRANCH="master"
 BASEPATH=$(
   cd $(dirname $0)
