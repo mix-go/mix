@@ -20,7 +20,7 @@ go get github.com/mix-go/mixcli
 - 可选择是否需要 `.env` 环境配置
 - 可选择使用 `viper`, `configer` 加载 `.yml`, `.json`, `.toml` 等独立配置
 - 可选择使用 `gorm`, `xorm` 的数据库
-- 可选择使用 `logrus`, `zap` 的日志库
+- 可选择使用 `zap`, `logrus` 的日志库
 
 ~~~
 $ mixcli new hello
