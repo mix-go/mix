@@ -41,10 +41,9 @@ $ mixcli new hello
 ├── bin
 ├── commands
 ├── conf
-├── configor
+├── config
 ├── controllers
 ├── di
-├── dotenv
 ├── go.mod
 ├── go.sum
 ├── main.go
@@ -277,10 +276,9 @@ $ bin/go_build_main_go web
 
 
 Server      Name:      mix-web
-Listen      Addr:      :8080
 System      Name:      darwin
 Go          Version:   1.13.4
-Framework   Version:   1.0.9
+Listen      Addr:      :8080
 time=2020-09-16 20:24:41.515 level=info msg=Server start file=web.go:58
 ~~~
 
@@ -456,10 +454,9 @@ $ bin/go_build_main_go web
 
 
 Server      Name:      mix-web
-Listen      Addr:      :8080
 System      Name:      darwin
 Go          Version:   1.13.4
-Framework   Version:   1.0.9
+Listen      Addr:      :8080
 time=2020-09-16 20:24:41.515 level=info msg=Server start file=web.go:58
 ~~~
 

@@ -41,9 +41,8 @@ $ mixcli new hello
 ├── bin
 ├── commands
 ├── conf
-├── configor
+├── config
 ├── di
-├── dotenv
 ├── go.mod
 ├── go.sum
 ├── logs
