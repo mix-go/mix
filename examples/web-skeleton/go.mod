@@ -21,8 +21,8 @@ require (
 	github.com/jinzhu/configor v1.2.0
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mix-go/dotenv v1.1.15
-	github.com/mix-go/xcli v1.1.15
-	github.com/mix-go/xdi v1.1.11
+	github.com/mix-go/xcli v1.1.16
+	github.com/mix-go/xdi v1.1.16
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.8.1
