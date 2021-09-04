@@ -8,6 +8,7 @@ if (("$#" != 1)); then
 fi
 
 NOW=$(date +%s)
+TOKEN=""
 CURRENT_BRANCH="master"
 VERSION=$1
 BASEPATH=$(
@@ -29,7 +30,7 @@ for REMOTE in $repos; do
   echo ""
   echo "Cloning $REMOTE"
   TMP_DIR="/tmp/mix-split"
-  REMOTE_URL="https://github.com/mix-go/$REMOTE.git"
+  REMOTE_URL="https://$TOKEN@github.com/mix-go/$REMOTE.git"
 
   rm -rf $TMP_DIR
   mkdir $TMP_DIR
