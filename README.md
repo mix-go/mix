@@ -24,6 +24,11 @@ MixGo 是一个 Go 快速开发标准工具包；内部模块高度解耦，整�
 - [mix-go/varwatch](src/varwatch) 监视配置结构体变量的数据变化并执行一些任务
 - [mix-go/dotenv](src/dotenv) 具有类型转换功能的 DotEnv 环境配置库
 
+## 开发文档
+
+- `V1.1` https://openmix.org/mix-go/docs/1.1/
+- `V1.0` https://www.kancloud.cn/onanying/mixgo1/content
+
 ## 快速开始
 
 提供了现成的脚手架工具，快速创建项目，立即产出。
@@ -74,6 +79,7 @@ go mod tidy
 OpenMix 同时还有 PHP 生态的框架
 
 - https://github.com/mix-php/mix
+- https://gitee.com/mix-php/mix
 
 ## License
 
