@@ -78,7 +78,7 @@ func main() {
 
 `commands/main.go` 文件：
 
-我们可以在这里自定义命令，[查看更多](https://github.com/mix-go/xcli)
+我们可以在这里自定义命令，[查看更多](zh-cn/mix-xcli.md)
 
 - `RunI` 指定了命令执行的接口，也可以使用 `RunF` 设定一个匿名函数
 
@@ -268,20 +268,20 @@ time=2020-09-16 20:24:41.515 level=info msg=Server start file=api.go:58
 
 ## 如何使用 DI 容器中的 Logger、Database、Redis 等组件
 
-项目中要使用的公共组件，都定义在 `di` 目录，框架默认生成了一些常用的组件，用户也可以定义自己的组件，[查看更多](https://github.com/mix-go/xdi)
+项目中要使用的公共组件，都定义在 `di` 目录，框架默认生成了一些常用的组件，用户也可以定义自己的组件，[查看更多](zh-cn/mix-xdi.md)
 
 - 可以在哪里使用
 
 可以在代码的任意位置使用，但是为了可以使用到环境变量和自定义配置，通常我们在 `xcli.Command` 结构体定义的 `RunF`、`RunI` 中使用。
 
-- 使用日志，比如：`logrus`、`zap`
+- 使用日志，比如：[zap](https://github.com/uber-go/zap)、[logrus](https://github.com/Sirupsen/logrus)
 
 ```go
-logger := di.Logrus()
+logger := di.Zap()
 logger.Info("test")
 ```
 
-- 使用数据库，比如：`gorm`、`xorm`
+- 使用数据库，比如：[gorm](https://gorm.io/)、[xorm](https://xorm.io/)
 
 ```go
 db := di.Gorm()
@@ -290,7 +290,7 @@ result := db.Create(&user)
 fmt.Println(result)
 ```
 
-- 使用 Redis，比如：`go-redis`
+- 使用 Redis，比如：[go-redis](https://redis.uptrace.dev/)
 
 ```go
 rdb := di.GoRedis()

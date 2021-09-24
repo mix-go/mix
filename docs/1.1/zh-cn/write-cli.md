@@ -75,7 +75,7 @@ func main() {
 
 `commands/main.go` 文件：
 
-我们可以在这里自定义命令，[查看更多](https://github.com/mix-go/xcli)
+我们可以在这里自定义命令，[查看更多](zh-cn/mix-xcli.md)
 
 - `RunI` 定义了 `hello` 命令执行的接口，也可以使用 `RunF` 设定一个匿名函数
 
@@ -184,9 +184,9 @@ liujian: hello
 
 ### 编写一个 Worker Pool 队列消费
 
-队列消费是高并发系统中最常用的异步处理模型，通常我们是编写一个 CLI 命令行程序在后台执行 Redis、RabbitMQ 等 MQ 的队列消费，并将处理结果落地到 mysql 等数据库中，由于这类需求的标准化比较容易，因此我们开发了 [mix-go/xwp](https://github.com/mix-go/xwp) 库来处理这类需求，基本上大部分异步处理类需求都可使用。
+队列消费是高并发系统中最常用的异步处理模型，通常我们是编写一个 CLI 命令行程序在后台执行 Redis、RabbitMQ 等 MQ 的队列消费，并将处理结果落地到 mysql 等数据库中，由于这类需求的标准化比较容易，因此我们开发了 [mix-go/xwp](zh-cn/mix-xwp.md) 库来处理这类需求，基本上大部分异步处理类需求都可使用。
 
-首先我们需要安装 [mix-go/xwp](https://github.com/mix-go/xwp)，因为这是一个独立库没有包含在骨架中：
+首先我们需要安装 [mix-go/xwp](zh-cn/mix-xwp.md)，因为这是一个独立库没有包含在骨架中：
 
 ```
 go get github.com/mix-go/xwp
@@ -278,20 +278,20 @@ func (t *WorkerPoolDaemonCommand) Main() {
 
 ## 如何使用 DI 容器中的 Logger、Database、Redis 等组件
 
-项目中要使用的公共组件，都定义在 `di` 目录，框架默认生成了一些常用的组件，用户也可以定义自己的组件，[查看更多](https://github.com/mix-go/xdi)
+项目中要使用的公共组件，都定义在 `di` 目录，框架默认生成了一些常用的组件，用户也可以定义自己的组件，[查看更多](zh-cn/mix-xdi.md)
 
 - 可以在哪里使用
 
 可以在代码的任意位置使用，但是为了可以使用到环境变量和自定义配置，通常我们在 `xcli.Command` 结构体定义的 `RunF`、`RunI` 中使用。
 
-- 使用日志，比如：`logrus`、`zap`
+- 使用日志，比如：[zap](https://github.com/uber-go/zap)、[logrus](https://github.com/Sirupsen/logrus)
 
 ```go
-logger := di.Logrus()
+logger := di.Zap()
 logger.Info("test")
 ```
 
-- 使用数据库，比如：`gorm`、`xorm`
+- 使用数据库，比如：[gorm](https://gorm.io/)、[xorm](https://xorm.io/)
 
 ```go
 db := di.Gorm()
@@ -300,13 +300,13 @@ result := db.Create(&user)
 fmt.Println(result)
 ```
 
-- 使用 Redis，比如：`go-redis`
+- 使用 Redis，比如：[go-redis](https://redis.uptrace.dev/)
 
 ```go
 rdb := di.GoRedis()
 val, err := rdb.Get(context.Background(), "key").Result()
 if err != nil {
-    panic(err)
+panic(err)
 }
 fmt.Println("key", val)
 ```
