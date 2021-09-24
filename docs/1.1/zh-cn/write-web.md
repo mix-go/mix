@@ -503,7 +503,17 @@ fmt.Println("key", val)
 
 ## 部署
 
-线上部署启动时，修改 `shell/server.sh` 脚本中的绝对路径和参数
+线上部署时，不需要部署源码到服务器，只需要部署编译好的二进制、配置文件等
+
+```
+├── bin
+├── conf
+├── runtime
+├── shell
+└── .env
+```
+
+修改 `shell/server.sh` 脚本中的绝对路径和参数
 
 ```
 file=/project/bin/program
