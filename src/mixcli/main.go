@@ -8,7 +8,7 @@ import (
 
 func main() {
 	xcli.SetName("mixcli").
-		SetVersion(commands.FrameworkVersion).
+		SetVersion(commands.CLIVersion).
 		SetDebug(dotenv.Getenv("APP_DEBUG").Bool(false))
 	xcli.AddCommand(commands.Cmds...).Run()
 }
