@@ -530,7 +530,7 @@ sh shell/server.sh restart
 
 使用 `nginx` 或者 `SLB` 代理到服务器端口即可
 
-- API
+- Web
 
 ```
 server {

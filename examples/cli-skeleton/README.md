@@ -284,14 +284,14 @@ func (t *WorkerPoolDaemonCommand) Main() {
 
 可以在代码的任意位置使用，但是为了可以使用到环境变量和自定义配置，通常我们在 `xcli.Command` 结构体定义的 `RunF`、`RunI` 中使用。
 
-- 使用日志，比如：`logrus`、`zap`
+- 使用日志，比如：[zap](https://github.com/uber-go/zap)、[logrus](https://github.com/Sirupsen/logrus)
 
 ```go
-logger := di.Logrus()
+logger := di.Zap()
 logger.Info("test")
 ```
 
-- 使用数据库，比如：`gorm`、`xorm`
+- 使用数据库，比如：[gorm](https://gorm.io/)、[xorm](https://xorm.io/)
 
 ```go
 db := di.Gorm()
@@ -300,16 +300,29 @@ result := db.Create(&user)
 fmt.Println(result)
 ```
 
-- 使用 Redis，比如：`go-redis`
+- 使用 Redis，比如：[go-redis](https://redis.uptrace.dev/)
 
 ```go
 rdb := di.GoRedis()
 val, err := rdb.Get(context.Background(), "key").Result()
 if err != nil {
-    panic(err)
+panic(err)
 }
 fmt.Println("key", val)
 ```
+
+## 部署
+
+线上部署时，不需要部署源码到服务器，只需要部署编译好的二进制、配置文件等
+
+```
+├── bin
+├── conf
+├── logs
+└── .env
+```
+
+直接执行 `bin` 目录内的二进制即可
 
 ## License
 

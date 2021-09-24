@@ -274,14 +274,14 @@ time=2020-09-16 20:24:41.515 level=info msg=Server start file=api.go:58
 
 可以在代码的任意位置使用，但是为了可以使用到环境变量和自定义配置，通常我们在 `xcli.Command` 结构体定义的 `RunF`、`RunI` 中使用。
 
-- 使用日志，比如：`logrus`、`zap`
+- 使用日志，比如：[zap](https://github.com/uber-go/zap)、[logrus](https://github.com/Sirupsen/logrus)
 
 ```go
-logger := di.Logrus()
+logger := di.Zap()
 logger.Info("test")
 ```
 
-- 使用数据库，比如：`gorm`、`xorm`
+- 使用数据库，比如：[gorm](https://gorm.io/)、[xorm](https://xorm.io/)
 
 ```go
 db := di.Gorm()
@@ -290,7 +290,7 @@ result := db.Create(&user)
 fmt.Println(result)
 ```
 
-- 使用 Redis，比如：`go-redis`
+- 使用 Redis，比如：[go-redis](https://redis.uptrace.dev/)
 
 ```go
 rdb := di.GoRedis()
@@ -299,6 +299,54 @@ if err != nil {
     panic(err)
 }
 fmt.Println("key", val)
+```
+
+## 部署
+
+线上部署时，不需要部署源码到服务器，只需要部署编译好的二进制、配置文件等
+
+```
+├── bin
+├── conf
+├── runtime
+├── shell
+└── .env
+```
+
+修改 `shell/server.sh` 脚本中的绝对路径和参数
+
+```
+file=/project/bin/program
+cmd=api
+```
+
+启动管理
+
+```
+sh shell/server.sh start
+sh shell/server.sh stop
+sh shell/server.sh restart
+```
+
+使用 `nginx` 或者 `SLB` 代理到服务器端口即可
+
+```
+server {
+    server_name www.domain.com;
+    listen 80; 
+
+    location / {
+        proxy_http_version 1.1;
+        proxy_set_header Connection "keep-alive";
+        proxy_set_header Host $http_host;
+        proxy_set_header Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        if (!-f $request_filename) {
+             proxy_pass http://127.0.0.1:8080;
+        }
+    }
+}
 ```
 
 ## License
