@@ -367,3 +367,22 @@ panic(err)
 }
 fmt.Println("key", val)
 ```
+
+## 部署
+
+线上部署启动时，修改 `shell/server.sh` 脚本中的绝对路径和参数
+
+```
+file=/project/bin/program
+cmd=grpc:server
+```
+
+启动管理
+
+```
+sh shell/server.sh start
+sh shell/server.sh stop
+sh shell/server.sh restart
+```
+
+gRPC 通常都是内部使用，使用内网 `SLB` 代理到服务器IP或者直接使用 IP:PORT 调用

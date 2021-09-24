@@ -300,3 +300,41 @@ if err != nil {
 }
 fmt.Println("key", val)
 ```
+
+## 部署
+
+线上部署启动时，修改 `shell/server.sh` 脚本中的绝对路径和参数
+
+```
+file=/project/bin/program
+cmd=api
+```
+
+启动管理
+
+```
+sh shell/server.sh start
+sh shell/server.sh stop
+sh shell/server.sh restart
+```
+
+使用 `nginx` 或者 `SLB` 代理到服务器端口即可
+
+```
+server {
+    server_name www.domain.com;
+    listen 80; 
+
+    location / {
+        proxy_http_version 1.1;
+        proxy_set_header Connection "keep-alive";
+        proxy_set_header Host $http_host;
+        proxy_set_header Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        if (!-f $request_filename) {
+             proxy_pass http://127.0.0.1:8080;
+        }
+    }
+}
+```
