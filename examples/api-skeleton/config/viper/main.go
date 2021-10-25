@@ -9,7 +9,7 @@ import (
 
 func init() {
 	// Conf support JSON, TOML, YAML, HCL, INI, envfile
-	viper.AddConfigPath(fmt.Sprintf("%s/../conf/config.yml", argv.Program().Dir))
+	viper.SetConfigFile(fmt.Sprintf("%s/../conf/config.yml", argv.Program().Dir))
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)
 	}
