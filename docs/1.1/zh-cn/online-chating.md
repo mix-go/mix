@@ -10,10 +10,6 @@
 - 作者: https://www.zhihu.com/people/onanying
 - MixGo 专栏: https://www.zhihu.com/column/mix-go
 
-## 推荐阅读
-
-- [MixGo 在 IDE Goland 中的如何使用](https://zhuanlan.zhihu.com/p/391857663)
-
 ## 视频教程
 
 [![使用 MixGo 快速开发 API 项目](https://openstr.com/cover/aa328ff33de085aa8fc87301056f3407.jpg?size=small&share=true)](https://openstr.com/watch/aa328ff33de085aa8fc87301056f3407)

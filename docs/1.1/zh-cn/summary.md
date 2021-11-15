@@ -5,6 +5,7 @@
 
 * 快速开始
 
+  * [编程须知](zh-cn/instructions.md)
   * [编写 CLI 程序](zh-cn/write-cli.md)
   * [编写 API 接口](zh-cn/write-api.md)
   * [编写 Web 页面](zh-cn/write-web.md)
