@@ -14,13 +14,13 @@ cd project
 go build -o bin/go_build_main_go main.go
 
 // 执行编译好的程序
-./bin/go_build_main_go api
+bin/go_build_main_go api
 ```
 
 上面的命令可以合并执行
 
 ```
-go build -o bin/go_build_main_go main.go && ./bin/go_build_main_go api
+go build -o bin/go_build_main_go main.go && bin/go_build_main_go api
 ```
 
 ## `Goland` 如何使用
