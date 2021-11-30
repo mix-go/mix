@@ -222,6 +222,7 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 		}
 		_ = os.RemoveAll(fmt.Sprintf("%s/config/viper", dest))
 		_ = os.RemoveAll(fmt.Sprintf("%s/config/configor", dest))
+		_ = os.RemoveAll(fmt.Sprintf("%s/config/main.go", dest))
 		_ = os.RemoveAll(fmt.Sprintf("%s/conf", dest))
 	}
 	fmt.Println(" > ok")
