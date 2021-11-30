@@ -69,7 +69,7 @@ func (t *NewCommand) Main() {
 	}
 
 	selectEnv := promp("Select .env configuration file library", []string{DotEnv, None})
-	selectConf := promp("Select .yml, .json, .toml configuration files library", []string{Viper, Configor, None})
+	selectConf := promp("Select .yml, .json, .toml configuration files library", []string{Configor, Viper, None})
 
 	var selectLog string
 	var selectLogItems []string
@@ -207,22 +207,16 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 
 	fmt.Print(" - Processing conf")
 	switch selectConf {
+	case Configor:
+		_ = os.RemoveAll(fmt.Sprintf("%s/config/viper", dest))
+		break
 	case Viper:
-		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/configor"`, selectType), ""); err != nil {
+		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/configor"`, selectType), fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/viper"`, selectType)); err != nil {
 			panic(errors.New("Replace failed"))
 		}
 		_ = os.RemoveAll(fmt.Sprintf("%s/config/configor", dest))
 		break
-	case Configor:
-		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/viper"`, selectType), ""); err != nil {
-			panic(errors.New("Replace failed"))
-		}
-		_ = os.RemoveAll(fmt.Sprintf("%s/config/viper", dest))
-		break
-	default:
-		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/viper"`, selectType), ""); err != nil {
-			panic(errors.New("Replace failed"))
-		}
+	case None:
 		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/configor"`, selectType), ""); err != nil {
 			panic(errors.New("Replace failed"))
 		}
