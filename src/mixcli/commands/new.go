@@ -107,7 +107,8 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 	}
 
 	installCmd := "get"
-	if VersionCompare(runtime.Version(), "1.17") == VersionBig || VersionCompare(runtime.Version(), "1.17") == VersionEqual {
+	goVer := runtime.Version()[2:]
+	if VersionCompare(goVer, "1.17.1") == VersionBig || VersionCompare(goVer, "1.17.1") == VersionEqual {
 		installCmd = "install"
 	}
 

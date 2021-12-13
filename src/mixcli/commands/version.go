@@ -21,7 +21,7 @@ func VersionCompare(verA, verB string) int {
 	lenStrA := len(verStrArrA)
 	lenStrB := len(verStrArrB)
 	if lenStrA != lenStrB {
-		panic("")
+		panic("version length is inconsistent")
 	}
 	return compareArrStrVers(verStrArrA, verStrArrB)
 }
