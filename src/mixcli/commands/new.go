@@ -106,6 +106,11 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 		return
 	}
 
+	installCmd := "get"
+	if VersionCompare(runtime.Version(), "1.17") == VersionBig || VersionCompare(runtime.Version(), "1.17") == VersionEqual {
+		installCmd = "install"
+	}
+
 	envCmd := "go env GOPATH"
 	cmd := exec.Command("go", "env", "GOPATH")
 	out, err := cmd.CombinedOutput()
@@ -130,8 +135,8 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 
 	srcDir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/%s-skeleton@%s", goPath, selectType, ver)
 	if _, err := os.Stat(srcDir); err != nil {
-		cmd := exec.Command("go", "get", fmt.Sprintf("github.com/mix-go/%s-skeleton@%s", selectType, ver))
-		fmt.Printf("Skeleton local not found, exec 'go get github.com/mix-go/%s-skeleton@%s'\n", selectType, ver)
+		cmd := exec.Command("go", installCmd, fmt.Sprintf("github.com/mix-go/%s-skeleton@%s", selectType, ver))
+		fmt.Printf("Skeleton local not found, exec 'go %s github.com/mix-go/%s-skeleton@%s'\n", installCmd, selectType, ver)
 		total := 0
 		switch selectType {
 		case CLI:
@@ -174,7 +179,7 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 		bar.Finish()
 		if err != nil {
 			fmt.Println(fmt.Sprintf("Exec failed: %s", err.Error()))
-			fmt.Println("Please try again, or manually execute 'go get ***'")
+			fmt.Println(fmt.Sprintf("Please try again, or manually execute 'go %s ***'", installCmd))
 			return
 		}
 		time.Sleep(2 * time.Second) // 等待一会，让 gomod 完成解压
