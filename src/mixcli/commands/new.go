@@ -106,12 +106,6 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 		return
 	}
 
-	installCmd := "get"
-	goVer := runtime.Version()[2:]
-	if VersionCompare(goVer, "1.17.1") == VersionBig || VersionCompare(goVer, "1.17.1") == VersionEqual {
-		installCmd = "install"
-	}
-
 	envCmd := "go env GOPATH"
 	cmd := exec.Command("go", "env", "GOPATH")
 	out, err := cmd.CombinedOutput()
@@ -136,58 +130,66 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 
 	srcDir := fmt.Sprintf("%s/pkg/mod/github.com/mix-go/%s-skeleton@%s", goPath, selectType, ver)
 	if _, err := os.Stat(srcDir); err != nil {
-		cmd := exec.Command("go", installCmd, fmt.Sprintf("github.com/mix-go/%s-skeleton@%s", selectType, ver))
-		fmt.Printf("Skeleton local not found, exec 'go %s github.com/mix-go/%s-skeleton@%s'\n", installCmd, selectType, ver)
-		total := 0
-		switch selectType {
-		case CLI:
-			total = 7695
-		case API:
-			total = 13834
-		case Web:
-			total = 17705
-		case gRPC:
-			total = 15659
-		}
-		current := int64(0)
-		bar := pb.StartNew(total)
-		go func() {
-			path := fmt.Sprintf("%s/pkg/mod/cache/download/github.com/mix-go/%s-skeleton/@v/%s.zip", goPath, selectType, ver)
-			for {
-				f, err := os.Open(path)
-				if err != nil {
-					continue
-				}
-				fi, err := f.Stat()
-				if err != nil {
-					_ = f.Close()
-					continue
-				}
-				current = fi.Size()
-				bar.SetCurrent(current)
-				_ = f.Close()
-				time.Sleep(time.Millisecond * 100)
+		fmt.Printf("No skeleton found 'github.com/mix-go/%s-skeleton@%s'\n", selectType, ver)
+
+		installFunc := func(installCmd string) error {
+			cmd := exec.Command("go", installCmd, fmt.Sprintf("github.com/mix-go/%s-skeleton@%s", selectType, ver))
+			fmt.Printf("Install skeleton 'go %s github.com/mix-go/%s-skeleton@%s'\n", installCmd, selectType, ver)
+			total := 0
+			switch selectType {
+			case CLI:
+				total = 7695
+			case API:
+				total = 13834
+			case Web:
+				total = 17705
+			case gRPC:
+				total = 15659
 			}
-		}()
-		err = cmd.Run()
-		if err == nil {
-			bar.SetTotal(current)
-			bar.SetCurrent(current)
-		} else {
-			bar.SetTotal(0)
-			bar.SetCurrent(0)
+			current := int64(0)
+			bar := pb.StartNew(total)
+			go func() {
+				path := fmt.Sprintf("%s/pkg/mod/cache/download/github.com/mix-go/%s-skeleton/@v/%s.zip", goPath, selectType, ver)
+				for {
+					f, err := os.Open(path)
+					if err != nil {
+						continue
+					}
+					fi, err := f.Stat()
+					if err != nil {
+						_ = f.Close()
+						continue
+					}
+					current = fi.Size()
+					bar.SetCurrent(current)
+					_ = f.Close()
+					time.Sleep(time.Millisecond * 100)
+				}
+			}()
+			err = cmd.Run()
+			if err == nil {
+				bar.SetTotal(current)
+				bar.SetCurrent(current)
+			} else {
+				bar.SetTotal(0)
+				bar.SetCurrent(0)
+			}
+			bar.Finish()
+			return err
 		}
-		bar.Finish()
-		if err != nil {
-			fmt.Println(fmt.Sprintf("Exec failed: %s", err.Error()))
-			fmt.Println(fmt.Sprintf("Please try again, or manually execute 'go %s ***'", installCmd))
-			return
+
+		if err1 := installFunc("get"); err1 != nil {
+			if err2 := installFunc("install"); err2 != nil {
+				fmt.Println(fmt.Sprintf("Install failed: %s: %s", err1, err2))
+				return
+			}
 		}
+
 		time.Sleep(2 * time.Second) // 等待一会，让 gomod 完成解压
 		_ = os.Remove(fmt.Sprintf("%s/bin/%s-skeleton", goPath, selectType))
-		fmt.Println(fmt.Sprintf("Skeleton 'github.com/mix-go/%s-skeleton@%s' download is completed", selectType, ver))
+		fmt.Println(fmt.Sprintf("Skeleton 'github.com/mix-go/%s-skeleton@%s' installed successfully", selectType, ver))
 	} else {
-		fmt.Println(fmt.Sprintf("Skeleton 'github.com/mix-go/%s-skeleton@%s' local found", selectType, ver))
+		fmt.Println(fmt.Sprintf("Local skeleton found 'github.com/mix-go/%s-skeleton@%s'", selectType, ver))
 	}
 
 	fmt.Print(" - Generate code")
