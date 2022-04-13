@@ -65,7 +65,7 @@ func mapped(field reflect.Value, row *Row, tag string) (err error) {
 		v = res.String()
 		break
 	default:
-		if field.Type().String() == "time.Time" {
+		if field.Type().String() == "time.Time" && reflect.ValueOf(v).Type().String() != "time.Time" {
 			if t, e := time.ParseInLocation(layout, res.String(), time.Local); e == nil {
 				v = t
 			} else {
