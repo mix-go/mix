@@ -40,11 +40,16 @@ MixGo 是一个 Go 快速开发标准工具包；内部模块高度解耦，整�
   - [编写一个 WebSocket 服务](examples/web-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-WebSocket-%E6%9C%8D%E5%8A%A1)
 - [编写一个 gRPC 服务、客户端](examples/grpc-skeleton#readme)
 
-```
+
+```bash
+# Go 1.15 及之前版本
 go get github.com/mix-go/mixcli
+# Go 1.16 及以后版本
+go install github.com/mix-go/mixcli@latest
 ```
 
-~~~
+
+```bash
 $ mixcli new hello
 Use the arrow keys to navigate: ↓ ↑ → ← 
 ? Select project type:
@@ -52,7 +57,7 @@ Use the arrow keys to navigate: ↓ ↑ → ←
     API
     Web (contains the websocket)
     gRPC
-~~~
+```
 
 如果编译时报错，整理一下依赖
 
