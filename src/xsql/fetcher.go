@@ -152,7 +152,7 @@ type Result struct {
 }
 
 func (t *Result) Empty() bool {
-	if b, ok := t.v.([]byte); ok {
+	if b, ok := t.v.([]uint8); ok {
 		return len(b) == 0
 	}
 	if s, ok := t.v.(string); ok {
@@ -199,7 +199,7 @@ func (t *Result) String() string {
 	case reflect.String:
 		return t.v.(string)
 	default:
-		if b, ok := t.v.([]byte); ok {
+		if b, ok := t.v.([]uint8); ok {
 			return string(b)
 		}
 	}
@@ -246,7 +246,7 @@ func (t *Result) Int() int64 {
 		}
 		return i
 	default:
-		if b, ok := t.v.([]byte); ok {
+		if b, ok := t.v.([]uint8); ok {
 			s := string(b)
 			i, err := strconv.ParseInt(s, 10, 64)
 			if err != nil {
@@ -260,7 +260,7 @@ func (t *Result) Int() int64 {
 
 func (t *Result) Time() time.Time {
 	typ := t.Type()
-	if typ == "string" || typ == "[]byte" {
+	if typ == "string" || typ == "[]uint8" {
 		tt, _ := time.ParseInLocation(TimeParselayout, t.String(), time.Local)
 		return tt
 	}

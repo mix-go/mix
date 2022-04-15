@@ -23,6 +23,7 @@ func TestQuery(t *testing.T) {
 		log.Fatal(err)
 	}
 	bar := rows[0].Get("bar").String()
+	fmt.Println(bar)
 
 	a.Equal(bar, "2022-04-14 23:49:48")
 }
