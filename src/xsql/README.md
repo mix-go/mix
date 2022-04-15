@@ -24,6 +24,7 @@ rows, err := xsql.Query(db, "SELECT * FROM xsql")
 if err != nil {
     log.Fatal(err)
 }
+
 bar := rows[0].Get("bar").String()
 fmt.Println(bar)
 ```
@@ -70,6 +71,7 @@ rows, err := db.Query("SELECT * FROM xsql")
 if err != nil {
     log.Fatal(err)
 }
+
 var tests []Test
 err = xsql.Find(rows, &tests)
 if err != nil {
