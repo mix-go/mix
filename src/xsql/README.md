@@ -20,7 +20,7 @@ if err != nil {
     log.Fatal(err)
 }
 
-rows, err := Query(db, "SELECT * FROM xsql")
+rows, err := xsql.Query(db, "SELECT * FROM xsql")
 if err != nil {
     log.Fatal(err)
 }
@@ -52,7 +52,7 @@ if err != nil {
 }
 
 var test Test
-err = First(rows, &test)
+err = xsql.First(rows, &test)
 if err != nil {
     log.Fatal(err)
 }
@@ -71,7 +71,7 @@ if err != nil {
     log.Fatal(err)
 }
 var tests []Test
-err = Find(rows, &tests)
+err = xsql.Find(rows, &tests)
 if err != nil {
     log.Fatal(err)
 }
