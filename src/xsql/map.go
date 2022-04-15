@@ -3,30 +3,10 @@ package xsql
 import (
 	"fmt"
 	"reflect"
-	"strings"
 	"time"
 )
 
-func tagName(tag string) string {
-	if strings.Contains(tag, ",") {
-		tags := strings.Split(tag, ",")
-		if len(tags) > 1 {
-			return tags[0]
-		}
-	}
-	return tag
-}
-
-func mapped(field reflect.Value, row *Row, tag string) (err error) {
-	layout := ""
-	if strings.Contains(tag, ",") {
-		tags := strings.Split(tag, ",")
-		if len(tags) > 1 {
-			tag = tags[0]
-			layout = tags[1]
-		}
-	}
-
+func mapped(field reflect.Value, row Row, tag string) (err error) {
 	res := row.Get(tag)
 	v := res.Value()
 
@@ -65,8 +45,10 @@ func mapped(field reflect.Value, row *Row, tag string) (err error) {
 		v = res.String()
 		break
 	default:
-		if field.Type().String() == "time.Time" && reflect.ValueOf(v).Type().String() != "time.Time" {
-			if t, e := time.ParseInLocation(layout, res.String(), time.Local); e == nil {
+		if !res.Empty() &&
+			field.Type().String() == "time.Time" &&
+			reflect.ValueOf(v).Type().String() != "time.Time" {
+			if t, e := time.ParseInLocation(TimeParselayout, res.String(), time.Local); e == nil {
 				v = t
 			} else {
 				return fmt.Errorf("time parse fail for field %s: %v", tag, e)
