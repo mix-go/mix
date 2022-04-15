@@ -1,10 +1,8 @@
 > OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
 
-## Mix XRows
+## Mix XSQL
 
-database/sql 查询与映射
-
-database/sql query and mapper
+database/sql 标准库的查询与映射，支持任何驱动。
 
 ## Installation
 
