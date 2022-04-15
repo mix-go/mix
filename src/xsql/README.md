@@ -2,7 +2,7 @@
 
 ## Mix XSQL
 
-database/sql 标准库的查询与映射，支持任何驱动。
+database/sql 标准库的查询与映射，支持任何数据库驱动。
 
 ## Installation
 
