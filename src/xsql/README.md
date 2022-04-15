@@ -38,7 +38,7 @@ type Test struct {
 }
 ```
 
-- `First()` 映射第一行
+### `First()` 映射第一行
 
 ```go
 db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
@@ -58,7 +58,7 @@ if err != nil {
 }
 ```
 
-- `Find()` 映射全部行
+### `Find()` 映射全部行
 
 ```go
 db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
