@@ -1,4 +1,4 @@
-module github.com/mix-go/xrows
+module github.com/mix-go/xsql
 
 go 1.17
 
