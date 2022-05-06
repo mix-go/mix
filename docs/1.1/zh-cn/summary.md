@@ -16,7 +16,7 @@
   * [mix-go/mixcli](zh-cn/mix-mixcli.md)
   * [mix-go/xcli](zh-cn/mix-xcli.md)
   * [mix-go/xdi](zh-cn/mix-xdi.md)
-  * [mix-go/xwp](zh-cn/mix-xsql.md)
+  * [mix-go/xsql](zh-cn/mix-xsql.md)
   * [mix-go/xwp](zh-cn/mix-xwp.md)
   * [mix-go/xfmt](zh-cn/mix-xfmt.md)
   * [mix-go/varwatch](zh-cn/mix-varwatch.md)
