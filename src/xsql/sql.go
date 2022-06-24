@@ -32,3 +32,17 @@ func First(r *sql.Rows, i interface{}) error {
 	f := &Fetcher{R: r}
 	return f.First(i)
 }
+
+func Insert(db *sql.DB, table string, data interface{}, opts ...Option) (sql.Result, *Log, error) {
+	e := &Executor{
+		DB: db,
+	}
+	return e.Insert(table, data, opts...)
+}
+
+func BatchInsert(db *sql.DB, table string, data interface{}, opts ...Option) (sql.Result, *Log, error) {
+	e := &Executor{
+		DB: db,
+	}
+	return e.BatchInsert(table, data, opts...)
+}
