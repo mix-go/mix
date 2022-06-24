@@ -5,6 +5,7 @@ type Option interface {
 }
 
 type Config struct {
+	// 默认为: INSERT INTO
 	InsertKey string
 
 	// 默认为: ? , oracle 可配置为 :%d
