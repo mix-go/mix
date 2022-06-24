@@ -9,7 +9,7 @@ import (
 )
 
 type Fetcher struct {
-	r *sql.Rows
+	R *sql.Rows
 }
 
 func (t *Fetcher) First(i interface{}) error {
@@ -90,7 +90,7 @@ func (t *Fetcher) Find(i interface{}) error {
 
 func (t *Fetcher) Rows() ([]Row, error) {
 	// 获取列名
-	columns, err := t.r.Columns()
+	columns, err := t.R.Columns()
 	if err != nil {
 		return nil, err
 	}
@@ -109,8 +109,8 @@ func (t *Fetcher) Rows() ([]Row, error) {
 	// Fetch rows
 	var rows []Row
 
-	for t.r.Next() {
-		err = t.r.Scan(scanArgs...)
+	for t.R.Next() {
+		err = t.R.Scan(scanArgs...)
 		if err != nil {
 			return nil, err
 		}
@@ -136,22 +136,22 @@ func (t Row) Exist(field string) bool {
 	return ok
 }
 
-func (t Row) Get(field string) *Result {
+func (t Row) Get(field string) *RowResult {
 	if v, ok := t[field]; ok {
-		return &Result{v: v}
+		return &RowResult{v: v}
 	}
-	return &Result{v: ""}
+	return &RowResult{v: ""}
 }
 
 func (t Row) Value() map[string]interface{} {
 	return t
 }
 
-type Result struct {
+type RowResult struct {
 	v interface{}
 }
 
-func (t *Result) Empty() bool {
+func (t *RowResult) Empty() bool {
 	if b, ok := t.v.([]uint8); ok {
 		return len(b) == 0
 	}
@@ -164,7 +164,7 @@ func (t *Result) Empty() bool {
 	return false
 }
 
-func (t *Result) String() string {
+func (t *RowResult) String() string {
 	switch reflect.ValueOf(t.v).Kind() {
 	case reflect.Int:
 		i := t.v.(int)
@@ -206,7 +206,7 @@ func (t *Result) String() string {
 	return ""
 }
 
-func (t *Result) Int() int64 {
+func (t *RowResult) Int() int64 {
 	switch reflect.ValueOf(t.v).Kind() {
 	case reflect.Int:
 		i := t.v.(int)
@@ -258,7 +258,7 @@ func (t *Result) Int() int64 {
 	return 0
 }
 
-func (t *Result) Time() time.Time {
+func (t *RowResult) Time() time.Time {
 	typ := t.Type()
 	if typ == "string" || typ == "[]uint8" {
 		tt, _ := time.ParseInLocation(TimeParselayout, t.String(), time.Local)
@@ -270,10 +270,10 @@ func (t *Result) Time() time.Time {
 	return time.Time{}
 }
 
-func (t *Result) Value() interface{} {
+func (t *RowResult) Value() interface{} {
 	return t.v
 }
 
-func (t *Result) Type() string {
+func (t *RowResult) Type() string {
 	return reflect.TypeOf(t.v).String()
 }

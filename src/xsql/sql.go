@@ -11,16 +11,16 @@ func Query(db *sql.DB, query string, args ...interface{}) ([]Row, error) {
 	if err != nil {
 		return nil, err
 	}
-	f := Fetcher{r: r}
+	f := Fetcher{R: r}
 	return f.Rows()
 }
 
 func Find(r *sql.Rows, i interface{}) error {
-	f := &Fetcher{r: r}
+	f := &Fetcher{R: r}
 	return f.Find(i)
 }
 
 func First(r *sql.Rows, i interface{}) error {
-	f := &Fetcher{r: r}
+	f := &Fetcher{R: r}
 	return f.First(i)
 }
