@@ -9,12 +9,6 @@ import (
 	"time"
 )
 
-type Log struct {
-	SQL  string
-	Args []interface{}
-	Time time.Duration
-}
-
 type Executor struct {
 	DB *sql.DB
 }

@@ -2,17 +2,25 @@ package xsql
 
 import (
 	"database/sql"
+	"time"
 )
 
 var TimeParselayout = "2006-01-02 15:04:05"
 
-func Query(db *sql.DB, query string, args ...interface{}) ([]Row, error) {
+func Query(db *sql.DB, query string, args ...interface{}) ([]Row, *Log, error) {
+	startTime := time.Now()
 	r, err := db.Query(query, args...)
+	l := &Log{
+		SQL:  query,
+		Args: args,
+		Time: time.Now().Sub(startTime),
+	}
 	if err != nil {
-		return nil, err
+		return nil, l, err
 	}
 	f := Fetcher{R: r}
-	return f.Rows()
+	rows, err := f.Rows()
+	return rows, l, err
 }
 
 func Find(r *sql.Rows, i interface{}) error {
