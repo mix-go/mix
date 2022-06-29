@@ -25,7 +25,7 @@ func (t *GrpcServerCommand) Main() {
 		process.Daemon()
 	}
 
-	addr := dotenv.Getenv("GIN_ADDR").String(":8080")
+	addr := dotenv.Getenv("RPC_ADDR").String(":8080")
 	logger := di.Logrus()
 
 	// listen
