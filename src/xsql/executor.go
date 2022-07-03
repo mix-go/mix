@@ -88,9 +88,9 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, *Log, er
 	startTime := time.Now()
 	res, err := t.DB.Exec(SQL, bindArgs...)
 	l := &Log{
-		SQL:  SQL,
-		Args: bindArgs,
-		Time: time.Now().Sub(startTime),
+		SQL:      SQL,
+		Bindings: bindArgs,
+		Time:     time.Now().Sub(startTime),
 	}
 	if err != nil {
 		return nil, l, err
@@ -211,9 +211,9 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, *L
 	startTime := time.Now()
 	res, err := t.DB.Exec(SQL, bindArgs...)
 	l := &Log{
-		SQL:  SQL,
-		Args: bindArgs,
-		Time: time.Now().Sub(startTime),
+		SQL:      SQL,
+		Bindings: bindArgs,
+		Time:     time.Now().Sub(startTime),
 	}
 	if err != nil {
 		return nil, l, err
@@ -292,9 +292,9 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	startTime := time.Now()
 	res, err := t.DB.Exec(SQL, bindArgs...)
 	l := &Log{
-		SQL:  SQL,
-		Args: bindArgs,
-		Time: time.Now().Sub(startTime),
+		SQL:      SQL,
+		Bindings: bindArgs,
+		Time:     time.Now().Sub(startTime),
 	}
 	if err != nil {
 		return nil, l, err

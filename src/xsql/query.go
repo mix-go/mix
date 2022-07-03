@@ -13,9 +13,9 @@ func (t *query) Fetch(query string, args []interface{}, opts *Options) (*Fetcher
 	startTime := time.Now()
 	r, err := t.DB.Query(query, args...)
 	l := &Log{
-		SQL:  query,
-		Args: args,
-		Time: time.Now().Sub(startTime),
+		SQL:      query,
+		Bindings: args,
+		Time:     time.Now().Sub(startTime),
 	}
 	if err != nil {
 		return nil, l, err
