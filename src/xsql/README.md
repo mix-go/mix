@@ -147,12 +147,26 @@ type Options struct {
     
     // 默认：== DefaultTimeParseLayout
     TimeParseLayout string
+	
+    // 全局 debug SQL
+    DebugFunc DebugFunc
 }
 ```
 
 ## 日志
 
-每个 sql 执行都会返回以下日志对象，就是执行失败也会返回。
+在 `xsql.New()` 方法时传入配置 `DebugFunc`，可以在这里使用任何日志库打印SQL信息。
+
+```go
+opts := Options{
+    DebugFunc: func(l *Log) {
+        log.Println(l)
+    },
+}
+DB := New(db, opts)
+```
+
+日志对象包含以下字段
 
 ```go
 type Log struct {

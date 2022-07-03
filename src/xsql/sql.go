@@ -48,36 +48,36 @@ func (t *Database) Update(data interface{}, expr string, args ...interface{}) (s
 	return t.executor.Update(data, expr, args, &t.Options)
 }
 
-func (t *Database) Query(query string, args ...interface{}) ([]Row, *Log, error) {
-	f, l, err := t.query.Fetch(query, args, &t.Options)
+func (t *Database) Query(query string, args ...interface{}) ([]Row, error) {
+	f, err := t.query.Fetch(query, args, &t.Options)
 	if err != nil {
-		return nil, l, err
+		return nil, err
 	}
 	r, err := f.Rows()
 	if err != nil {
-		return nil, l, err
+		return nil, err
 	}
-	return r, l, nil
+	return r, nil
 }
 
-func (t *Database) Find(i interface{}, query string, args ...interface{}) (*Log, error) {
-	f, l, err := t.query.Fetch(query, args, &t.Options)
+func (t *Database) Find(i interface{}, query string, args ...interface{}) error {
+	f, err := t.query.Fetch(query, args, &t.Options)
 	if err != nil {
-		return l, err
+		return err
 	}
 	if err := f.Find(i); err != nil {
-		return l, err
+		return err
 	}
-	return l, nil
+	return nil
 }
 
-func (t *Database) First(i interface{}, query string, args ...interface{}) (*Log, error) {
-	f, l, err := t.query.Fetch(query, args, &t.Options)
+func (t *Database) First(i interface{}, query string, args ...interface{}) error {
+	f, err := t.query.Fetch(query, args, &t.Options)
 	if err != nil {
-		return l, err
+		return err
 	}
 	if err := f.First(i); err != nil {
-		return l, err
+		return err
 	}
-	return l, nil
+	return nil
 }

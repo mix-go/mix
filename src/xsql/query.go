@@ -9,7 +9,11 @@ type query struct {
 	DB *sql.DB
 }
 
-func (t *query) Fetch(query string, args []interface{}, opts *Options) (*Fetcher, *Log, error) {
+func (t *query) Fetch(query string, args []interface{}, opts *Options) (*Fetcher, error) {
+	var debugFunc DebugFunc
+	if opts.DebugFunc != nil {
+		debugFunc = opts.DebugFunc
+	}
 	startTime := time.Now()
 	r, err := t.DB.Query(query, args...)
 	l := &Log{
@@ -17,12 +21,15 @@ func (t *query) Fetch(query string, args []interface{}, opts *Options) (*Fetcher
 		Bindings: args,
 		Time:     time.Now().Sub(startTime),
 	}
+	if debugFunc != nil {
+		debugFunc(l)
+	}
 	if err != nil {
-		return nil, l, err
+		return nil, err
 	}
 	f := &Fetcher{
 		R:       r,
 		Options: opts,
 	}
-	return f, l, err
+	return f, err
 }

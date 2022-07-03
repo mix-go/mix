@@ -20,7 +20,7 @@ func TestQuery(t *testing.T) {
 
 	DB := New(db)
 
-	rows, _, err := DB.Query("SELECT * FROM xsql")
+	rows, err := DB.Query("SELECT * FROM xsql")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -55,8 +55,7 @@ func TestInsert(t *testing.T) {
 		Foo: "test",
 		Bar: time.Now(),
 	}
-	_, l, err := DB.Insert(&test)
-	fmt.Println(l)
+	_, err = DB.Insert(&test)
 
 	a.Empty(err)
 }
@@ -83,8 +82,7 @@ func TestBatchInsert(t *testing.T) {
 			Bar: time.Now(),
 		},
 	}
-	_, l, err := DB.BatchInsert(&tests)
-	fmt.Println(l)
+	_, err = DB.BatchInsert(&tests)
 
 	a.Empty(err)
 }
@@ -145,7 +143,7 @@ func TestFirst(t *testing.T) {
 	DB := New(db)
 
 	var test Test
-	_, err = DB.First(&test, "SELECT * FROM xsql")
+	err = DB.First(&test, "SELECT * FROM xsql")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -164,7 +162,7 @@ func TestFind(t *testing.T) {
 	DB := New(db)
 
 	var tests []Test
-	_, err = DB.Find(&tests, "SELECT * FROM xsql LIMIT 2")
+	err = DB.Find(&tests, "SELECT * FROM xsql LIMIT 2")
 	if err != nil {
 		log.Fatal(err)
 	}
