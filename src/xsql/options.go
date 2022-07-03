@@ -14,4 +14,7 @@ type Options struct {
 
 	// 默认：== DefaultTimeParseLayout
 	TimeParseLayout string
+
+	// 全局 debug SQL
+	DebugFunc DebugFunc
 }

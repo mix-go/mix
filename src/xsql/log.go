@@ -7,3 +7,5 @@ type Log struct {
 	SQL      string        `json:"sql"`
 	Bindings []interface{} `json:"bindings"`
 }
+
+type DebugFunc func(l *Log)

@@ -104,8 +104,32 @@ func TestUpdate(t *testing.T) {
 		Foo: "test update",
 		Bar: time.Now(),
 	}
-	_, l, err := DB.Update(&test, "id = ?", 10)
-	fmt.Println(l)
+	_, err = DB.Update(&test, "id = ?", 10)
+
+	a.Empty(err)
+}
+
+func TestDebugFunc(t *testing.T) {
+	a := assert.New(t)
+
+	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	opts := Options{
+		DebugFunc: func(l *Log) {
+			fmt.Println(l)
+		},
+	}
+	DB := New(db, opts)
+
+	test := Test{
+		Id:  999,
+		Foo: "test update",
+		Bar: time.Now(),
+	}
+	_, err = DB.Update(&test, "id = ?", 10)
 
 	a.Empty(err)
 }

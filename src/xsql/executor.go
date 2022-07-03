@@ -17,7 +17,7 @@ type executor struct {
 	DB *sql.DB
 }
 
-func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, *Log, error) {
+func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 	insertKey := "INSERT INTO"
 	if opts.InsertKey != "" {
 		insertKey = opts.InsertKey
@@ -33,6 +33,10 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, *Log, er
 	columnQuotes := "`"
 	if opts.ColumnQuotes != "" {
 		columnQuotes = opts.ColumnQuotes
+	}
+	var debugFunc DebugFunc
+	if opts.DebugFunc != nil {
+		debugFunc = opts.DebugFunc
 	}
 
 	fields := make([]string, 0)
@@ -80,7 +84,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, *Log, er
 		}
 		break
 	default:
-		return nil, nil, errors.New("only for struct type")
+		return nil, errors.New("only for struct type")
 	}
 
 	SQL := fmt.Sprintf(`%s %s (%s) VALUES (%s)`, insertKey, table, columnQuotes+strings.Join(fields, columnQuotes+", "+columnQuotes)+columnQuotes, strings.Join(vars, `, `))
@@ -92,14 +96,17 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, *Log, er
 		Bindings: bindArgs,
 		Time:     time.Now().Sub(startTime),
 	}
+	if debugFunc != nil {
+		debugFunc(l)
+	}
 	if err != nil {
-		return nil, l, err
+		return nil, err
 	}
 
-	return res, l, nil
+	return res, nil
 }
 
-func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, *Log, error) {
+func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, error) {
 	insertKey := "INSERT INTO"
 	if opts.InsertKey != "" {
 		insertKey = opts.InsertKey
@@ -116,6 +123,10 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, *L
 	if opts.ColumnQuotes != "" {
 		columnQuotes = opts.ColumnQuotes
 	}
+	var debugFunc DebugFunc
+	if opts.DebugFunc != nil {
+		debugFunc = opts.DebugFunc
+	}
 
 	fields := make([]string, 0)
 	valueSql := make([]string, 0)
@@ -131,10 +142,10 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, *L
 	case reflect.Array, reflect.Slice:
 		break
 	default:
-		return nil, nil, errors.New("only for struct array/slice type")
+		return nil, errors.New("only for struct array/slice type")
 	}
 	if value.Len() == 0 {
-		return nil, nil, errors.New("array/slice length cannot be 0")
+		return nil, errors.New("array/slice length cannot be 0")
 	}
 
 	// fields
@@ -160,7 +171,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, *L
 		}
 		break
 	default:
-		return nil, nil, errors.New("only for struct array/slice type")
+		return nil, errors.New("only for struct array/slice type")
 	}
 
 	// values
@@ -198,12 +209,12 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, *L
 				valueSql = append(valueSql, fmt.Sprintf("(%s)", strings.Join(vars, `, `)))
 				break
 			default:
-				return nil, nil, errors.New("only for struct array/slice type")
+				return nil, errors.New("only for struct array/slice type")
 			}
 		}
 		break
 	default:
-		return nil, nil, errors.New("only for struct array/slice type")
+		return nil, errors.New("only for struct array/slice type")
 	}
 
 	SQL := fmt.Sprintf(`%s %s (%s) VALUES %s`, insertKey, table, columnQuotes+strings.Join(fields, columnQuotes+", "+columnQuotes)+columnQuotes, strings.Join(valueSql, ", "))
@@ -215,14 +226,17 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, *L
 		Bindings: bindArgs,
 		Time:     time.Now().Sub(startTime),
 	}
+	if debugFunc != nil {
+		debugFunc(l)
+	}
 	if err != nil {
-		return nil, l, err
+		return nil, err
 	}
 
-	return res, l, nil
+	return res, nil
 }
 
-func (t *executor) Update(data interface{}, expr string, args []interface{}, opts *Options) (sql.Result, *Log, error) {
+func (t *executor) Update(data interface{}, expr string, args []interface{}, opts *Options) (sql.Result, error) {
 	placeholder := "?"
 	if opts.Placeholder != "" {
 		placeholder = opts.Placeholder
@@ -234,6 +248,10 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	columnQuotes := "`"
 	if opts.ColumnQuotes != "" {
 		columnQuotes = opts.ColumnQuotes
+	}
+	var debugFunc DebugFunc
+	if opts.DebugFunc != nil {
+		debugFunc = opts.DebugFunc
 	}
 
 	set := make([]string, 0)
@@ -278,7 +296,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 		}
 		break
 	default:
-		return nil, nil, errors.New("only for struct type")
+		return nil, errors.New("only for struct type")
 	}
 
 	where := ""
@@ -296,9 +314,12 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 		Bindings: bindArgs,
 		Time:     time.Now().Sub(startTime),
 	}
+	if debugFunc != nil {
+		debugFunc(l)
+	}
 	if err != nil {
-		return nil, l, err
+		return nil, err
 	}
 
-	return res, l, nil
+	return res, nil
 }

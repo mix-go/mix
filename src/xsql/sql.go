@@ -30,21 +30,21 @@ func New(db *sql.DB, opts ...Options) *Database {
 	}
 }
 
-func (t *Database) Insert(data interface{}, opts ...Options) (sql.Result, *Log, error) {
+func (t *Database) Insert(data interface{}, opts ...Options) (sql.Result, error) {
 	for _, o := range opts {
 		t.Options.InsertKey = o.InsertKey
 	}
 	return t.executor.Insert(data, &t.Options)
 }
 
-func (t *Database) BatchInsert(data interface{}, opts ...Options) (sql.Result, *Log, error) {
+func (t *Database) BatchInsert(data interface{}, opts ...Options) (sql.Result, error) {
 	for _, o := range opts {
 		t.Options.InsertKey = o.InsertKey
 	}
 	return t.executor.BatchInsert(data, &t.Options)
 }
 
-func (t *Database) Update(data interface{}, expr string, args ...interface{}) (sql.Result, *Log, error) {
+func (t *Database) Update(data interface{}, expr string, args ...interface{}) (sql.Result, error) {
 	return t.executor.Update(data, expr, args, &t.Options)
 }
 
