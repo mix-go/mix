@@ -10,8 +10,6 @@
 go get github.com/mix-go/xsql
 ```
 
-### 数据库驱动
-
 推荐使用以下数据库驱动
 
 - mysql `_ "github.com/go-sql-driver/mysql"`
@@ -22,7 +20,7 @@ go get github.com/mix-go/xsql
 ```go
 db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
 if err != nil {
-log.Fatal(err)
+    log.Fatal(err)
 }
 
 DB := xsql.New(db)
@@ -33,12 +31,12 @@ DB := xsql.New(db)
 可以像脚本语言一样使用，不绑定结构体，直接自由获取每个字段的值。
 
 ```go
-rows, err := DB.Query("SELECT * FROM xsql")
+rows, log, err := DB.Query("SELECT * FROM xsql")
 if err != nil {
-log.Fatal(err)
+    log.Fatal(err)
 }
 
-id := rows[0].Get("id").Int()
+id  := rows[0].Get("id").Int()
 foo := rows[0].Get("foo").String()
 bar := rows[0].Get("bar").Time() // time.Time
 val := rows[0].Get("bar").Value() // interface{}
@@ -50,13 +48,13 @@ val := rows[0].Get("bar").Value() // interface{}
 
 ```go
 type Test struct {
-Id  int       `xsql:"id"`
-Foo string    `xsql:"foo"`
-Bar time.Time `xsql:"bar"`
+	Id  int       `xsql:"id"`
+	Foo string    `xsql:"foo"`
+	Bar time.Time `xsql:"bar"`
 }
 
 func (t Test) TableName() string {
-return "tableName"
+    return "tableName"
 }
 ```
 
@@ -66,9 +64,9 @@ return "tableName"
 
 ```go
 var test Test
-err := DB.First(&test, "SELECT * FROM xsql WHERE id = ?", 1)
+log, err = DB.First(&test, "SELECT * FROM xsql WHERE id = ?", 1)
 if err != nil {
-log.Fatal(err)
+    log.Fatal(err)
 }
 ```
 
@@ -78,9 +76,9 @@ log.Fatal(err)
 
 ```go
 var tests []Test
-err := DB.Find(&tests, "SELECT * FROM xsql")
+log, err = DB.Find(&tests, "SELECT * FROM xsql")
 if err != nil {
-log.Fatal(err)
+    log.Fatal(err)
 }
 ```
 
@@ -90,13 +88,13 @@ log.Fatal(err)
 
 ```go
 test := Test{
-Id:  0,
-Foo: "test",
-Bar: time.Now(),
+    Id:  0,
+    Foo: "test",
+    Bar: time.Now(),
 }
-res, err := DB.Insert(&test)
+res, log, err := DB.Insert(&test)
 if err != nil {
-log.Fatal(err)
+    log.Fatal(err)
 }
 ```
 
@@ -104,20 +102,20 @@ log.Fatal(err)
 
 ```go
 tests := []Test{
-{
-Id:  0,
-Foo: "test",
-Bar: time.Now(),
-},
-{
-Id:  0,
-Foo: "test",
-Bar: time.Now(),
-},
+    {
+        Id:  0,
+        Foo: "test",
+        Bar: time.Now(),
+    },
+    {
+        Id:  0,
+        Foo: "test",
+        Bar: time.Now(),
+    },
 }
-res, err := DB.BatchInsert(&tests)
+res, log, err := DB.BatchInsert(&tests)
 if err != nil {
-log.Fatal(err)
+    log.Fatal(err)
 }
 ```
 
@@ -125,19 +123,11 @@ log.Fatal(err)
 
 ```go
 test := Test{
-Id:  10,
-Foo: "update",
-Bar: time.Now(),
+    Id:  10,
+    Foo: "update",
+    Bar: time.Now(),
 }
-res, err := DB.Update(&test, "id = ?", 10)
-```
-
-## 删除
-
-采用 `Exec()` 手动执行删除。
-
-```go
-res, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 10)
+res, log, err := DB.Update(&test, "id = ?", 10)
 ```
 
 ## 配置
@@ -149,22 +139,22 @@ res, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 10)
 
 ```go
 type Options struct {
-// 默认: INSERT INTO
-InsertKey string
-
-// 默认: ?
-// oracle 可配置为 :%d
-Placeholder string
-
-// 默认：`
-// oracle 可配置为 "
-ColumnQuotes string
-
-// 默认：== DefaultTimeParseLayout
-TimeParseLayout string
-
-// 全局 debug SQL
-DebugFunc DebugFunc
+    // 默认: INSERT INTO
+    InsertKey string
+    
+    // 默认: ?
+    // oracle 可配置为 :%d
+    Placeholder string
+    
+    // 默认：`
+    // oracle 可配置为 "
+    ColumnQuotes string
+    
+    // 默认：== DefaultTimeParseLayout
+    TimeParseLayout string
+	
+    // 全局 debug SQL
+    DebugFunc DebugFunc
 }
 ```
 
@@ -174,9 +164,9 @@ DebugFunc DebugFunc
 
 ```go
 opts := Options{
-DebugFunc: func (l *Log) {
-log.Println(l)
-},
+    DebugFunc: func(l *Log) {
+        log.Println(l)
+    },
 }
 DB := New(db, opts)
 ```
@@ -185,9 +175,9 @@ DB := New(db, opts)
 
 ```go
 type Log struct {
-Time     time.Duration `json:"time"`
-SQL      string        `json:"sql"`
-Bindings []interface{} `json:"bindings"`
+    Time     time.Duration `json:"time"`
+    SQL      string        `json:"sql"`
+    Bindings []interface{} `json:"bindings"`
 }
 ```
 
