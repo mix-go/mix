@@ -30,9 +30,9 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, *Log, er
 	if opts.TimeParseLayout != "" {
 		timeParseLayout = opts.TimeParseLayout
 	}
-	quoteSymbol := "`"
-	if opts.QuoteSymbol != "" {
-		quoteSymbol = opts.QuoteSymbol
+	columnQuotes := "`"
+	if opts.ColumnQuotes != "" {
+		columnQuotes = opts.ColumnQuotes
 	}
 
 	fields := make([]string, 0)
@@ -83,7 +83,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, *Log, er
 		return nil, nil, errors.New("only for struct type")
 	}
 
-	SQL := fmt.Sprintf(`%s %s (%s) VALUES (%s)`, insertKey, table, quoteSymbol+strings.Join(fields, quoteSymbol+", "+quoteSymbol)+quoteSymbol, strings.Join(vars, `, `))
+	SQL := fmt.Sprintf(`%s %s (%s) VALUES (%s)`, insertKey, table, columnQuotes+strings.Join(fields, columnQuotes+", "+columnQuotes)+columnQuotes, strings.Join(vars, `, `))
 
 	startTime := time.Now()
 	res, err := t.DB.Exec(SQL, bindArgs...)
@@ -112,9 +112,9 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, *L
 	if opts.TimeParseLayout != "" {
 		timeParseLayout = opts.TimeParseLayout
 	}
-	quoteSymbol := "`"
-	if opts.QuoteSymbol != "" {
-		quoteSymbol = opts.QuoteSymbol
+	columnQuotes := "`"
+	if opts.ColumnQuotes != "" {
+		columnQuotes = opts.ColumnQuotes
 	}
 
 	fields := make([]string, 0)
@@ -206,7 +206,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, *L
 		return nil, nil, errors.New("only for struct array/slice type")
 	}
 
-	SQL := fmt.Sprintf(`%s %s (%s) VALUES %s`, insertKey, table, quoteSymbol+strings.Join(fields, quoteSymbol+", "+quoteSymbol)+quoteSymbol, strings.Join(valueSql, ", "))
+	SQL := fmt.Sprintf(`%s %s (%s) VALUES %s`, insertKey, table, columnQuotes+strings.Join(fields, columnQuotes+", "+columnQuotes)+columnQuotes, strings.Join(valueSql, ", "))
 
 	startTime := time.Now()
 	res, err := t.DB.Exec(SQL, bindArgs...)
@@ -231,9 +231,9 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	if opts.TimeParseLayout != "" {
 		timeParseLayout = opts.TimeParseLayout
 	}
-	quoteSymbol := "`"
-	if opts.QuoteSymbol != "" {
-		quoteSymbol = opts.QuoteSymbol
+	columnQuotes := "`"
+	if opts.ColumnQuotes != "" {
+		columnQuotes = opts.ColumnQuotes
 	}
 
 	set := make([]string, 0)
@@ -263,9 +263,9 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 			}
 
 			if placeholder == "?" {
-				set = append(set, fmt.Sprintf("%s = %s", quoteSymbol+tag+quoteSymbol, placeholder))
+				set = append(set, fmt.Sprintf("%s = %s", columnQuotes+tag+columnQuotes, placeholder))
 			} else {
-				set = append(set, fmt.Sprintf("%s = %s", quoteSymbol+tag+quoteSymbol, fmt.Sprintf(placeholder, i)))
+				set = append(set, fmt.Sprintf("%s = %s", columnQuotes+tag+columnQuotes, fmt.Sprintf(placeholder, i)))
 			}
 
 			// time特殊处理

@@ -127,7 +127,7 @@ res, log, err := DB.Update(&test, "id = ?", 10)
 
 在 `xsql.New()` 方法中可以传入以下配置对象
 
-- 默认为 mysql 模式，当切换到 oracle 时，需要修改 `Placeholder`、`QuoteSymbol` 配置
+- 默认为 mysql 模式，当切换到 oracle 时，需要修改 `Placeholder`、`ColumnQuotes` 配置
 - `Insert()`、`BatchInsert()` 可在执行时传入配置，覆盖 insert 相关的配置，比如将 InsertKey 修改为 REPLACE INTO
 
 ```go
@@ -141,7 +141,7 @@ type Options struct {
     
     // 默认：`
     // oracle 可配置为 "
-    QuoteSymbol string
+    ColumnQuotes string
     
     // 默认：== DefaultTimeParseLayout
     TimeParseLayout string

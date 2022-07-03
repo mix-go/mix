@@ -10,7 +10,7 @@ type Options struct {
 
 	// 默认：`
 	// oracle 可配置为 "
-	QuoteSymbol string
+	ColumnQuotes string
 
 	// 默认：== DefaultTimeParseLayout
 	TimeParseLayout string
