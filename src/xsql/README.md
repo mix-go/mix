@@ -31,8 +31,10 @@ if err != nil {
     log.Fatal(err)
 }
 
-bar := rows[0].Get("bar").String()
-fmt.Println(bar)
+id  := rows[0].Get("id").Int()
+foo := rows[0].Get("foo").String()
+bar := rows[0].Get("bar").Time() // time.Time
+val := rows[0].Get("bar").Value() // interface{}
 ```
 
 ### 映射
