@@ -31,7 +31,7 @@ DB := xsql.New(db)
 可以像脚本语言一样使用，不绑定结构体，直接自由获取每个字段的值。
 
 ```go
-rows, log, err := DB.Query("SELECT * FROM xsql")
+rows, err := DB.Query("SELECT * FROM xsql")
 if err != nil {
     log.Fatal(err)
 }
@@ -64,7 +64,7 @@ func (t Test) TableName() string {
 
 ```go
 var test Test
-log, err = DB.First(&test, "SELECT * FROM xsql WHERE id = ?", 1)
+err := DB.First(&test, "SELECT * FROM xsql WHERE id = ?", 1)
 if err != nil {
     log.Fatal(err)
 }
@@ -76,7 +76,7 @@ if err != nil {
 
 ```go
 var tests []Test
-log, err = DB.Find(&tests, "SELECT * FROM xsql")
+err := DB.Find(&tests, "SELECT * FROM xsql")
 if err != nil {
     log.Fatal(err)
 }
@@ -92,7 +92,7 @@ test := Test{
     Foo: "test",
     Bar: time.Now(),
 }
-res, log, err := DB.Insert(&test)
+res, err := DB.Insert(&test)
 if err != nil {
     log.Fatal(err)
 }
@@ -113,7 +113,7 @@ tests := []Test{
         Bar: time.Now(),
     },
 }
-res, log, err := DB.BatchInsert(&tests)
+res, err := DB.BatchInsert(&tests)
 if err != nil {
     log.Fatal(err)
 }
@@ -127,7 +127,15 @@ test := Test{
     Foo: "update",
     Bar: time.Now(),
 }
-res, log, err := DB.Update(&test, "id = ?", 10)
+res, err := DB.Update(&test, "id = ?", 10)
+```
+
+## 删除
+
+采用 `Exec()` 手动执行删除，也可手动执行更新操作。
+
+```go
+res, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 10)
 ```
 
 ## 配置
