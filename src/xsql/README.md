@@ -57,7 +57,7 @@ func (t Test) TableName() string {
 
 ```go
 var test Test
-log, err = DB.First(&test, "SELECT * FROM xsql")
+log, err = DB.First(&test, "SELECT * FROM xsql WHERE id = ?", 1)
 if err != nil {
     log.Fatal(err)
 }
