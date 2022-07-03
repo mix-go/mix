@@ -2,17 +2,20 @@
 
 ## Mix XSQL
 
-database/sql 标准库的查询与映射，支持任何数据库驱动。
+基于 database/sql 的轻量数据库，功能完备且支持任何数据库驱动。
 
-## Installation
+## 安装
 
 ```
 go get github.com/mix-go/xsql
 ```
 
-## 查询
+推荐使用以下数据库驱动
 
-不需要绑定结构体，自由获取每个字段的值。
+- mysql `_ "github.com/go-sql-driver/mysql"`
+- oracle `_ "github.com/sijms/go-ora/v2"`
+
+## 初始化
 
 ```go
 db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
@@ -20,16 +23,28 @@ if err != nil {
     log.Fatal(err)
 }
 
-rows, err := xsql.Query(db, "SELECT * FROM xsql")
+DB := xsql.New(db)
+```
+
+## 查询
+
+可以像脚本语言一样使用，不绑定结构体，直接自由获取每个字段的值。
+
+```go
+rows, err := DB.Query("SELECT * FROM xsql")
 if err != nil {
     log.Fatal(err)
 }
 
-bar := rows[0].Get("bar").String()
-fmt.Println(bar)
+id  := rows[0].Get("id").Int()
+foo := rows[0].Get("foo").String()
+bar := rows[0].Get("bar").Time() // time.Time
+val := rows[0].Get("bar").Value() // interface{}
 ```
 
-## 映射
+### 映射
+
+当然你也可以像 `gorm`, `xorm` 一样映射使用。
 
 ```go
 type Test struct {
@@ -37,45 +52,140 @@ type Test struct {
 	Foo string    `xsql:"foo"`
 	Bar time.Time `xsql:"bar"`
 }
+
+func (t Test) TableName() string {
+    return "tableName"
+}
 ```
 
-### `First()` 映射第一行
+### `First()`
+
+映射第一行
 
 ```go
-db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
-if err != nil {
-    log.Fatal(err)
-}
-
-rows, err := db.Query("SELECT * FROM xsql limit 1")
-if err != nil {
-    log.Fatal(err)
-}
-
 var test Test
-err = xsql.First(rows, &test)
+err := DB.First(&test, "SELECT * FROM xsql WHERE id = ?", 1)
 if err != nil {
     log.Fatal(err)
 }
 ```
 
-### `Find()` 映射全部行
+### `Find()`
+
+映射全部行
 
 ```go
-db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
-if err != nil {
-    log.Fatal(err)
-}
-
-rows, err := db.Query("SELECT * FROM xsql")
-if err != nil {
-    log.Fatal(err)
-}
-
 var tests []Test
-err = xsql.Find(rows, &tests)
+err := DB.Find(&tests, "SELECT * FROM xsql")
 if err != nil {
     log.Fatal(err)
+}
+```
+
+## 插入
+
+### `Insert()`
+
+```go
+test := Test{
+    Id:  0,
+    Foo: "test",
+    Bar: time.Now(),
+}
+res, err := DB.Insert(&test)
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+### `BatchInsert()`
+
+```go
+tests := []Test{
+    {
+        Id:  0,
+        Foo: "test",
+        Bar: time.Now(),
+    },
+    {
+        Id:  0,
+        Foo: "test",
+        Bar: time.Now(),
+    },
+}
+res, err := DB.BatchInsert(&tests)
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+## 更新
+
+```go
+test := Test{
+    Id:  10,
+    Foo: "update",
+    Bar: time.Now(),
+}
+res, err := DB.Update(&test, "id = ?", 10)
+```
+
+## 删除
+
+采用 `Exec()` 手动执行删除，也可手动执行更新操作。
+
+```go
+res, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 10)
+```
+
+## 配置
+
+在 `xsql.New()` 方法中可以传入以下配置对象
+
+- 默认为 mysql 模式，当切换到 oracle 时，需要修改 `Placeholder`、`ColumnQuotes` 配置
+- `Insert()`、`BatchInsert()` 可在执行时传入配置，覆盖 insert 相关的配置，比如将 InsertKey 修改为 REPLACE INTO
+
+```go
+type Options struct {
+    // 默认: INSERT INTO
+    InsertKey string
+    
+    // 默认: ?
+    // oracle 可配置为 :%d
+    Placeholder string
+    
+    // 默认：`
+    // oracle 可配置为 "
+    ColumnQuotes string
+    
+    // 默认：== DefaultTimeLayout
+    TimeLayout string
+	
+    // 全局 debug SQL
+    DebugFunc DebugFunc
+}
+```
+
+## 日志
+
+在 `xsql.New()` 方法时传入配置 `DebugFunc`，可以在这里使用任何日志库打印SQL信息。
+
+```go
+opts := Options{
+    DebugFunc: func(l *Log) {
+        log.Println(l)
+    },
+}
+DB := New(db, opts)
+```
+
+日志对象包含以下字段
+
+```go
+type Log struct {
+Time     time.Duration `json:"time"`
+SQL      string        `json:"sql"`
+Bindings []interface{} `json:"bindings"`
 }
 ```
 
