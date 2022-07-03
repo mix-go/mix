@@ -18,7 +18,7 @@ MixGo 是一个 Go 快速开发标准工具包；内部模块高度解耦，整�
 
 - [mix-go/mixcli](src/mixcli) 快速创建 Go 项目的脚手架，类似前端界的 Vue CLI。
 - [mix-go/xcli](src/xcli) 命令行交互与指挥管理工具，同时它还包括命令行参数获取、中间件、程序守护等。
-- [mix-go/xsql](src/xsql) database/sql 标准库的查询与映射，支持任何数据库驱动。
+- [mix-go/xsql](src/xsql) 基于 database/sql 的轻量级查询库，功能完备且支持任何数据库驱动。
 - [mix-go/xdi](src/xdi) 处理对象依赖关系的 IoC、DI 库，可以实现统一管理依赖，全局对象管理，动态配置刷新等。
 - [mix-go/xwp](src/xwp) 一个通用工作池、协程池，可动态扩容缩容。
 - [mix-go/xfmt](src/xfmt) 可以打印结构体嵌套指针地址内部数据的格式化库。

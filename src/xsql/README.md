@@ -2,7 +2,7 @@
 
 ## Mix XSQL
 
-database/sql 标准库的查询与映射，支持任何数据库驱动。
+基于 database/sql 的轻量级查询库，功能完备且支持任何数据库驱动。
 
 ## Installation
 
@@ -119,6 +119,31 @@ test := Test{
     Bar: time.Now(),
 }
 res, log, err := DB.Update(&test, "id = ?", 10)
+```
+
+## 配置
+
+在 `xsql.New()` 方法中可以传入以下配置对象
+
+- 默认为 mysql 模式，当切换到 oracle 时，需要修改 `Placeholder`、`QuoteSymbol` 配置
+- `Insert()`、`BatchInsert()` 可在执行时传入配置，覆盖 insert 相关的配置，比如将 InsertKey 修改为 REPLACE INTO
+
+```go
+type Options struct {
+	// 默认: INSERT INTO
+	InsertKey string
+
+	// 默认: ?
+	// oracle 可配置为 :%d
+	Placeholder string
+
+	// 默认：== DefaultTimeParseLayout
+	TimeParseLayout string
+
+	// 默认：`
+	// oracle 可配置为 "
+	QuoteSymbol string
+}
 ```
 
 ## License
