@@ -23,7 +23,7 @@ DB := xsql.New(db)
 
 ## 查询
 
-不需要绑定结构体，自由获取每个字段的值。
+可以像脚本语言一样使用，不绑定结构体，直接自由获取每个字段的值。
 
 ```go
 rows, log, err := DB.Query(db, "SELECT * FROM xsql")
@@ -38,6 +38,8 @@ val := rows[0].Get("bar").Value() // interface{}
 ```
 
 ### 映射
+
+当然你也可以像 `gorm`, `xorm` 一样映射使用。
 
 ```go
 type Test struct {
