@@ -9,7 +9,7 @@ var DefaultTimeParseLayout = "2006-01-02 15:04:05"
 type Database struct {
 	Options
 	executor
-	queryManager
+	query
 }
 
 // New
@@ -24,7 +24,7 @@ func New(db *sql.DB, opts ...Options) *Database {
 		executor: executor{
 			DB: db,
 		},
-		queryManager: queryManager{
+		query: query{
 			DB: db,
 		},
 	}
@@ -43,7 +43,7 @@ func (t *Database) Update(data interface{}, expr string, args ...interface{}) (s
 }
 
 func (t *Database) Query(query string, args ...interface{}) ([]Row, *Log, error) {
-	f, l, err := t.queryManager.Fetch(query, args, &t.Options)
+	f, l, err := t.query.Fetch(query, args, &t.Options)
 	if err != nil {
 		return nil, l, err
 	}
@@ -55,7 +55,7 @@ func (t *Database) Query(query string, args ...interface{}) ([]Row, *Log, error)
 }
 
 func (t *Database) Find(i interface{}, query string, args ...interface{}) (*Log, error) {
-	f, l, err := t.queryManager.Fetch(query, args, &t.Options)
+	f, l, err := t.query.Fetch(query, args, &t.Options)
 	if err != nil {
 		return l, err
 	}
@@ -66,7 +66,7 @@ func (t *Database) Find(i interface{}, query string, args ...interface{}) (*Log,
 }
 
 func (t *Database) First(i interface{}, query string, args ...interface{}) (*Log, error) {
-	f, l, err := t.queryManager.Fetch(query, args, &t.Options)
+	f, l, err := t.query.Fetch(query, args, &t.Options)
 	if err != nil {
 		return l, err
 	}

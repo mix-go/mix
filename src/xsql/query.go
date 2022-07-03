@@ -5,11 +5,11 @@ import (
 	"time"
 )
 
-type queryManager struct {
+type query struct {
 	DB *sql.DB
 }
 
-func (t *queryManager) Fetch(query string, args []interface{}, opts *Options) (*Fetcher, *Log, error) {
+func (t *query) Fetch(query string, args []interface{}, opts *Options) (*Fetcher, *Log, error) {
 	startTime := time.Now()
 	r, err := t.DB.Query(query, args...)
 	l := &Log{
