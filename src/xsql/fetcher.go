@@ -3,13 +3,15 @@ package xsql
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"reflect"
 	"strconv"
 	"time"
 )
 
 type Fetcher struct {
-	R *sql.Rows
+	R       *sql.Rows
+	Options *Options
 }
 
 func (t *Fetcher) First(i interface{}) error {
@@ -40,7 +42,7 @@ func (t *Fetcher) First(i interface{}) error {
 		if !row.Exist(tag) {
 			continue
 		}
-		if err = mapped(field, row, tag); err != nil {
+		if err = mapped(field, row, tag, t.Options); err != nil {
 			return err
 		}
 	}
@@ -78,7 +80,7 @@ func (t *Fetcher) Find(i interface{}) error {
 			if !rows[r].Exist(tag) {
 				continue
 			}
-			if err = mapped(field, rows[r], tag); err != nil {
+			if err = mapped(field, rows[r], tag, t.Options); err != nil {
 				return err
 			}
 		}
@@ -123,32 +125,45 @@ func (t *Fetcher) Rows() ([]Row, error) {
 			}
 		}
 
-		rows = append(rows, rowMap)
+		rows = append(rows, Row{
+			v:       rowMap,
+			options: t.Options,
+		})
 	}
 
 	return rows, nil
 }
 
-type Row map[string]interface{}
+type Row struct {
+	v       map[string]interface{}
+	options *Options
+}
 
 func (t Row) Exist(field string) bool {
-	_, ok := t[field]
+	_, ok := t.v[field]
 	return ok
 }
 
 func (t Row) Get(field string) *RowResult {
-	if v, ok := t[field]; ok {
-		return &RowResult{v: v}
+	if v, ok := t.v[field]; ok {
+		return &RowResult{
+			v:       v,
+			options: t.options,
+		}
 	}
-	return &RowResult{v: ""}
+	return &RowResult{
+		v:       "",
+		options: t.options,
+	}
 }
 
 func (t Row) Value() map[string]interface{} {
-	return t
+	return t.v
 }
 
 type RowResult struct {
-	v interface{}
+	v       interface{}
+	options *Options
 }
 
 func (t *RowResult) Empty() bool {
@@ -259,9 +274,14 @@ func (t *RowResult) Int() int64 {
 }
 
 func (t *RowResult) Time() time.Time {
+	timeParseLayout := DefaultTimeParseLayout
+	if t.options.TimeParseLayout != "" {
+		timeParseLayout = t.options.TimeParseLayout
+	}
+
 	typ := t.Type()
 	if typ == "string" || typ == "[]uint8" {
-		tt, _ := time.ParseInLocation(TimeParselayout, t.String(), time.Local)
+		tt, _ := time.ParseInLocation(timeParseLayout, t.String(), time.Local)
 		return tt
 	}
 	if typ == "time.Time" {
@@ -276,4 +296,70 @@ func (t *RowResult) Value() interface{} {
 
 func (t *RowResult) Type() string {
 	return reflect.TypeOf(t.v).String()
+}
+
+func mapped(field reflect.Value, row Row, tag string, opts *Options) (err error) {
+	timeParseLayout := DefaultTimeParseLayout
+	if opts.TimeParseLayout != "" {
+		timeParseLayout = opts.TimeParseLayout
+	}
+
+	res := row.Get(tag)
+	v := res.Value()
+
+	switch field.Kind() {
+	case reflect.Int:
+		v = int(res.Int())
+		break
+	case reflect.Int8:
+		v = int8(res.Int())
+		break
+	case reflect.Int16:
+		v = int16(res.Int())
+		break
+	case reflect.Int32:
+		v = int32(res.Int())
+		break
+	case reflect.Int64:
+		v = res.Int()
+		break
+	case reflect.Uint:
+		v = uint(res.Int())
+		break
+	case reflect.Uint8:
+		v = uint8(res.Int())
+		break
+	case reflect.Uint16:
+		v = uint16(res.Int())
+		break
+	case reflect.Uint32:
+		v = uint32(res.Int())
+		break
+	case reflect.Uint64:
+		v = uint64(res.Int())
+		break
+	case reflect.String:
+		v = res.String()
+		break
+	default:
+		if !res.Empty() &&
+			field.Type().String() == "time.Time" &&
+			reflect.ValueOf(v).Type().String() != "time.Time" {
+			if t, e := time.ParseInLocation(timeParseLayout, res.String(), time.Local); e == nil {
+				v = t
+			} else {
+				return fmt.Errorf("time parse fail for field %s: %v", tag, e)
+			}
+		}
+	}
+
+	// 追加异常信息
+	defer func() {
+		if e := recover(); e != nil {
+			err = fmt.Errorf("type mismatch for field %s: %v", tag, e)
+		}
+	}()
+	field.Set(reflect.ValueOf(v))
+
+	return
 }

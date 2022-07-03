@@ -18,7 +18,9 @@ func TestQuery(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	rows, err := Query(db, "SELECT * FROM xsql")
+	DB := New(db)
+
+	rows, _, err := DB.Query("SELECT * FROM xsql")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,6 +36,80 @@ type Test struct {
 	Bar time.Time `xsql:"bar"`
 }
 
+func (t Test) TableName() string {
+	return "xsql"
+}
+
+func TestInsert(t *testing.T) {
+	a := assert.New(t)
+
+	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	DB := New(db)
+
+	test := Test{
+		Id:  0,
+		Foo: "test",
+		Bar: time.Now(),
+	}
+	_, l, err := DB.Insert(&test)
+	fmt.Println(l)
+
+	a.Empty(err)
+}
+
+func TestBatchInsert(t *testing.T) {
+	a := assert.New(t)
+
+	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	DB := New(db)
+
+	test := []Test{
+		{
+			Id:  0,
+			Foo: "test",
+			Bar: time.Now(),
+		},
+		{
+			Id:  0,
+			Foo: "test",
+			Bar: time.Now(),
+		},
+	}
+	_, l, err := DB.BatchInsert(&test)
+	fmt.Println(l)
+
+	a.Empty(err)
+}
+
+func TestUpdate(t *testing.T) {
+	a := assert.New(t)
+
+	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	DB := New(db)
+
+	test := Test{
+		Id:  999,
+		Foo: "test update",
+		Bar: time.Now(),
+	}
+	_, l, err := DB.Update(&test, "id = ?", 10)
+	fmt.Println(l)
+
+	a.Empty(err)
+}
+
 func TestFirst(t *testing.T) {
 	a := assert.New(t)
 
@@ -42,13 +118,10 @@ func TestFirst(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	rows, err := db.Query("SELECT * FROM xsql")
-	if err != nil {
-		log.Fatal(err)
-	}
+	DB := New(db)
 
 	var test Test
-	err = First(rows, &test)
+	_, err = DB.First(&test, "SELECT * FROM xsql")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,12 +137,10 @@ func TestFind(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	rows, err := db.Query("SELECT * FROM xsql")
-	if err != nil {
-		log.Fatal(err)
-	}
+	DB := New(db)
+
 	var tests []Test
-	err = Find(rows, &tests)
+	_, err = DB.Find(&tests, "SELECT * FROM xsql LIMIT 2")
 	if err != nil {
 		log.Fatal(err)
 	}
