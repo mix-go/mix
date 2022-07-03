@@ -2,7 +2,7 @@
 
 ## Mix XSQL
 
-基于 database/sql 的轻量级查询库，功能完备且支持任何数据库驱动。
+基于 database/sql 的轻量数据库，功能完备且支持任何数据库驱动。
 
 ## Installation
 
