@@ -274,14 +274,14 @@ func (t *RowResult) Int() int64 {
 }
 
 func (t *RowResult) Time() time.Time {
-	timeParseLayout := DefaultTimeParseLayout
-	if t.options.TimeParseLayout != "" {
-		timeParseLayout = t.options.TimeParseLayout
+	timeLayout := DefaultTimeLayout
+	if t.options.TimeLayout != "" {
+		timeLayout = t.options.TimeLayout
 	}
 
 	typ := t.Type()
 	if typ == "string" || typ == "[]uint8" {
-		tt, _ := time.ParseInLocation(timeParseLayout, t.String(), time.Local)
+		tt, _ := time.ParseInLocation(timeLayout, t.String(), time.Local)
 		return tt
 	}
 	if typ == "time.Time" {
@@ -299,9 +299,9 @@ func (t *RowResult) Type() string {
 }
 
 func mapped(field reflect.Value, row Row, tag string, opts *Options) (err error) {
-	timeParseLayout := DefaultTimeParseLayout
-	if opts.TimeParseLayout != "" {
-		timeParseLayout = opts.TimeParseLayout
+	timeLayout := DefaultTimeLayout
+	if opts.TimeLayout != "" {
+		timeLayout = opts.TimeLayout
 	}
 
 	res := row.Get(tag)
@@ -345,7 +345,7 @@ func mapped(field reflect.Value, row Row, tag string, opts *Options) (err error)
 		if !res.Empty() &&
 			field.Type().String() == "time.Time" &&
 			reflect.ValueOf(v).Type().String() != "time.Time" {
-			if t, e := time.ParseInLocation(timeParseLayout, res.String(), time.Local); e == nil {
+			if t, e := time.ParseInLocation(timeLayout, res.String(), time.Local); e == nil {
 				v = t
 			} else {
 				return fmt.Errorf("time parse fail for field %s: %v", tag, e)

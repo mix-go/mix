@@ -26,9 +26,9 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 	if opts.Placeholder != "" {
 		placeholder = opts.Placeholder
 	}
-	timeParseLayout := DefaultTimeParseLayout
-	if opts.TimeParseLayout != "" {
-		timeParseLayout = opts.TimeParseLayout
+	timeLayout := DefaultTimeLayout
+	if opts.TimeLayout != "" {
+		timeLayout = opts.TimeLayout
 	}
 	columnQuotes := "`"
 	if opts.ColumnQuotes != "" {
@@ -77,7 +77,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 			// time特殊处理
 			if value.Field(i).Type().String() == "time.Time" {
 				ti := value.Field(i).Interface().(time.Time)
-				bindArgs = append(bindArgs, ti.Format(timeParseLayout))
+				bindArgs = append(bindArgs, ti.Format(timeLayout))
 			} else {
 				bindArgs = append(bindArgs, value.Field(i).Interface())
 			}
@@ -115,9 +115,9 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 	if opts.Placeholder != "" {
 		placeholder = opts.Placeholder
 	}
-	timeParseLayout := DefaultTimeParseLayout
-	if opts.TimeParseLayout != "" {
-		timeParseLayout = opts.TimeParseLayout
+	timeLayout := DefaultTimeLayout
+	if opts.TimeLayout != "" {
+		timeLayout = opts.TimeLayout
 	}
 	columnQuotes := "`"
 	if opts.ColumnQuotes != "" {
@@ -201,7 +201,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 					// time特殊处理
 					if subValue.Field(i).Type().String() == "time.Time" {
 						ti := subValue.Field(i).Interface().(time.Time)
-						bindArgs = append(bindArgs, ti.Format(timeParseLayout))
+						bindArgs = append(bindArgs, ti.Format(timeLayout))
 					} else {
 						bindArgs = append(bindArgs, subValue.Field(i).Interface())
 					}
@@ -241,9 +241,9 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	if opts.Placeholder != "" {
 		placeholder = opts.Placeholder
 	}
-	timeParseLayout := DefaultTimeParseLayout
-	if opts.TimeParseLayout != "" {
-		timeParseLayout = opts.TimeParseLayout
+	timeLayout := DefaultTimeLayout
+	if opts.TimeLayout != "" {
+		timeLayout = opts.TimeLayout
 	}
 	columnQuotes := "`"
 	if opts.ColumnQuotes != "" {
@@ -289,7 +289,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 			// time特殊处理
 			if value.Field(i).Type().String() == "time.Time" {
 				ti := value.Field(i).Interface().(time.Time)
-				bindArgs = append(bindArgs, ti.Format(timeParseLayout))
+				bindArgs = append(bindArgs, ti.Format(timeLayout))
 			} else {
 				bindArgs = append(bindArgs, value.Field(i).Interface())
 			}

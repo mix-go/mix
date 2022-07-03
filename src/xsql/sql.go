@@ -4,7 +4,7 @@ import (
 	"database/sql"
 )
 
-var DefaultTimeParseLayout = "2006-01-02 15:04:05"
+var DefaultTimeLayout = "2006-01-02 15:04:05"
 
 type Database struct {
 	Options

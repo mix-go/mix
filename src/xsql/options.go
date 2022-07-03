@@ -12,8 +12,8 @@ type Options struct {
 	// oracle 可配置为 "
 	ColumnQuotes string
 
-	// 默认：== DefaultTimeParseLayout
-	TimeParseLayout string
+	// 默认：== DefaultTimeLayout
+	TimeLayout string
 
 	// 全局 debug SQL
 	DebugFunc DebugFunc
