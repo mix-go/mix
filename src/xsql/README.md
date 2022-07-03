@@ -150,6 +150,18 @@ type Options struct {
 }
 ```
 
+## 日志
+
+每个 sql 执行都会返回以下日志对象，就是执行失败也会返回。
+
+```go
+type Log struct {
+	Time     time.Duration `json:"time"`
+	SQL      string        `json:"sql"`
+	Bindings []interface{} `json:"bindings"`
+}
+```
+
 ## License
 
 Apache License Version 2.0, http://www.apache.org/licenses/
