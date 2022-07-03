@@ -130,19 +130,19 @@ res, log, err := DB.Update(&test, "id = ?", 10)
 
 ```go
 type Options struct {
-	// 默认: INSERT INTO
-	InsertKey string
-
-	// 默认: ?
-	// oracle 可配置为 :%d
-	Placeholder string
-
-	// 默认：== DefaultTimeParseLayout
-	TimeParseLayout string
-
-	// 默认：`
-	// oracle 可配置为 "
-	QuoteSymbol string
+    // 默认: INSERT INTO
+    InsertKey string
+    
+    // 默认: ?
+    // oracle 可配置为 :%d
+    Placeholder string
+    
+    // 默认：`
+    // oracle 可配置为 "
+    QuoteSymbol string
+    
+    // 默认：== DefaultTimeParseLayout
+    TimeParseLayout string
 }
 ```
 
