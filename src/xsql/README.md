@@ -151,7 +151,7 @@ type Options struct {
     ColumnQuotes string
     
     // 默认：== DefaultTimeLayout
-	TimeLayout string
+    TimeLayout string
 	
     // 全局 debug SQL
     DebugFunc DebugFunc
