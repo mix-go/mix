@@ -26,7 +26,7 @@ DB := xsql.New(db)
 可以像脚本语言一样使用，不绑定结构体，直接自由获取每个字段的值。
 
 ```go
-rows, log, err := DB.Query(db, "SELECT * FROM xsql")
+rows, log, err := DB.Query("SELECT * FROM xsql")
 if err != nil {
     log.Fatal(err)
 }
