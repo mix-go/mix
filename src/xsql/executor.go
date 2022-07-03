@@ -323,3 +323,24 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 
 	return res, nil
 }
+
+func (t *executor) Exec(query string, args []interface{}, opts *Options) (sql.Result, error) {
+	var debugFunc DebugFunc
+	if opts.DebugFunc != nil {
+		debugFunc = opts.DebugFunc
+	}
+	startTime := time.Now()
+	r, err := t.DB.Exec(query, args...)
+	l := &Log{
+		SQL:      query,
+		Bindings: args,
+		Time:     time.Now().Sub(startTime),
+	}
+	if debugFunc != nil {
+		debugFunc(l)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return r, err
+}

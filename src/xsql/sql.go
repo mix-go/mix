@@ -48,6 +48,10 @@ func (t *Database) Update(data interface{}, expr string, args ...interface{}) (s
 	return t.executor.Update(data, expr, args, &t.Options)
 }
 
+func (t *Database) Exec(query string, args ...interface{}) (sql.Result, error) {
+	return t.executor.Exec(query, args, &t.Options)
+}
+
 func (t *Database) Query(query string, args ...interface{}) ([]Row, error) {
 	f, err := t.query.Fetch(query, args, &t.Options)
 	if err != nil {

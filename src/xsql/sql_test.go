@@ -100,6 +100,16 @@ func TestUpdate(t *testing.T) {
 	a.Empty(err)
 }
 
+func TestExec(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	_, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 10)
+
+	a.Empty(err)
+}
+
 func TestDebugFunc(t *testing.T) {
 	a := assert.New(t)
 
