@@ -94,7 +94,7 @@ if err != nil {
 ### `BatchInsert()`
 
 ```go
-test := []Test{
+tests := []Test{
     {
         Id:  0,
         Foo: "test",
@@ -106,7 +106,7 @@ test := []Test{
         Bar: time.Now(),
     },
 }
-res, log, err := DB.BatchInsert(&test)
+res, log, err := DB.BatchInsert(&tests)
 if err != nil {
     log.Fatal(err)
 }

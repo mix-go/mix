@@ -71,7 +71,7 @@ func TestBatchInsert(t *testing.T) {
 
 	DB := New(db)
 
-	test := []Test{
+	tests := []Test{
 		{
 			Id:  0,
 			Foo: "test",
@@ -83,7 +83,7 @@ func TestBatchInsert(t *testing.T) {
 			Bar: time.Now(),
 		},
 	}
-	_, l, err := DB.BatchInsert(&test)
+	_, l, err := DB.BatchInsert(&tests)
 	fmt.Println(l)
 
 	a.Empty(err)
