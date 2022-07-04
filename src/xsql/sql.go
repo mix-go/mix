@@ -7,10 +7,10 @@ import (
 var DefaultTimeLayout = "2006-01-02 15:04:05"
 
 type DB struct {
-	raw *sql.DB
-	Options
-	executor
-	query
+	Options  Options
+	raw      *sql.DB
+	executor executor
+	query    query
 }
 
 // New
@@ -21,8 +21,8 @@ func New(db *sql.DB, opts ...Options) *DB {
 		o = v
 	}
 	return &DB{
-		raw:     db,
 		Options: o,
+		raw:     db,
 		executor: executor{
 			Executor: db,
 		},
