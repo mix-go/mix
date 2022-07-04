@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func newDB() *Database {
+func newDB() *DB {
 	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
 	if err != nil {
 		log.Fatal(err)
@@ -151,4 +151,42 @@ func TestFind(t *testing.T) {
 	}
 
 	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0800 CST} {Id:2 Foo:v1 Bar:2022-04-14 23:50:00 +0800 CST}]`)
+}
+
+func TestTxCommit(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	tx, _ := DB.Begin()
+
+	test := Test{
+		Id:  0,
+		Foo: "test",
+		Bar: time.Now(),
+	}
+	_, err := tx.Insert(&test)
+	a.Empty(err)
+
+	err = tx.Commit()
+	a.Empty(err)
+}
+
+func TestTxRollback(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	tx, _ := DB.Begin()
+
+	test := Test{
+		Id:  0,
+		Foo: "test",
+		Bar: time.Now(),
+	}
+	_, err := tx.Insert(&test)
+	a.Empty(err)
+
+	err = tx.Rollback()
+	a.Empty(err)
 }

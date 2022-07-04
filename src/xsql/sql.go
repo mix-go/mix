@@ -6,7 +6,8 @@ import (
 
 var DefaultTimeLayout = "2006-01-02 15:04:05"
 
-type Database struct {
+type DB struct {
+	raw *sql.DB
 	Options
 	executor
 	query
@@ -14,45 +15,65 @@ type Database struct {
 
 // New
 // opts 以最后一个为准
-func New(db *sql.DB, opts ...Options) *Database {
+func New(db *sql.DB, opts ...Options) *DB {
 	o := Options{}
 	for _, v := range opts {
 		o = v
 	}
-	return &Database{
+	return &DB{
+		raw:     db,
 		Options: o,
 		executor: executor{
-			DB: db,
+			Executor: db,
 		},
 		query: query{
-			DB: db,
+			Query: db,
 		},
 	}
 }
 
-func (t *Database) Insert(data interface{}, opts ...Options) (sql.Result, error) {
+func (t *DB) Insert(data interface{}, opts ...Options) (sql.Result, error) {
 	for _, o := range opts {
 		t.Options.InsertKey = o.InsertKey
 	}
 	return t.executor.Insert(data, &t.Options)
 }
 
-func (t *Database) BatchInsert(data interface{}, opts ...Options) (sql.Result, error) {
+func (t *DB) BatchInsert(data interface{}, opts ...Options) (sql.Result, error) {
 	for _, o := range opts {
 		t.Options.InsertKey = o.InsertKey
 	}
 	return t.executor.BatchInsert(data, &t.Options)
 }
 
-func (t *Database) Update(data interface{}, expr string, args ...interface{}) (sql.Result, error) {
+func (t *DB) Update(data interface{}, expr string, args ...interface{}) (sql.Result, error) {
 	return t.executor.Update(data, expr, args, &t.Options)
 }
 
-func (t *Database) Exec(query string, args ...interface{}) (sql.Result, error) {
+func (t *DB) Exec(query string, args ...interface{}) (sql.Result, error) {
 	return t.executor.Exec(query, args, &t.Options)
 }
 
-func (t *Database) Query(query string, args ...interface{}) ([]Row, error) {
+func (t *DB) Begin() (*Tx, error) {
+	tx, err := t.raw.Begin()
+	if err != nil {
+		return nil, err
+	}
+	return &Tx{
+		raw: tx,
+		DB: &DB{
+			Options: t.Options,
+			executor: executor{
+				Executor: tx,
+			},
+			query: query{
+				Query: tx,
+			},
+		},
+	}, nil
+}
+
+func (t *DB) Query(query string, args ...interface{}) ([]Row, error) {
 	f, err := t.query.Fetch(query, args, &t.Options)
 	if err != nil {
 		return nil, err
@@ -64,7 +85,7 @@ func (t *Database) Query(query string, args ...interface{}) ([]Row, error) {
 	return r, nil
 }
 
-func (t *Database) Find(i interface{}, query string, args ...interface{}) error {
+func (t *DB) Find(i interface{}, query string, args ...interface{}) error {
 	f, err := t.query.Fetch(query, args, &t.Options)
 	if err != nil {
 		return err
@@ -75,7 +96,7 @@ func (t *Database) Find(i interface{}, query string, args ...interface{}) error 
 	return nil
 }
 
-func (t *Database) First(i interface{}, query string, args ...interface{}) error {
+func (t *DB) First(i interface{}, query string, args ...interface{}) error {
 	f, err := t.query.Fetch(query, args, &t.Options)
 	if err != nil {
 		return err

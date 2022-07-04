@@ -14,7 +14,7 @@ type Table interface {
 }
 
 type executor struct {
-	DB *sql.DB
+	Executor
 }
 
 func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
@@ -90,7 +90,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 	SQL := fmt.Sprintf(`%s %s (%s) VALUES (%s)`, insertKey, table, columnQuotes+strings.Join(fields, columnQuotes+", "+columnQuotes)+columnQuotes, strings.Join(vars, `, `))
 
 	startTime := time.Now()
-	res, err := t.DB.Exec(SQL, bindArgs...)
+	res, err := t.Executor.Exec(SQL, bindArgs...)
 	l := &Log{
 		SQL:      SQL,
 		Bindings: bindArgs,
@@ -220,7 +220,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 	SQL := fmt.Sprintf(`%s %s (%s) VALUES %s`, insertKey, table, columnQuotes+strings.Join(fields, columnQuotes+", "+columnQuotes)+columnQuotes, strings.Join(valueSql, ", "))
 
 	startTime := time.Now()
-	res, err := t.DB.Exec(SQL, bindArgs...)
+	res, err := t.Executor.Exec(SQL, bindArgs...)
 	l := &Log{
 		SQL:      SQL,
 		Bindings: bindArgs,
@@ -308,7 +308,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	SQL := fmt.Sprintf(`UPDATE %s SET %s%s`, table, strings.Join(set, ", "), where)
 
 	startTime := time.Now()
-	res, err := t.DB.Exec(SQL, bindArgs...)
+	res, err := t.Executor.Exec(SQL, bindArgs...)
 	l := &Log{
 		SQL:      SQL,
 		Bindings: bindArgs,
@@ -330,7 +330,7 @@ func (t *executor) Exec(query string, args []interface{}, opts *Options) (sql.Re
 		debugFunc = opts.DebugFunc
 	}
 	startTime := time.Now()
-	r, err := t.DB.Exec(query, args...)
+	r, err := t.Executor.Exec(query, args...)
 	l := &Log{
 		SQL:      query,
 		Bindings: args,

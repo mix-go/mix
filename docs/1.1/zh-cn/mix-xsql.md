@@ -138,6 +138,19 @@ res, err := DB.Update(&test, "id = ?", 10)
 res, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 10)
 ```
 
+## 事务
+
+```go
+tx, err := DB.Begin()
+test := Test{
+    Id:  0,
+    Foo: "test",
+    Bar: time.Now(),
+}
+res, err := tx.Insert(&test)
+tx.Commit()
+```
+
 ## 配置
 
 在 `xsql.New()` 方法中可以传入以下配置对象
@@ -183,9 +196,9 @@ DB := New(db, opts)
 
 ```go
 type Log struct {
-Time     time.Duration `json:"time"`
-SQL      string        `json:"sql"`
-Bindings []interface{} `json:"bindings"`
+    Time     time.Duration `json:"time"`
+    SQL      string        `json:"sql"`
+    Bindings []interface{} `json:"bindings"`
 }
 ```
 

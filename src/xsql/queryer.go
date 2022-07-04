@@ -1,12 +1,11 @@
 package xsql
 
 import (
-	"database/sql"
 	"time"
 )
 
 type query struct {
-	DB *sql.DB
+	Query
 }
 
 func (t *query) Fetch(query string, args []interface{}, opts *Options) (*Fetcher, error) {
@@ -15,7 +14,7 @@ func (t *query) Fetch(query string, args []interface{}, opts *Options) (*Fetcher
 		debugFunc = opts.DebugFunc
 	}
 	startTime := time.Now()
-	r, err := t.DB.Query(query, args...)
+	r, err := t.Query.Query(query, args...)
 	l := &Log{
 		SQL:      query,
 		Bindings: args,
