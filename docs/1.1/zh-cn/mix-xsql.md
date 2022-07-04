@@ -142,12 +142,19 @@ res, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 10)
 
 ```go
 tx, err := DB.Begin()
+if err != nil {
+    log.Fatal(err)
+}
 test := Test{
     Id:  0,
     Foo: "test",
     Bar: time.Now(),
 }
 res, err := tx.Insert(&test)
+if err != nil {
+    tx.Rollback()
+    log.Fatal(err)
+}
 tx.Commit()
 ```
 
