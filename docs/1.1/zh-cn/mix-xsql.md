@@ -12,7 +12,7 @@ A lightweight database based on database/sql
 go get github.com/mix-go/xsql
 ```
 
-推荐使用以下数据库驱动，其他驱动基本也都支持
+推荐使用以下数据库驱动
 
 - Mysql `_ "github.com/go-sql-driver/mysql"`
 - Oracle `_ "github.com/sijms/go-ora/v2"` 无需安装 instantclient
