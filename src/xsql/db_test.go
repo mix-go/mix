@@ -139,6 +139,34 @@ func TestFirst(t *testing.T) {
 	a.Equal(fmt.Sprintf("%+v", test), "{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0800 CST}")
 }
 
+func TestFirstPart(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	var test Test
+	err := DB.First(&test, "SELECT id FROM xsql")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	a.Equal(fmt.Sprintf("%+v", test), "{Id:1 Foo: Bar:0001-01-01 00:00:00 +0000 UTC}")
+}
+
+func TestFindPart(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	var tests []Test
+	err := DB.Find(&tests, "SELECT id FROM xsql LIMIT 2")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo: Bar:0001-01-01 00:00:00 +0000 UTC} {Id:2 Foo: Bar:0001-01-01 00:00:00 +0000 UTC}]`)
+}
+
 func TestFind(t *testing.T) {
 	a := assert.New(t)
 
