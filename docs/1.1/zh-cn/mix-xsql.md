@@ -4,16 +4,19 @@
 
 基于 database/sql 的轻量数据库，功能完备且支持任何数据库驱动。
 
+A lightweight database based on database/sql
+
 ## 安装
 
 ```
 go get github.com/mix-go/xsql
 ```
 
-推荐使用以下数据库驱动
+推荐使用以下数据库驱动，其他驱动基本也都支持
 
-- mysql `_ "github.com/go-sql-driver/mysql"`
-- oracle `_ "github.com/sijms/go-ora/v2"`
+- Mysql `_ "github.com/go-sql-driver/mysql"`
+- Oracle `_ "github.com/sijms/go-ora/v2"` 无需安装 instantclient
+- [xorm#drivers](https://github.com/go-xorm/xorm#drivers-support) 这些驱动都支持
 
 ## 初始化
 
