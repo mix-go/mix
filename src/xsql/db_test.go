@@ -145,12 +145,12 @@ func TestFirstPart(t *testing.T) {
 	DB := newDB()
 
 	var test Test
-	err := DB.First(&test, "SELECT id FROM xsql")
+	err := DB.First(&test, "SELECT foo FROM xsql")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	a.Equal(fmt.Sprintf("%+v", test), "{Id:1 Foo: Bar:0001-01-01 00:00:00 +0000 UTC}")
+	a.Equal(fmt.Sprintf("%+v", test), "{Id:0 Foo:v Bar:0001-01-01 00:00:00 +0000 UTC}")
 }
 
 func TestFind(t *testing.T) {
@@ -173,12 +173,12 @@ func TestFindPart(t *testing.T) {
 	DB := newDB()
 
 	var tests []Test
-	err := DB.Find(&tests, "SELECT id FROM xsql LIMIT 2")
+	err := DB.Find(&tests, "SELECT foo FROM xsql LIMIT 2")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo: Bar:0001-01-01 00:00:00 +0000 UTC} {Id:2 Foo: Bar:0001-01-01 00:00:00 +0000 UTC}]`)
+	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:0 Foo:v Bar:0001-01-01 00:00:00 +0000 UTC} {Id:0 Foo:v1 Bar:0001-01-01 00:00:00 +0000 UTC}]`)
 }
 
 func TestTxCommit(t *testing.T) {
