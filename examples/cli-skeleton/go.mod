@@ -6,16 +6,18 @@ replace (
 	github.com/mix-go/dotenv => ../../src/dotenv
 	github.com/mix-go/xcli => ../../src/xcli
 	github.com/mix-go/xdi => ../../src/xdi
+	github.com/mix-go/xsql => ../../src/xsql
 )
 
 require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-redis/redis/v8 v8.7.1
-	github.com/go-sql-driver/mysql v1.5.0
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/jinzhu/configor v1.2.1
 	github.com/mix-go/dotenv v1.1.15
 	github.com/mix-go/xcli v1.1.20
 	github.com/mix-go/xdi v1.1.16
+	github.com/mix-go/xsql v1.1.6
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cast v1.4.1 // indirect

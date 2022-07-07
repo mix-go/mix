@@ -6,6 +6,7 @@ replace (
 	github.com/mix-go/dotenv => ../../src/dotenv
 	github.com/mix-go/xcli => ../../src/xcli
 	github.com/mix-go/xdi => ../../src/xdi
+	github.com/mix-go/xsql => ../../src/xsql
 )
 
 require (
@@ -16,7 +17,7 @@ require (
 	github.com/go-redis/redis/v8 v8.8.0
 	github.com/go-session/redis v3.0.1+incompatible
 	github.com/go-session/session v3.1.2+incompatible
-	github.com/go-sql-driver/mysql v1.5.0
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang-jwt/jwt/v4 v4.0.0
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/jinzhu/configor v1.2.0
@@ -24,6 +25,7 @@ require (
 	github.com/mix-go/dotenv v1.1.15
 	github.com/mix-go/xcli v1.1.20
 	github.com/mix-go/xdi v1.1.16
+	github.com/mix-go/xsql v1.1.6
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.8.1
