@@ -5,7 +5,6 @@ import (
 	"github.com/mix-go/dotenv"
 	"github.com/mix-go/xdi"
 	"github.com/mix-go/xsql"
-	"log"
 )
 
 func init() {
@@ -16,11 +15,7 @@ func init() {
 			if err != nil {
 				return nil, err
 			}
-			return xsql.New(db, xsql.Options{
-				DebugFunc: func(l *xsql.Log) {
-					log.Printf("SQL Time: %s  Sql: %s  Args: %s", l.Time, l.SQL, l.Bindings)
-				},
-			}), nil
+			return xsql.New(db), nil
 		},
 	}
 	if err := xdi.Provide(&obj); err != nil {
