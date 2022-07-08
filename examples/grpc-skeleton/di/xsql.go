@@ -2,6 +2,7 @@ package di
 
 import (
 	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/mix-go/dotenv"
 	"github.com/mix-go/xdi"
 	"github.com/mix-go/xsql"
