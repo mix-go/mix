@@ -16,7 +16,7 @@ type Options struct {
 	TimeLayout string
 
 	// 默认：== DefaultTimeFunc
-	// oracle 可修改这个闭包
+	// oracle 可修改这个闭包增加 TO_TIMESTAMP
 	TimeFunc TimeFunc
 
 	// 全局 debug SQL
