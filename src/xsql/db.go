@@ -6,6 +6,15 @@ import (
 
 var DefaultTimeLayout = "2006-01-02 15:04:05"
 
+// DefaultTimeFunc
+// mysql: return placeholder
+// oracle: return fmt.Sprintf("TO_TIMESTAMP(%s, 'SYYYY-MM-DD HH24:MI:SS:FF6')", placeholder)
+var DefaultTimeFunc = func(placeholder string) string {
+	return placeholder
+}
+
+type TimeFunc func(placeholder string) string
+
 type DB struct {
 	Options  Options
 	raw      *sql.DB

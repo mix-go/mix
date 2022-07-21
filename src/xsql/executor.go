@@ -30,6 +30,10 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 	if opts.TimeLayout != "" {
 		timeLayout = opts.TimeLayout
 	}
+	timeFunc := DefaultTimeFunc
+	if opts.TimeFunc != nil {
+		timeFunc = opts.TimeFunc
+	}
 	columnQuotes := "`"
 	if opts.ColumnQuotes != "" {
 		columnQuotes = opts.ColumnQuotes
@@ -60,22 +64,27 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 			if !value.Field(i).CanInterface() {
 				continue
 			}
+			isTime := value.Field(i).Type().String() == "time.Time"
 
 			tag := value.Type().Field(i).Tag.Get("xsql")
 			if tag == "" || tag == "-" || tag == "_" {
 				continue
 			}
-
 			fields = append(fields, tag)
 
+			v := ""
 			if placeholder == "?" {
-				vars = append(vars, placeholder)
+				v = placeholder
 			} else {
-				vars = append(vars, fmt.Sprintf(placeholder, i))
+				v = fmt.Sprintf(placeholder, i)
+			}
+			if isTime {
+				vars = append(vars, timeFunc(v))
+			} else {
+				vars = append(vars, v)
 			}
 
-			// time特殊处理
-			if value.Field(i).Type().String() == "time.Time" {
+			if isTime {
 				ti := value.Field(i).Interface().(time.Time)
 				bindArgs = append(bindArgs, ti.Format(timeLayout))
 			} else {
