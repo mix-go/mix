@@ -93,7 +93,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 		}
 		break
 	default:
-		return nil, errors.New("only for struct type")
+		return nil, errors.New("sql: only for struct type")
 	}
 
 	SQL := fmt.Sprintf(`%s %s (%s) VALUES (%s)`, insertKey, table, columnQuotes+strings.Join(fields, columnQuotes+", "+columnQuotes)+columnQuotes, strings.Join(vars, `, `))
@@ -151,10 +151,10 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 	case reflect.Array, reflect.Slice:
 		break
 	default:
-		return nil, errors.New("only for struct array/slice type")
+		return nil, errors.New("sql: only for struct array/slice type")
 	}
 	if value.Len() == 0 {
-		return nil, errors.New("array/slice length cannot be 0")
+		return nil, errors.New("sql: array/slice length cannot be 0")
 	}
 
 	// fields
@@ -180,7 +180,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 		}
 		break
 	default:
-		return nil, errors.New("only for struct array/slice type")
+		return nil, errors.New("sql: only for struct array/slice type")
 	}
 
 	// values
@@ -218,12 +218,12 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 				valueSql = append(valueSql, fmt.Sprintf("(%s)", strings.Join(vars, `, `)))
 				break
 			default:
-				return nil, errors.New("only for struct array/slice type")
+				return nil, errors.New("sql: only for struct array/slice type")
 			}
 		}
 		break
 	default:
-		return nil, errors.New("only for struct array/slice type")
+		return nil, errors.New("sql: only for struct array/slice type")
 	}
 
 	SQL := fmt.Sprintf(`%s %s (%s) VALUES %s`, insertKey, table, columnQuotes+strings.Join(fields, columnQuotes+", "+columnQuotes)+columnQuotes, strings.Join(valueSql, ", "))
@@ -305,7 +305,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 		}
 		break
 	default:
-		return nil, errors.New("only for struct type")
+		return nil, errors.New("sql: only for struct type")
 	}
 
 	where := ""
