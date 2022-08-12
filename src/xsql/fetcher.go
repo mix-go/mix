@@ -14,7 +14,7 @@ type Fetcher struct {
 	Options *Options
 }
 
-var ErrNoRows = errors.New("sql: no rows in result set")
+var ErrNoRows = sql.ErrNoRows
 var ErrArgType = errors.New("sql: argument can only be pointer type")
 
 func (t *Fetcher) First(i interface{}) error {
