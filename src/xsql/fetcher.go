@@ -14,13 +14,10 @@ type Fetcher struct {
 	Options *Options
 }
 
-var ErrNoRows = sql.ErrNoRows
-var ErrArgType = errors.New("sql: argument can only be pointer type")
-
 func (t *Fetcher) First(i interface{}) error {
 	value := reflect.ValueOf(i)
 	if value.Kind() != reflect.Ptr {
-		return ErrArgType
+		return errors.New("sql: argument can only be pointer type")
 	}
 	root := value.Elem()
 
@@ -29,7 +26,7 @@ func (t *Fetcher) First(i interface{}) error {
 		return err
 	}
 	if len(rows) == 0 {
-		return ErrNoRows
+		return sql.ErrNoRows
 	}
 	row := rows[0]
 
@@ -56,7 +53,7 @@ func (t *Fetcher) First(i interface{}) error {
 func (t *Fetcher) Find(i interface{}) error {
 	value := reflect.ValueOf(i)
 	if value.Kind() != reflect.Ptr {
-		return ErrArgType
+		return errors.New("sql: argument can only be pointer type")
 	}
 	root := value.Elem()
 	itemType := root.Type().Elem()
