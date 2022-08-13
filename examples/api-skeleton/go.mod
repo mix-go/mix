@@ -25,7 +25,7 @@ require (
 	github.com/mix-go/dotenv v1.1.15
 	github.com/mix-go/xcli v1.1.20
 	github.com/mix-go/xdi v1.1.16
-	github.com/mix-go/xsql v1.1.6
+	github.com/mix-go/xsql v1.1.8
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.8.1

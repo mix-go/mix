@@ -5,8 +5,8 @@ import (
 )
 
 var (
-	SkeletonVersion = "1.1.22"
-	CLIVersion      = "1.1.22"
+	SkeletonVersion = "1.1.23"
+	CLIVersion      = "1.1.23"
 )
 
 var (
