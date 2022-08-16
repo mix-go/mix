@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	go_ora "github.com/sijms/go-ora/v2"
 	"reflect"
 	"strconv"
 	"time"
@@ -286,6 +287,9 @@ func (t *RowResult) Time() time.Time {
 	}
 	if typ == "time.Time" {
 		return t.v.(time.Time)
+	}
+	if typ == "go_ora.TimeStamp" {
+		return time.Time(t.v.(go_ora.TimeStamp))
 	}
 	return time.Time{}
 }

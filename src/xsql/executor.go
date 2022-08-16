@@ -186,17 +186,18 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 	// values
 	switch value.Kind() {
 	case reflect.Slice, reflect.Array:
-		for i := 0; i < value.Len(); i++ {
-			switch value.Index(i).Kind() {
+		ai := 0
+		for r := 0; r < value.Len(); r++ {
+			switch value.Index(r).Kind() {
 			case reflect.Struct:
-				subValue := value.Index(i)
+				subValue := value.Index(r)
 				vars := make([]string, 0)
-				for i := 0; i < subValue.NumField(); i++ {
-					if !subValue.Field(i).CanInterface() {
+				for c := 0; c < subValue.NumField(); c++ {
+					if !subValue.Field(c).CanInterface() {
 						continue
 					}
 
-					tag := subValue.Type().Field(i).Tag.Get("xsql")
+					tag := subValue.Type().Field(c).Tag.Get("xsql")
 					if tag == "" || tag == "-" || tag == "_" {
 						continue
 					}
@@ -204,15 +205,16 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 					if placeholder == "?" {
 						vars = append(vars, placeholder)
 					} else {
-						vars = append(vars, fmt.Sprintf(placeholder, i))
+						vars = append(vars, fmt.Sprintf(placeholder, ai))
+						ai += 1
 					}
 
 					// time特殊处理
-					if subValue.Field(i).Type().String() == "time.Time" {
-						ti := subValue.Field(i).Interface().(time.Time)
+					if subValue.Field(c).Type().String() == "time.Time" {
+						ti := subValue.Field(c).Interface().(time.Time)
 						bindArgs = append(bindArgs, ti.Format(timeLayout))
 					} else {
-						bindArgs = append(bindArgs, subValue.Field(i).Interface())
+						bindArgs = append(bindArgs, subValue.Field(c).Interface())
 					}
 				}
 				valueSql = append(valueSql, fmt.Sprintf("(%s)", strings.Join(vars, `, `)))

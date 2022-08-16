@@ -23,6 +23,31 @@ func newDB() *DB {
 	return New(db, opts)
 }
 
+func TestClear(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	_, err := DB.Exec("DELETE FROM xsql WHERE id > 2")
+
+	a.Empty(err)
+}
+
+func TestDebugFunc(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	test := Test{
+		Id:  0,
+		Foo: "test update",
+		Bar: time.Now(),
+	}
+	_, err := DB.Update(&test, "id = ?", 0)
+
+	a.Empty(err)
+}
+
 func TestQuery(t *testing.T) {
 	a := assert.New(t)
 
@@ -106,21 +131,6 @@ func TestExec(t *testing.T) {
 	DB := newDB()
 
 	_, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 10)
-
-	a.Empty(err)
-}
-
-func TestDebugFunc(t *testing.T) {
-	a := assert.New(t)
-
-	DB := newDB()
-
-	test := Test{
-		Id:  999,
-		Foo: "test update",
-		Bar: time.Now(),
-	}
-	_, err := DB.Update(&test, "id = ?", 10)
 
 	a.Empty(err)
 }
