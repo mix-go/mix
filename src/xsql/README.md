@@ -49,6 +49,8 @@ val := rows[0].Get("bar").Value() // interface{}
 
 当然你也可以像 `gorm`, `xorm` 一样映射使用。
 
+> oracle 字段、表名需要大写
+
 ```go
 type Test struct {
 	Id  int       `xsql:"id"`
@@ -64,6 +66,8 @@ func (t Test) TableName() string {
 ### `First()`
 
 映射第一行
+
+> oracle 占位符需修改为 :id
 
 ```go
 var test Test
@@ -165,7 +169,7 @@ tx.Commit()
 
 在 `xsql.New()` 方法中可以传入以下配置对象
 
-- 默认为 mysql 模式，当切换到 oracle 时，需要修改 `Placeholder`、`ColumnQuotes`、`TimeFunc` 配置
+- 默认为 mysql 模式，当切换到 oracle 时，需要[修改配置](dbora_test.go#L18)
 - `Insert()`、`BatchInsert()` 可在执行时传入配置，覆盖 insert 相关的配置，比如将 InsertKey 修改为 REPLACE INTO
 
 ```go

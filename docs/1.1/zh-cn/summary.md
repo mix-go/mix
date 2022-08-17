@@ -19,5 +19,4 @@
   * [mix-go/xdi](zh-cn/mix-xdi.md)
   * [mix-go/xwp](zh-cn/mix-xwp.md)
   * [mix-go/xfmt](zh-cn/mix-xfmt.md)
-  * [mix-go/varwatch](zh-cn/mix-varwatch.md)
   * [mix-go/dotenv](zh-cn/mix-dotenv.md)

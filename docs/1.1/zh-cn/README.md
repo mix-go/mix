@@ -29,7 +29,6 @@ MixGo 是一个 Go 快速开发标准工具包；内部模块高度解耦，整�
 - [mix-go/xdi](zh-cn/mix-xdi) 处理对象依赖关系的 IoC、DI 库，可以实现统一管理依赖，全局对象管理，动态配置刷新等。
 - [mix-go/xwp](zh-cn/mix-xwp) 一个通用工作池、协程池，可动态扩容缩容。
 - [mix-go/xfmt](zh-cn/mix-xfmt) 可以打印结构体嵌套指针地址内部数据的格式化库。
-- [mix-go/varwatch](zh-cn/mix-varwatch) 监视配置结构体变量的数据变化并执行一些任务。
 - [mix-go/dotenv](zh-cn/mix-dotenv) 具有类型转换功能的 DotEnv 环境配置库。
 
 ## PHP 框架
