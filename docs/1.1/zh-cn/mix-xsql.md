@@ -22,7 +22,7 @@ go get github.com/mix-go/xsql
 
 以下是 mysql 初始化，使用 [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) 驱动。
 
-> oracle [初始化}(https://github.com/mix-go/mix/blob/master/src/xsql/dbora_test.go#L14)
+> oracle [初始化](https://github.com/mix-go/mix/blob/master/src/xsql/dbora_test.go#L14)
 
 ```go
 db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
