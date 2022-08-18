@@ -20,9 +20,7 @@ go get github.com/mix-go/xsql
 
 ## 初始化
 
-以下是 mysql 初始化，使用 [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) 驱动。
-
-> oracle [初始化](https://github.com/mix-go/mix/blob/master/src/xsql/dbora_test.go#L14)
+- mysql 初始化，使用 [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) 驱动。
 
 ```go
 db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
@@ -33,9 +31,22 @@ if err != nil {
 DB := xsql.New(db)
 ```
 
+- oracle 初始化，使用 [sijms/go-ora/v2](https://github.com/sijms/go-ora) 驱动。
+
+```go
+db, err := sql.Open("oracle", "oracle://root:123456@127.0.0.1:1521/orcl")
+if err != nil {
+    log.Fatal(err)
+}
+
+DB := xsql.New(db)
+```
+
 ## 查询
 
 可以像脚本语言一样使用，不绑定结构体，直接自由获取每个字段的值。
+
+> oracle 字段、表名需要大写
 
 ```go
 rows, err := DB.Query("SELECT * FROM xsql")
@@ -184,15 +195,15 @@ tx.Commit()
 type Options struct {
     // 默认: INSERT INTO
     InsertKey string
-
+    
     // 默认: ?
     // oracle 可配置为 :%d
     Placeholder string
-
+    
     // 默认：`
     // oracle 可配置为 "
     ColumnQuotes string
-
+    
     // 默认：== DefaultTimeLayout
     TimeLayout string
 
