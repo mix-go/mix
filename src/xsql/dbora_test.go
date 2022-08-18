@@ -3,7 +3,7 @@ package xsql
 import (
 	"database/sql"
 	"fmt"
-	go_ora "github.com/sijms/go-ora/v2"
+	goora "github.com/sijms/go-ora/v2"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"testing"
@@ -54,9 +54,9 @@ func TestOracleQuery(t *testing.T) {
 }
 
 type TestOracle struct {
-	Id  int              `xsql:"ID"`
-	Foo string           `xsql:"FOO"`
-	Bar go_ora.TimeStamp `xsql:"BAR"`
+	Id  int             `xsql:"ID"`
+	Foo string          `xsql:"FOO"`
+	Bar goora.TimeStamp `xsql:"BAR"`
 }
 
 func (t TestOracle) TableName() string {
@@ -71,7 +71,7 @@ func TestOracleInsert(t *testing.T) {
 	test := TestOracle{
 		Id:  3,
 		Foo: "test",
-		Bar: go_ora.TimeStamp(time.Now()),
+		Bar: goora.TimeStamp(time.Now()),
 	}
 	_, err := DB.Insert(&test)
 
@@ -88,12 +88,12 @@ func _TestOracleBatchInsert(t *testing.T) {
 		{
 			Id:  4,
 			Foo: "test",
-			Bar: go_ora.TimeStamp(time.Now()),
+			Bar: goora.TimeStamp(time.Now()),
 		},
 		{
 			Id:  5,
 			Foo: "test",
-			Bar: go_ora.TimeStamp(time.Now()),
+			Bar: goora.TimeStamp(time.Now()),
 		},
 	}
 	_, err := DB.BatchInsert(&tests)
@@ -109,7 +109,7 @@ func TestOracleUpdate(t *testing.T) {
 	test := TestOracle{
 		Id:  999,
 		Foo: "test update",
-		Bar: go_ora.TimeStamp(time.Now()),
+		Bar: goora.TimeStamp(time.Now()),
 	}
 	_, err := DB.Update(&test, "id = :id", 3)
 
@@ -192,7 +192,7 @@ func TestOracleTxCommit(t *testing.T) {
 	test := TestOracle{
 		Id:  999,
 		Foo: "test",
-		Bar: go_ora.TimeStamp(time.Now()),
+		Bar: goora.TimeStamp(time.Now()),
 	}
 	_, err := tx.Insert(&test)
 	a.Empty(err)
@@ -211,7 +211,7 @@ func TestOracleTxRollback(t *testing.T) {
 	test := TestOracle{
 		Id:  998,
 		Foo: "test",
-		Bar: go_ora.TimeStamp(time.Now()),
+		Bar: goora.TimeStamp(time.Now()),
 	}
 	_, err := tx.Insert(&test)
 	a.Empty(err)

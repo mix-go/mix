@@ -12,17 +12,13 @@ A lightweight database based on database/sql
 go get github.com/mix-go/xsql
 ```
 
-推荐使用以下数据库驱动
-
-- Mysql `_ "github.com/go-sql-driver/mysql"`
-- Oracle `_ "github.com/sijms/go-ora/v2"` 无需安装 instantclient
-- [xorm#drivers](https://github.com/go-xorm/xorm#drivers-support) 这些驱动都支持
-
 ## 初始化
 
 - mysql 初始化，使用 [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) 驱动。
 
 ```go
+import _ "github.com/go-sql-driver/mysql"
+
 db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
 if err != nil {
     log.Fatal(err)
@@ -31,9 +27,11 @@ if err != nil {
 DB := xsql.New(db)
 ```
 
-- oracle 初始化，使用 [sijms/go-ora/v2](https://github.com/sijms/go-ora) 驱动。
+- oracle 初始化，使用 [sijms/go-ora/v2](https://github.com/sijms/go-ora) 驱动 (无需安装 instantclient)。
 
 ```go
+import _ "github.com/sijms/go-ora/v2"
+
 db, err := sql.Open("oracle", "oracle://root:123456@127.0.0.1:1521/orcl")
 if err != nil {
     log.Fatal(err)
@@ -41,6 +39,8 @@ if err != nil {
 
 DB := xsql.New(db)
 ```
+
+- [xorm#drivers](https://github.com/go-xorm/xorm#drivers-support) 这些驱动也都支持
 
 ## 查询
 
@@ -70,7 +70,7 @@ val := rows[0].Get("bar").Value() // interface{}
 type Test struct {
 	Id  int       `xsql:"id"`
 	Foo string    `xsql:"foo"`
-	Bar time.Time `xsql:"bar"`
+	Bar time.Time `xsql:"bar"` // oracle 使用 goora.TimeStamp
 }
 
 func (t Test) TableName() string {
