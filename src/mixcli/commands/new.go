@@ -199,14 +199,14 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 	}
 	dest := fmt.Sprintf("%s/%s", pwd, name)
 	if !logic.CopyPath(srcDir, dest) {
-		panic(errors.New("Copy dir failed"))
+		panic(errors.New("copy dir failed"))
 	}
 	fmt.Println(" > ok")
 
 	fmt.Print(" - Processing .env")
 	if selectEnv == None {
 		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/dotenv"`, selectType), ""); err != nil {
-			panic(errors.New("Replace failed"))
+			panic(errors.New("replace failed"))
 		}
 		_ = os.RemoveAll(fmt.Sprintf("%s/config/dotenv", dest))
 		_ = os.RemoveAll(fmt.Sprintf("%s/.env", dest))
@@ -220,13 +220,13 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 		break
 	case Viper:
 		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/configor"`, selectType), fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/viper"`, selectType)); err != nil {
-			panic(errors.New("Replace failed"))
+			panic(errors.New("replace failed"))
 		}
 		_ = os.RemoveAll(fmt.Sprintf("%s/config/configor", dest))
 		break
 	case None:
 		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/config/configor"`, selectType), ""); err != nil {
-			panic(errors.New("Replace failed"))
+			panic(errors.New("replace failed"))
 		}
 		_ = os.RemoveAll(fmt.Sprintf("%s/config/viper", dest))
 		_ = os.RemoveAll(fmt.Sprintf("%s/config/configor", dest))
@@ -239,10 +239,10 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 	switch selectLog {
 	case Zap:
 		if err := logic.ReplaceAll(dest, `logger := di.Logrus`, `logger := di.Zap`); err != nil {
-			panic(errors.New("Replace failed"))
+			panic(errors.New("replace failed"))
 		}
 		if err := logic.ReplaceAll(dest, `Output: logger.Writer\(\)`, `Output: &di.ZapOutput{Logger: logger}`); err != nil {
-			panic(errors.New("Replace failed"))
+			panic(errors.New("replace failed"))
 		}
 		_ = os.Remove(fmt.Sprintf("%s/di/logrus.go", dest))
 		break
@@ -284,16 +284,16 @@ func (t *NewCommand) NewProject(name, selectType, selectEnv, selectConf, selectL
 	// 都没有选
 	if selectLog == None && selectDb == None && selectRedis == None {
 		if err := logic.ReplaceMain(dest, fmt.Sprintf(`_ "github.com/mix-go/%s-skeleton/di"`, selectType), ""); err != nil {
-			panic(errors.New("Replace failed"))
+			panic(errors.New("replace failed"))
 		}
 	}
 
 	fmt.Print(" - Processing package name")
 	if err := logic.ReplaceAll(dest, fmt.Sprintf("github.com/mix-go/%s-skeleton", selectType), name); err != nil {
-		panic(errors.New("Replace failed"))
+		panic(errors.New("replace failed"))
 	}
 	if err := logic.ReplaceMod(dest); err != nil {
-		panic(errors.New("Replace go.mod failed"))
+		panic(errors.New("replace go.mod failed"))
 	}
 	fmt.Println(" > ok")
 
