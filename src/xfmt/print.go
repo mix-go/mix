@@ -63,13 +63,13 @@ func Sprintf(format string, args ...interface{}) string {
 		return str
 	}
 
-	pointers := []pointer{}
+	var pointers []pointer
 	for _, v := range values(format, args...) {
 		pointers = append(pointers, extract(reflect.ValueOf(v.Arg), v.Flag)...)
 	}
 
 	// 去重
-	unique := []pointer{}
+	var unique []pointer
 	for _, p := range pointers {
 		find := false
 		for _, u := range unique {
@@ -87,7 +87,7 @@ func Sprintf(format string, args ...interface{}) string {
 
 // 生成格式
 func format(args ...interface{}) string {
-	formats := []string{}
+	var formats []string
 	for i := 0; i < len(args); i++ {
 		formats = append(formats, varFormat)
 	}
@@ -96,7 +96,7 @@ func format(args ...interface{}) string {
 
 // 获取全部指针对象的反射
 func values(format string, args ...interface{}) []value {
-	result := []value{}
+	var result []value
 	for _, v := range filter(format, args...) {
 		val := reflect.ValueOf(v.Arg)
 		switch val.Kind() {
@@ -130,7 +130,7 @@ func filter(format string, args ...interface{}) []value {
 	fb := []byte(format)
 	next := len(fb) - 1
 	loc := -1
-	result := []value{}
+	var result []value
 	for k, v := range fb {
 		if v == '%' {
 			loc += 1
@@ -167,7 +167,7 @@ func filter(format string, args ...interface{}) []value {
 
 // 提取指针信息
 func extract(val reflect.Value, format string) []pointer {
-	pointers := []pointer{}
+	var pointers []pointer
 	switch val.Kind() {
 	case reflect.Ptr:
 		elem := val.Elem()
