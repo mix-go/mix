@@ -15,15 +15,9 @@ func newOracleDB() *DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	opts := Options{
-		Placeholder:  `:%d`,
-		ColumnQuotes: `"`,
-		TimeFunc: func(placeholder string) string {
-			return fmt.Sprintf("TO_TIMESTAMP(%s, 'SYYYY-MM-DD HH24:MI:SS:FF6')", placeholder)
-		},
-		DebugFunc: func(l *Log) {
-			log.Println(l)
-		},
+	opts := Oracle()
+	opts.DebugFunc = func(l *Log) {
+		log.Println(l)
 	}
 	return New(db, opts)
 }
