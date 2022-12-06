@@ -1,5 +1,9 @@
 package xsql
 
+import "fmt"
+
+// Options
+// 默认为mysql模式
 type Options struct {
 	// 默认: INSERT INTO
 	InsertKey string
@@ -21,4 +25,16 @@ type Options struct {
 
 	// 全局 debug SQL
 	DebugFunc DebugFunc
+}
+
+// Oracle
+// 使用oracle模式
+func Oracle() Options {
+	return Options{
+		Placeholder:  `:%d`,
+		ColumnQuotes: `"`,
+		TimeFunc: func(placeholder string) string {
+			return fmt.Sprintf("TO_TIMESTAMP(%s, 'SYYYY-MM-DD HH24:MI:SS:FF6')", placeholder)
+		},
+	}
 }

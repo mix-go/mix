@@ -37,7 +37,7 @@ if err != nil {
     log.Fatal(err)
 }
 
-DB := xsql.New(db)
+DB := xsql.New(db, xsql.Oracle())
 ```
 
 - [xorm#drivers](https://github.com/go-xorm/xorm#drivers-support) 这些驱动也都支持
