@@ -12,6 +12,7 @@ import (
 
 type Fetcher struct {
 	R       *sql.Rows
+	Log     *Log
 	Options *Options
 }
 
@@ -92,6 +93,11 @@ func (t *Fetcher) Find(i interface{}) error {
 }
 
 func (t *Fetcher) Rows() ([]Row, error) {
+	var debugFunc DebugFunc
+	if t.Options.DebugFunc != nil {
+		debugFunc = t.Options.DebugFunc
+	}
+
 	// 获取列名
 	columns, err := t.R.Columns()
 	if err != nil {
@@ -130,6 +136,11 @@ func (t *Fetcher) Rows() ([]Row, error) {
 			v:       rowMap,
 			options: t.Options,
 		})
+	}
+
+	if debugFunc != nil {
+		t.Log.RowsAffected = int64(len(rows))
+		debugFunc(t.Log)
 	}
 
 	return rows, nil

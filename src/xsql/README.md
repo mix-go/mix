@@ -233,9 +233,11 @@ DB := New(db, opts)
 
 ```go
 type Log struct {
-    Time     time.Duration `json:"time"`
-    SQL      string        `json:"sql"`
-    Bindings []interface{} `json:"bindings"`
+    Time         time.Duration `json:"time"`
+    SQL          string        `json:"sql"`
+    Bindings     []interface{} `json:"bindings"`
+    RowsAffected int64         `json:"rowsAffected"`
+    Error        error         `json:"error"`
 }
 ```
 

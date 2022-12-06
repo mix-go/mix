@@ -100,10 +100,16 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(SQL, bindArgs...)
+	var rowsAffected int64
+	if res != nil {
+		rowsAffected, _ = res.RowsAffected()
+	}
 	l := &Log{
-		SQL:      SQL,
-		Bindings: bindArgs,
-		Time:     time.Now().Sub(startTime),
+		Time:         time.Now().Sub(startTime),
+		SQL:          SQL,
+		Bindings:     bindArgs,
+		RowsAffected: rowsAffected,
+		Error:        err,
 	}
 	if debugFunc != nil {
 		debugFunc(l)
@@ -232,10 +238,16 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(SQL, bindArgs...)
+	var rowsAffected int64
+	if res != nil {
+		rowsAffected, _ = res.RowsAffected()
+	}
 	l := &Log{
-		SQL:      SQL,
-		Bindings: bindArgs,
-		Time:     time.Now().Sub(startTime),
+		Time:         time.Now().Sub(startTime),
+		SQL:          SQL,
+		Bindings:     bindArgs,
+		RowsAffected: rowsAffected,
+		Error:        err,
 	}
 	if debugFunc != nil {
 		debugFunc(l)
@@ -320,10 +332,16 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(SQL, bindArgs...)
+	var rowsAffected int64
+	if res != nil {
+		rowsAffected, _ = res.RowsAffected()
+	}
 	l := &Log{
-		SQL:      SQL,
-		Bindings: bindArgs,
-		Time:     time.Now().Sub(startTime),
+		Time:         time.Now().Sub(startTime),
+		SQL:          SQL,
+		Bindings:     bindArgs,
+		RowsAffected: rowsAffected,
+		Error:        err,
 	}
 	if debugFunc != nil {
 		debugFunc(l)
@@ -340,12 +358,19 @@ func (t *executor) Exec(query string, args []interface{}, opts *Options) (sql.Re
 	if opts.DebugFunc != nil {
 		debugFunc = opts.DebugFunc
 	}
+
 	startTime := time.Now()
-	r, err := t.Executor.Exec(query, args...)
+	res, err := t.Executor.Exec(query, args...)
+	var rowsAffected int64
+	if res != nil {
+		rowsAffected, _ = res.RowsAffected()
+	}
 	l := &Log{
-		SQL:      query,
-		Bindings: args,
-		Time:     time.Now().Sub(startTime),
+		Time:         time.Now().Sub(startTime),
+		SQL:          query,
+		Bindings:     args,
+		RowsAffected: rowsAffected,
+		Error:        err,
 	}
 	if debugFunc != nil {
 		debugFunc(l)
@@ -353,5 +378,6 @@ func (t *executor) Exec(query string, args []interface{}, opts *Options) (sql.Re
 	if err != nil {
 		return nil, err
 	}
-	return r, err
+
+	return res, err
 }
