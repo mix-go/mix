@@ -18,8 +18,10 @@ func (t *query) Fetch(query string, args []interface{}, opts *Options) (*Fetcher
 		RowsAffected: 0,
 		Error:        err,
 	}
-
 	if err != nil {
+		if opts.DebugFunc != nil {
+			opts.DebugFunc(l)
+		}
 		return nil, err
 	}
 
