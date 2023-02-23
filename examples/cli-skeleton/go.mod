@@ -23,8 +23,7 @@ require (
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/viper v1.8.1
 	go.uber.org/zap v1.17.0
-	golang.org/x/sys v0.0.0-20210903071746-97244b99971b // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/text v0.3.8 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gorm.io/driver/mysql v1.0.5
 	gorm.io/gorm v1.21.3
