@@ -1,6 +1,7 @@
 package xdi
 
 import (
+	"errors"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -41,14 +42,23 @@ func TestPopulate(t *testing.T) {
 				}, nil
 			},
 		},
+		{
+			Name: "bar",
+			New: func() (i interface{}, e error) {
+				return nil, errors.New("error")
+			},
+		},
 	}
 	_ = c.Provide(objs...)
 
 	var f *foo
 	_ = c.Populate("foo", &f)
 	text := fmt.Sprintf("%#v \n", f.Client)
-
 	a.Contains(text, "Timeout:10000000000")
+
+	var i interface{}
+	err := c.Populate("bar", &i)
+	a.Equal(err, errors.New("error"))
 }
 
 func TestSingletonConcurrency(t *testing.T) {
