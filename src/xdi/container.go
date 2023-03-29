@@ -87,6 +87,7 @@ func (t *container) Populate(name string, ptr interface{}) error {
 			refresher.off()
 		})
 		if e != nil {
+			obj.once = sync.Once{}
 			return e
 		}
 		p, _ := t.instances.Load(name)

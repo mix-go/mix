@@ -59,6 +59,8 @@ func TestPopulate(t *testing.T) {
 	var i interface{}
 	err := c.Populate("bar", &i)
 	a.Equal(err, errors.New("error"))
+	err = c.Populate("bar", &i)
+	a.Equal(err, errors.New("error")) // 测试多次失败场景
 }
 
 func TestSingletonConcurrency(t *testing.T) {
