@@ -20,7 +20,7 @@ function remote()
 
 git pull origin $CURRENT_BRANCH
 
-IGNORE="guzzle"
+IGNORE=""
 
 WORKDIR="src"
 BASEPATH=$(cd `dirname $0`; cd ../$WORKDIR/; pwd)
