@@ -7,7 +7,7 @@ jobs:
   split:
     runs-on: ubuntu-latest
     env:
-      TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TOKEN: ${{ secrets.ACCESS_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
