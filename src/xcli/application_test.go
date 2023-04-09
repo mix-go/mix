@@ -263,3 +263,7 @@ func TestCommandPrint(t *testing.T) {
 	app.AddCommand(cmd)
 	app.Run()
 }
+
+func TestArgvProgram(t *testing.T) {
+	fmt.Printf("%+v\n", argv.Program())
+}
