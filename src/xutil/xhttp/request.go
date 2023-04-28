@@ -21,18 +21,27 @@ func newDefaultOptions() Options {
 }
 
 type Options struct {
-	Header  http.Header
+	Header http.Header
+
+	// 默认: time.Second * 5
 	Timeout time.Duration
 }
 
-func Request(method string, u string, body string, opts ...Options) ([]byte, error) {
-	o := DefaultOptions
+func newOptions(opts []Options) Options {
+	current := DefaultOptions
 	for _, v := range opts {
-		o = v
+		current = v
 	}
+	if current.Timeout == 0 {
+		current.Timeout = DefaultOptions.Timeout
+	}
+	return current
+}
 
+func Request(method string, u string, body string, opts ...Options) ([]byte, error) {
+	opt := newOptions(opts)
 	cli := http.Client{
-		Timeout: o.Timeout,
+		Timeout: opt.Timeout,
 	}
 	URL, err := url.Parse(u)
 	if err != nil {
@@ -42,7 +51,7 @@ func Request(method string, u string, body string, opts ...Options) ([]byte, err
 		Method: method,
 		URL:    URL,
 		Body:   io.NopCloser(strings.NewReader(body)),
-		Header: o.Header,
+		Header: opt.Header,
 	}
 	resp, err := cli.Do(req)
 	if err != nil {
