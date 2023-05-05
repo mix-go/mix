@@ -1,4 +1,4 @@
-package dotenv
+package xenv
 
 import (
 	"os"
