@@ -1,12 +1,12 @@
 package commands
 
 import (
-	"github.com/mix-go/dotenv"
 	"github.com/mix-go/grpc-skeleton/di"
 	pb "github.com/mix-go/grpc-skeleton/protos"
 	"github.com/mix-go/grpc-skeleton/services"
 	"github.com/mix-go/xcli/flag"
 	"github.com/mix-go/xcli/process"
+	"github.com/mix-go/xutil/xenv"
 	"google.golang.org/grpc"
 	"net"
 	"os"
@@ -25,7 +25,7 @@ func (t *GrpcServerCommand) Main() {
 		process.Daemon()
 	}
 
-	addr := dotenv.Getenv("RPC_ADDR").String(":8080")
+	addr := xenv.Getenv("RPC_ADDR").String(":8080")
 	logger := di.Logrus()
 
 	// listen

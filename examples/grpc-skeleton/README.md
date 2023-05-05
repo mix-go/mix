@@ -59,7 +59,7 @@ $ mixcli new hello
 package main
 
 import (
-	"github.com/mix-go/dotenv"
+	"github.com/mix-go/xutil/xenv"
 	"github.com/mix-go/grpc-skeleton/commands"
 	_ "github.com/mix-go/grpc-skeleton/configor"
 	_ "github.com/mix-go/grpc-skeleton/di"
@@ -70,7 +70,7 @@ import (
 func main() {
 	xcli.SetName("app").
 		SetVersion("0.0.0-alpha").
-		SetDebug(dotenv.Getenv("APP_DEBUG").Bool(false))
+		SetDebug(xenv.Getenv("APP_DEBUG").Bool(false))
 	xcli.AddCommand(commands.Commands...).Run()
 }
 ~~~
@@ -161,7 +161,7 @@ protoc --go_out=plugins=grpc:. user.proto
 package commands
 
 import (
-	"github.com/mix-go/dotenv"
+	"github.com/mix-go/xutil/xenv"
 	"github.com/mix-go/grpc-skeleton/di"
 	pb "github.com/mix-go/grpc-skeleton/protos"
 	"github.com/mix-go/grpc-skeleton/services"
@@ -185,7 +185,7 @@ func (t *GrpcServerCommand) Main() {
 		process.Daemon()
 	}
 
-	addr := dotenv.Getenv("GIN_ADDR").String(":8080")
+	addr := xenv.Getenv("GIN_ADDR").String(":8080")
 	logger := di.Logrus()
 
 	// listen
@@ -262,7 +262,7 @@ package commands
 import (
     "context"
     "fmt"
-	"github.com/mix-go/dotenv"
+	"github.com/mix-go/xutil/xenv"
 	pb "github.com/mix-go/grpc-skeleton/protos"
     "google.golang.org/grpc"
     "time"
@@ -272,7 +272,7 @@ type GrpcClientCommand struct {
 }
 
 func (t *GrpcClientCommand) Main() {
-    addr := dotenv.Getenv("GIN_ADDR").String(":8080")
+    addr := xenv.Getenv("GIN_ADDR").String(":8080")
     ctx, _ := context.WithTimeout(context.Background(), time.Duration(5)*time.Second)
     conn, err := grpc.DialContext(ctx, addr, grpc.WithInsecure(), grpc.WithBlock())
     if err != nil {
