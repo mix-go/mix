@@ -3,7 +3,7 @@ module github.com/mix-go/api-skeleton
 go 1.20
 
 replace (
-	github.com/mix-go/dotenv => ../../src/dotenv
+	github.com/mix-go/xutil => ../../src/xutil
 	github.com/mix-go/xcli => ../../src/xcli
 	github.com/mix-go/xdi => ../../src/xdi
 	github.com/mix-go/xsql => ../../src/xsql
@@ -16,7 +16,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/jinzhu/configor v1.2.1
-	github.com/mix-go/dotenv v1.1.15
+	github.com/mix-go/xutil v1.1.6
 	github.com/mix-go/xcli v1.1.21
 	github.com/mix-go/xdi v1.1.17
 	github.com/mix-go/xsql v1.1.11

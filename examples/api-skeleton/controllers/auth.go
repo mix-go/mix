@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/mix-go/dotenv"
 	"net/http"
 	"time"
 )
@@ -24,7 +23,7 @@ func (t *AuthController) Index(c *gin.Context) {
 		"nbf": time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(), // 什么时间之前不可用
 		"uid": 100008,
 	})
-	tokenString, err := token.SignedString([]byte(dotenv.Getenv("HMAC_SECRET").String()))
+	tokenString, err := token.SignedString([]byte(xenv.Getenv("HMAC_SECRET").String()))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,

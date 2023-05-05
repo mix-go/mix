@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mix-go/api-skeleton/di"
 	"github.com/mix-go/api-skeleton/routes"
-	"github.com/mix-go/dotenv"
 	"github.com/mix-go/xcli/flag"
 	"github.com/mix-go/xcli/process"
+	"github.com/mix-go/xutil/xenv"
 	"os"
 	"os/signal"
 	"strings"
@@ -26,8 +26,8 @@ func (t *APICommand) Main() {
 
 	logger := di.Logrus()
 	server := di.Server()
-	addr := dotenv.Getenv("GIN_ADDR").String(":8080")
-	mode := dotenv.Getenv("GIN_MODE").String(gin.ReleaseMode)
+	addr := xenv.Getenv("GIN_ADDR").String(":8080")
+	mode := xenv.Getenv("GIN_MODE").String(gin.ReleaseMode)
 
 	// server
 	gin.SetMode(mode)

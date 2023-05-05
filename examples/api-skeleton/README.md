@@ -64,14 +64,14 @@ import (
 	_ "github.com/mix-go/api-skeleton/configor"
 	_ "github.com/mix-go/api-skeleton/di"
 	_ "github.com/mix-go/api-skeleton/dotenv"
-	"github.com/mix-go/dotenv"
+	"github.com/mix-go/xutil/xenv"
 	"github.com/mix-go/xcli"
 )
 
 func main() {
 	xcli.SetName("app").
 		SetVersion("0.0.0-alpha").
-		SetDebug(dotenv.Getenv("APP_DEBUG").Bool(false))
+		SetDebug(xenv.Getenv("APP_DEBUG").Bool(false))
 	xcli.AddCommand(commands.Commands...).Run()
 }
 ~~~
@@ -127,7 +127,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mix-go/api-skeleton/di"
 	"github.com/mix-go/api-skeleton/routes"
-	"github.com/mix-go/dotenv"
+	"github.com/mix-go/xutil/xenv"
 	"github.com/mix-go/xcli/flag"
 	"github.com/mix-go/xcli/process"
 	"os"
@@ -147,8 +147,8 @@ func (t *APICommand) Main() {
 
 	logger := di.Logrus()
 	server := di.Server()
-	addr := dotenv.Getenv("GIN_ADDR").String(":8080")
-	mode := dotenv.Getenv("GIN_MODE").String(gin.ReleaseMode)
+	addr := xenv.Getenv("GIN_ADDR").String(":8080")
+	mode := xenv.Getenv("GIN_MODE").String(gin.ReleaseMode)
 
 	// server
 	gin.SetMode(mode)
