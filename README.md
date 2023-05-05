@@ -70,11 +70,6 @@ go mod tidy
 
 - [MixGo 在 IDE Goland 中的如何使用](https://zhuanlan.zhihu.com/p/391857663)
 
-## 视频教程
-
-[![使用 MixGo 快速开发 API 项目](https://openstr.com/cover/aa328ff33de085aa8fc87301056f3407.jpg?size=small&share=true)](https://openstr.com/watch/aa328ff33de085aa8fc87301056f3407)
-[![从 PHP 转 Go 的基础知识对比视频讲解](https://openstr.com/cover/41e9dc609cb8f9a4530fe8f7a37f1130.jpg?size=small&share=true)](https://openstr.com/watch/41e9dc609cb8f9a4530fe8f7a37f1130)
-
 ## 技术交流
 
 知乎：https://www.zhihu.com/people/onanying    
