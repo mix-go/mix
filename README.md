@@ -41,9 +41,6 @@ MixGo 是一个 Go 快速开发标准工具包；内部模块高度解耦，整�
 
 
 ```bash
-# Go 1.15 及之前版本
-go get github.com/mix-go/mixcli
-# Go 1.16 及以后版本
 go install github.com/mix-go/mixcli@latest
 ```
 
