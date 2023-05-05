@@ -32,18 +32,9 @@ MixGo 是一个 Go 快速开发标准工具包；内部模块高度解耦，整�
 
 提供了现成的脚手架工具，快速创建项目，立即产出。
 
-- [编写一个 CLI 程序](examples/cli-skeleton#readme)
-  - [编写一个 Worker Pool 队列消费](examples/cli-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-worker-pool-%E9%98%9F%E5%88%97%E6%B6%88%E8%B4%B9)
-- [编写一个 API 服务](examples/api-skeleton#readme)
-- [编写一个 Web 服务](examples/web-skeleton#readme)
-  - [编写一个 WebSocket 服务](examples/web-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-WebSocket-%E6%9C%8D%E5%8A%A1)
-- [编写一个 gRPC 服务、客户端](examples/grpc-skeleton#readme)
-
-
 ```bash
 go install github.com/mix-go/mixcli@latest
 ```
-
 
 ```bash
 $ mixcli new hello
@@ -61,9 +52,18 @@ Use the arrow keys to navigate: ↓ ↑ → ←
 go mod tidy
 ~~~
 
-## 推荐阅读
+### Goland
 
 - [MixGo 在 IDE Goland 中的如何使用](https://zhuanlan.zhihu.com/p/391857663)
+
+### Examples
+
+- [编写一个 CLI 程序](examples/cli-skeleton#readme)
+  - [编写一个 Worker Pool 队列消费](examples/cli-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-worker-pool-%E9%98%9F%E5%88%97%E6%B6%88%E8%B4%B9)
+- [编写一个 API 服务](examples/api-skeleton#readme)
+- [编写一个 Web 服务](examples/web-skeleton#readme)
+  - [编写一个 WebSocket 服务](examples/web-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-WebSocket-%E6%9C%8D%E5%8A%A1)
+- [编写一个 gRPC 服务、客户端](examples/grpc-skeleton#readme)
 
 ## 技术交流
 
