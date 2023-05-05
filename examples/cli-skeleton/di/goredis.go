@@ -1,9 +1,9 @@
 package di
 
 import (
-	"github.com/go-redis/redis/v8"
 	"github.com/mix-go/dotenv"
 	"github.com/mix-go/xdi"
+	"github.com/redis/go-redis/v9"
 	"time"
 )
 
