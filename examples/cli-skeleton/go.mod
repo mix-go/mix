@@ -3,19 +3,19 @@ module github.com/mix-go/cli-skeleton
 go 1.20
 
 replace (
-	github.com/mix-go/dotenv => ../../src/dotenv
 	github.com/mix-go/xcli => ../../src/xcli
 	github.com/mix-go/xdi => ../../src/xdi
 	github.com/mix-go/xsql => ../../src/xsql
+	github.com/mix-go/xutil => ../../src/xutil
 )
 
 require (
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/jinzhu/configor v1.2.1
-	github.com/mix-go/dotenv v1.1.15
 	github.com/mix-go/xcli v1.1.21
 	github.com/mix-go/xdi v1.1.17
 	github.com/mix-go/xsql v1.1.11
+	github.com/mix-go/xutil v1.1.6
 	github.com/redis/go-redis/v9 v9.0.4
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/viper v1.15.0
@@ -48,7 +48,6 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/testify v1.8.2 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
