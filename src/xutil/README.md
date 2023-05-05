@@ -56,7 +56,9 @@ xstrings.IsNumeric(s string) bool
 
 ## xfmt
 
-可以打印指针字段内部的数据结构，支持的方法与 `fmt` 系统库完全一致，[查看更多用法](xfmt/README.md)
+可以打印结构体嵌套指针地址内部数据的格式化库，[查看更多](xfmt/README.md)。
+
+支持的方法与 `fmt` 系统库完全一致
 
 - `Sprintf(format string, args ...interface{}) string`
 - `Sprint(args ...interface{}) string`
@@ -65,11 +67,34 @@ xstrings.IsNumeric(s string) bool
 - `Print(args ...interface{})`
 - `Println(args ...interface{})`
 
+动态停用和启用
+
+```go
+xfmt.Disable() // 停用后xfmt等同于fmt
+xfmt.Enable()
+```
+
 ## xenv
 
-具有类型转换功能的环境配置库，[查看更多用法](xenv/README.md)
+具有类型转换功能的环境配置库，[查看更多](xenv/README.md)。
 
-获取环境变量并设置默认值
+载入 `.env` 到环境变量
+
+~~~go
+_ = xenv.Load(".env")
+_ = xenv.Overload(".env")
+~~~
+
+获取环境变量
+
+~~~go
+i := xenv.Getenv("key").String()
+i := xenv.Getenv("key").Bool()
+i := xenv.Getenv("key").Int64()
+i := xenv.Getenv("key").Float64()
+~~~
+
+设置默认值
 
 ~~~go
 i := xenv.Getenv("key").String("default")

@@ -2,13 +2,9 @@
 
 ## Mix XFMT
 
-可以打印结构体嵌套指针地址内部数据的格式化库
-
 Formatting library that can print the internal data of the nested pointer address of the struct
 
-## Overview
-
-在 Golang 中使用 `fmt` 打印结构体时，无法打印指针字段内部的数据结构，导致增加 debug 难度，该库可以解决这个问题。
+可以打印结构体嵌套指针地址内部数据的格式化库
 
 ## Usage
 

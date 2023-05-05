@@ -1,10 +1,10 @@
 > OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
 
-## Mix XEnv
-
-基于 [GoDotEnv](https://github.com/joho/godotenv) 开发的具有**类型转换功能**的环境配置库
+## Mix XENV
 
 Based on GoDotEnv library, with type conversion function
+
+基于 [GoDotEnv](https://github.com/joho/godotenv) 开发的具有**类型转换功能**的环境配置库
 
 ## Usage
 
@@ -12,6 +12,7 @@ Based on GoDotEnv library, with type conversion function
 
 ~~~go
 _ = xenv.Load(".env")
+_ = xenv.Overload(".env")
 ~~~
 
 获取环境变量
