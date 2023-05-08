@@ -69,7 +69,7 @@ func (t *NewCommand) Main() {
 	}
 
 	selectEnv := promp("Select .env configuration file library", []string{DotEnv, None})
-	selectConf := promp("Select .yml, .json, .toml configuration files library", []string{Configor, Viper, None})
+	selectConf := promp("Select .yml, .json, .toml configuration files library", []string{Viper, Configor, None})
 
 	var selectLog string
 	var selectLogItems []string
