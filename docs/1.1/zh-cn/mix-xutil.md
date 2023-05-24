@@ -31,7 +31,7 @@ go get github.com/mix-go/xutil
 
 ## xfmt
 
-A formatting library that can print data inside nested pointer addresses of structures, [see more](xfmt/README.md).
+A formatting library that can print data inside nested pointer addresses of structures, [see more](https://github.com/mix-go/mix/blob/master/src/xutil/xfmt/README.md).
 
 The supported methods are identical to the `fmt` system library
 
@@ -48,7 +48,7 @@ The supported methods are identical to the `fmt` system library
 
 ## xenv
 
-Environment configuration library with type conversion, [see more](xenv/README.md).
+Environment configuration library with type conversion, [see more](https://github.com/mix-go/mix/blob/master/src/xutil/xenv/README.md).
 
 | Function                                  | Description |  
 |-------------------------------------------|-------------|
