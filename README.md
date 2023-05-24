@@ -10,7 +10,7 @@
 
 <h1 align="center">Mix Go</h1>
 
-[中文](README_CN.md) | English
+English | [中文](README_CN.md)
 
 MixGo is a Go rapid development standard toolkit; the internal modules are highly decoupled, and the overall code is built on multiple independent modules. Even if users do not use our `mixcli` scaffolding to quickly generate code, they can also use these independent modules. For example: you can use `xcli` alone to build your command-line interaction; use `xsql` to call the database; use `xwp` to handle MQ queue consumption; you can freely combine all modules like building blocks.
 
