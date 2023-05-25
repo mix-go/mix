@@ -12,10 +12,10 @@ go get github.com/mix-go/xutil
 
 ## xhttp
 
-| Function                                                                                   | Description              |  
-|--------------------------------------------------------------------------------------------|--------------------------|
-| xhttp.Request(method string, u string, body string, opts ...Options) ([]byte, error)       | Execute an http request. |
-| xhttp.RequestString(method string, u string, body string, opts ...Options) (string, error) | Execute an http request. |
+| Function                                                                                   | Description             |  
+|--------------------------------------------------------------------------------------------|-------------------------|
+| xhttp.Request(method string, u string, body string, opts ...Options) ([]byte, error)       | Execute a http request. |
+| xhttp.RequestString(method string, u string, body string, opts ...Options) (string, error) | Execute a http request. |
 
 ## xslices
 
@@ -31,7 +31,8 @@ go get github.com/mix-go/xutil
 
 ## xfmt
 
-A formatting library that can print data inside nested pointer addresses of structures, [see more](https://github.com/mix-go/mix/blob/master/src/xutil/xfmt/README.md).
+A formatting library that ca print data inside nested pointer addresses of
+structures, [see more](https://github.com/mix-go/mix/blob/master/src/xutil/xfmt/README.md).
 
 The supported methods are identical to the `fmt` system library
 
@@ -48,7 +49,8 @@ The supported methods are identical to the `fmt` system library
 
 ## xenv
 
-Environment configuration library with type conversion, [see more](https://github.com/mix-go/mix/blob/master/src/xutil/xenv/README.md).
+Environment configuration library with type
+conversion, [see more](https://github.com/mix-go/mix/blob/master/src/xutil/xenv/README.md).
 
 | Function                                  | Description |  
 |-------------------------------------------|-------------|
