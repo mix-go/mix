@@ -67,6 +67,13 @@ go mod tidy
   - [Write a WebSocket service](examples/web-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-WebSocket-%E6%9C%8D%E5%8A%A1)
 - [Write a gRPC service, client](examples/grpc-skeleton#readme)
 
+## `AD` CONNMIX Gateway
+
+[CONNMIX Gateway](https://connmix.com/) - Programmable distributed long connection gateway
+
+- Can be used for chat rooms, live pop-ups, IM instant messaging, online customer service, online games, hardware communication, smart home, IoT and other areas of development
+- A few lines of code, free to get socket, websocket real-time communication
+
 ## Technical Discussion
 
 Zhihu: https://www.zhihu.com/people/onanying    

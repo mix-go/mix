@@ -67,6 +67,13 @@ go mod tidy
     - [编写一个 WebSocket 服务](examples/web-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-WebSocket-%E6%9C%8D%E5%8A%A1)
 - [编写一个 gRPC 服务、客户端](examples/grpc-skeleton#readme)
 
+## `AD` 混联网关
+
+[混联网关](https://connmix.com/) - 可编程分布式长连接网关
+
+- 可用于聊天室、直播弹幕、IM即时通讯、在线客服、网络游戏、硬件通讯、智能家居、物联网等领域的开发
+- 几行代码，免费搞定socket、websocket实时通讯
+
 ## 技术交流
 
 知乎：https://www.zhihu.com/people/onanying    
