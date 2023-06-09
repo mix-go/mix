@@ -36,16 +36,16 @@ A formatting library that can print data inside nested pointer addresses of stru
 
 The supported methods are identical to the `fmt` system library
 
-| Function                                                | Description       |  
-|---------------------------------------------------------|-------------------|
-| xfmt.Sprintf(format string, args ...interface{}) string |                   |
-| xfmt.Sprint(args ...interface{}) string                 |                   |
-| xfmt.Sprintln(args ...interface{}) string               |                   |
-| xfmt.Printf(format string, args ...interface{})         |                   |
-| xfmt.Print(args ...interface{})                         |                   |
-| xfmt.Println(args ...interface{})                       |                   |
-| xfmt.Disable()                                          | Equivalent to fmt |
-| xfmt.Enable()                                           |                   |
+| Function                                                | Description                     |  
+|---------------------------------------------------------|---------------------------------|
+| xfmt.Sprintf(format string, args ...interface{}) string |                                 |
+| xfmt.Sprint(args ...interface{}) string                 |                                 |
+| xfmt.Sprintln(args ...interface{}) string               |                                 |
+| xfmt.Printf(format string, args ...interface{})         |                                 |
+| xfmt.Print(args ...interface{})                         |                                 |
+| xfmt.Println(args ...interface{})                       |                                 |
+| xfmt.Disable()                                          | Equivalent to fmt when disabled |
+| xfmt.Enable()                                           |                                 |
 
 ## xenv
 
