@@ -22,6 +22,7 @@ func newDefaultOptions() Options {
 
 type Options struct {
 	Header http.Header
+	Body   string
 
 	// 默认: time.Second * 5
 	Timeout time.Duration
@@ -38,7 +39,23 @@ func newOptions(opts []Options) Options {
 	return current
 }
 
-func Request(method string, u string, body string, opts ...Options) ([]byte, error) {
+type Response struct {
+	*http.Response
+}
+
+func (t *Response) ReadBody() []byte {
+	b, err := io.ReadAll(t.Body)
+	if err != nil {
+		return nil
+	}
+	return b
+}
+
+func (t *Response) ReadBodyString() string {
+	return string(t.ReadBody())
+}
+
+func Request(method string, u string, opts ...Options) (*Response, error) {
 	opt := newOptions(opts)
 	cli := http.Client{
 		Timeout: opt.Timeout,
@@ -50,25 +67,16 @@ func Request(method string, u string, body string, opts ...Options) ([]byte, err
 	req := &http.Request{
 		Method: method,
 		URL:    URL,
-		Body:   io.NopCloser(strings.NewReader(body)),
+		Body:   io.NopCloser(strings.NewReader(opt.Body)),
 		Header: opt.Header,
 	}
-	resp, err := cli.Do(req)
+	r, err := cli.Do(req)
+	resp := &Response{r}
 	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+		return resp, err
 	}
 	if resp.StatusCode != 200 {
-		return b, fmt.Errorf("status code: %d", resp.StatusCode)
+		return resp, fmt.Errorf("status code: %d", resp.StatusCode)
 	}
-	return b, nil
-}
-
-func RequestString(method string, u string, body string, opts ...Options) (string, error) {
-	b, err := Request(method, u, body, opts...)
-	return string(b), err
+	return resp, nil
 }
