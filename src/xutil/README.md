@@ -15,7 +15,7 @@ go get github.com/mix-go/xutil
 | Function                                                                   | Description                      |  
 |----------------------------------------------------------------------------|----------------------------------|
 | xhttp.Request(method string, u string, opts ...Options) (*Response, error) | Execute an http request.         |
-| xhttp.BuildJSON(v interface{}) string                                      | Generate json body               |
+| xhttp.BuildJSON(v interface{}) string                                      | Generate json string             |
 | xhttp.BuildQuery(m map[string]string) string                               | Generate urlencoded query string |
 
 ## xslices
