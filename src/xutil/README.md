@@ -12,12 +12,11 @@ go get github.com/mix-go/xutil
 
 ## xhttp
 
-| Function                                                                      | Description                       |  
-|-------------------------------------------------------------------------------|-----------------------------------|
-| xhttp.Request(method string, u string, opts ...Options) ([]byte, error)       | Execute an http request.          |
-| xhttp.RequestString(method string, u string, opts ...Options) (string, error) | Execute an http request.          |
-| xhttp.BuildJSON(v interface{}) string                                         | Generate json body                |
-| BuildQuery(m map[string]string) string                                        | Generate URL-encoded query string |
+| Function                                                                   | Description                      |  
+|----------------------------------------------------------------------------|----------------------------------|
+| xhttp.Request(method string, u string, opts ...Options) (*Response, error) | Execute an http request.         |
+| xhttp.BuildJSON(v interface{}) string                                      | Generate json body               |
+| xhttp.BuildQuery(m map[string]string) string                               | Generate urlencoded query string |
 
 ## xslices
 

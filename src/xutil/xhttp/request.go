@@ -41,18 +41,20 @@ func newOptions(opts []Options) Options {
 
 type Response struct {
 	*http.Response
+	Body string
 }
 
-func (t *Response) ReadBody() []byte {
-	b, err := io.ReadAll(t.Body)
-	if err != nil {
-		return nil
+func newResponse(r *http.Response) *Response {
+	resp := &Response{
+		Response: r,
 	}
-	return b
-}
-
-func (t *Response) ReadBodyString() string {
-	return string(t.ReadBody())
+	b, err := io.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil {
+		return resp
+	}
+	resp.Body = string(b)
+	return resp
 }
 
 func Request(method string, u string, opts ...Options) (*Response, error) {
@@ -71,7 +73,7 @@ func Request(method string, u string, opts ...Options) (*Response, error) {
 		Header: opt.Header,
 	}
 	r, err := cli.Do(req)
-	resp := &Response{r}
+	resp := newResponse(r)
 	if err != nil {
 		return resp, err
 	}
