@@ -50,6 +50,9 @@ func (t Body) String() string {
 }
 
 func newResponse(r *http.Response) *Response {
+	if r == nil {
+		return nil
+	}
 	resp := &Response{
 		Response: r,
 	}
@@ -79,8 +82,5 @@ func Request(method string, u string, opts ...Options) (*Response, error) {
 	}
 	r, err := cli.Do(req)
 	resp := newResponse(r)
-	if err != nil {
-		return resp, err
-	}
-	return resp, nil
+	return resp, err
 }
