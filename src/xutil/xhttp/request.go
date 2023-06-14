@@ -1,7 +1,6 @@
 package xhttp
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -41,7 +40,13 @@ func newOptions(opts []Options) Options {
 
 type Response struct {
 	*http.Response
-	Body string
+	Body Body
+}
+
+type Body []byte
+
+func (t Body) String() string {
+	return string(t)
 }
 
 func newResponse(r *http.Response) *Response {
@@ -53,7 +58,7 @@ func newResponse(r *http.Response) *Response {
 	if err != nil {
 		return resp
 	}
-	resp.Body = string(b)
+	resp.Body = b
 	return resp
 }
 
@@ -76,9 +81,6 @@ func Request(method string, u string, opts ...Options) (*Response, error) {
 	resp := newResponse(r)
 	if err != nil {
 		return resp, err
-	}
-	if resp.StatusCode != 200 {
-		return resp, fmt.Errorf("status code: %d", resp.StatusCode)
 	}
 	return resp, nil
 }
