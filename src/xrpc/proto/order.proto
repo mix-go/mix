@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package protobuf;
+option go_package = "./;protobuf";
+
+import "google/api/annotations.proto";
+
+service Order {
+  rpc RequestForRelease(ReleaseRequest) returns (ReleaseResponse) {
+    option (google.api.http) = {
+      post: "/v1/request_for_release"
+      body: "*"
+    };
+  }
+}
+
+message ReleaseRequest {
+  string order_number = 1;
+  string requester = 2;
+  string approver = 3;
+}
+
+message ReleaseResponse {
+  int64 code = 1;
+  string message = 2;
+}
