@@ -219,7 +219,7 @@ defer conn.Close()
 client := pb.NewOrderClient(conn)
 ctx, _ := context.WithTimeout(context.Background(), xrpc.CallTimeout)
 resp, err := client.RequestForRelease(ctx, &pb.ReleaseRequest{
-    OrderNumber: "131243234",
+    OrderNumber: "123456789",
 })
 ```
 
