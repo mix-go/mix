@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-package openmix;
-option go_package = "./;openmix";
+package testdata;
+option go_package = "./;testdata";
 
 import "google/api/annotations.proto";
 

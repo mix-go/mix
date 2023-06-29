@@ -2,11 +2,11 @@
 // source: order.proto
 
 /*
-Package openmix is a reverse proxy.
+Package testdata is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package openmix
+package testdata
 
 import (
 	"context"
@@ -79,7 +79,7 @@ func RegisterOrderHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/openmix.Order/RequestForRelease", runtime.WithHTTPPathPattern("/v1/request_for_release"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/testdata.Order/RequestForRelease", runtime.WithHTTPPathPattern("/v1/request_for_release"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -143,7 +143,7 @@ func RegisterOrderHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/openmix.Order/RequestForRelease", runtime.WithHTTPPathPattern("/v1/request_for_release"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/testdata.Order/RequestForRelease", runtime.WithHTTPPathPattern("/v1/request_for_release"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
