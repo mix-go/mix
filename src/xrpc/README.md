@@ -46,7 +46,7 @@ cp -R protobuf-main/src/google/protobuf `go env GOPATH`/src/google
 
 Goland settings: Settings > Languages & Frameworks > Protocol Buffers
 
-Add Import Paths: `go env GOPATH`/src
+Add Import Paths: \`go env GOPATH\`/src
 
 ## Best Practices
 
