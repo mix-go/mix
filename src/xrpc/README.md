@@ -26,7 +26,7 @@ go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@lat
 go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
 ```
 
-Install googleapis proto
+Install google proto
 
 ```
 mkdir `go env GOPATH`/src/google
@@ -46,7 +46,7 @@ cp -R protobuf-main/src/google/protobuf `go env GOPATH`/src/google
 
 Goland settings: Settings > Languages & Frameworks > Protocol Buffers
 
-Add Import Paths: \`go env GOPATH\`/src
+Add Import Paths: `$GOPATH`/src
 
 ## Best Practices
 
