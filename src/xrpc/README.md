@@ -80,8 +80,6 @@ message ReleaseResponse {
 
 ## Generate code
 
-- go
-
 ```
 generate-go.sh
 ```
