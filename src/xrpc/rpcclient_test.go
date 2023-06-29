@@ -3,7 +3,7 @@ package xrpc
 import (
 	"context"
 	"fmt"
-	pb "github.com/mix-go/xrpc/protobuf"
+	pb "github.com/mix-go/xrpc/openmix"
 	"log"
 	"net/http"
 	"strings"

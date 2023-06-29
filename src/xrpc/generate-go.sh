@@ -2,4 +2,4 @@
 set -ex
 
 cd proto
-protoc -I . -I `go env GOPATH`/src --go_out=../protobuf --go-grpc_out=../protobuf --grpc-gateway_out=../protobuf *.proto
+protoc -I . -I `go env GOPATH`/src --go_out=../openmix --go-grpc_out=../openmix --grpc-gateway_out=../openmix *.proto

@@ -3,7 +3,7 @@ package xrpc
 import (
 	"context"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	pb "github.com/mix-go/xrpc/protobuf"
+	pb "github.com/mix-go/xrpc/openmix"
 	"google.golang.org/grpc"
 	"testing"
 )

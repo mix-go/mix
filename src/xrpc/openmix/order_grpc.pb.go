@@ -4,7 +4,7 @@
 // - protoc             v4.23.0
 // source: order.proto
 
-package protobuf
+package openmix
 
 import (
 	context "context"
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Order_RequestForRelease_FullMethodName = "/protobuf.Order/RequestForRelease"
+	Order_RequestForRelease_FullMethodName = "/openmix.Order/RequestForRelease"
 )
 
 // OrderClient is the client API for Order service.
@@ -96,7 +96,7 @@ func _Order_RequestForRelease_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Order_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "protobuf.Order",
+	ServiceName: "openmix.Order",
 	HandlerType: (*OrderServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
