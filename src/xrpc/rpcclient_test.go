@@ -34,7 +34,7 @@ func TestNewGatewayClient(t *testing.T) {
 
 func TestNewGatewayTLSClient(t *testing.T) {
 	dir, _ := os.Getwd()
-	tlsConf, err := LoadTLSClientConfig(dir+"/certificates/ca.pem", dir+"/certificates/client.pem", dir+"/certificates/client.key")
+	tlsConf, err := LoadClientTLSConfig(dir+"/certificates/ca.pem", dir+"/certificates/client.pem", dir+"/certificates/client.key")
 	if err != nil {
 		log.Fatal(err)
 	}

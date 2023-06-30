@@ -25,10 +25,10 @@ type RpcServer struct {
 	// Optional
 	Logger logging.Logger
 
-	// Optional, Use xrpc.NewTLSConfig or xrpc.LoadTLSConfig to create
+	// Optional, Use xrpc.NewServerTLSConfig or xrpc.LoadServerTLSConfig to create
 	TLSConfig *tls.Config
 
-	// Optional, Use xrpc.NewTLSClientConfig or xrpc.LoadTLSClientConfig to create
+	// Optional, Use xrpc.NewClientTLSConfig or xrpc.LoadClientTLSConfig to create
 	TLSClientConfig *tls.Config
 }
 

@@ -7,9 +7,9 @@ import (
 	"os"
 )
 
-// LoadTLSConfig This is self-signed TLS
+// LoadServerTLSConfig This is self-signed TLS
 // Normal TLS use credentials.NewServerTLSFromFile
-func LoadTLSConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
+func LoadServerTLSConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
 	caPEMBlock, err := os.ReadFile(caFile)
 	if err != nil {
 		return nil, err
@@ -22,11 +22,11 @@ func LoadTLSConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewTLSConfig(caPEMBlock, certPEMBlock, keyPEMBlock)
+	return NewServerTLSConfig(caPEMBlock, certPEMBlock, keyPEMBlock)
 }
 
-// NewTLSConfig This is self-signed TLS
-func NewTLSConfig(ca, cert, key []byte) (*tls.Config, error) {
+// NewServerTLSConfig This is self-signed TLS
+func NewServerTLSConfig(ca, cert, key []byte) (*tls.Config, error) {
 	certificate, err := tls.X509KeyPair(cert, key)
 	if err != nil {
 		return nil, err
@@ -42,9 +42,9 @@ func NewTLSConfig(ca, cert, key []byte) (*tls.Config, error) {
 	}, nil
 }
 
-// LoadTLSClientConfig This is self-signed TLS
+// LoadClientTLSConfig This is self-signed TLS
 // Normal TLS use credentials.NewClientTLSFromFile
-func LoadTLSClientConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
+func LoadClientTLSConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
 	caPEMBlock, err := os.ReadFile(caFile)
 	if err != nil {
 		return nil, err
@@ -57,11 +57,11 @@ func LoadTLSClientConfig(caFile, certFile, keyFile string) (*tls.Config, error) 
 	if err != nil {
 		return nil, err
 	}
-	return NewTLSClientConfig(caPEMBlock, certPEMBlock, keyPEMBlock)
+	return NewClientTLSConfig(caPEMBlock, certPEMBlock, keyPEMBlock)
 }
 
-// NewTLSClientConfig This is self-signed TLS
-func NewTLSClientConfig(ca, cert, key []byte) (*tls.Config, error) {
+// NewClientTLSConfig This is self-signed TLS
+func NewClientTLSConfig(ca, cert, key []byte) (*tls.Config, error) {
 	certificate, err := tls.X509KeyPair(cert, key)
 	if err != nil {
 		return nil, err

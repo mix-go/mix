@@ -36,11 +36,11 @@ func TestRPCServer_Serve(t *testing.T) {
 
 func TestRpcServerTLS_Serve(t *testing.T) {
 	dir, _ := os.Getwd()
-	tlsConf, err := LoadTLSConfig(dir+"/certificates/ca.pem", dir+"/certificates/server.pem", dir+"/certificates/server.key")
+	tlsConf, err := LoadServerTLSConfig(dir+"/certificates/ca.pem", dir+"/certificates/server.pem", dir+"/certificates/server.key")
 	if err != nil {
 		log.Fatal(err)
 	}
-	tlsCliConf, err := LoadTLSClientConfig(dir+"/certificates/ca.pem", dir+"/certificates/client.pem", dir+"/certificates/client.key")
+	tlsClientConf, err := LoadClientTLSConfig(dir+"/certificates/ca.pem", dir+"/certificates/client.pem", dir+"/certificates/client.key")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,7 +59,7 @@ func TestRpcServerTLS_Serve(t *testing.T) {
 		},
 		Logger:          nil,
 		TLSConfig:       tlsConf,
-		TLSClientConfig: tlsCliConf,
+		TLSClientConfig: tlsClientConf,
 	}
 	s.Serve()
 }

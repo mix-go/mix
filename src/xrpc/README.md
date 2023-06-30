@@ -120,11 +120,11 @@ s.Shutdown()
 We need to use it when we write core financial services
 
 ```go
-tlsConf, err := xrpc.LoadTLSConfig("/certificates/ca.pem", "/certificates/server.pem", "/certificates/server.key")
+tlsConf, err := xrpc.LoadServerTLSConfig("/certificates/ca.pem", "/certificates/server.pem", "/certificates/server.key")
 if err != nil {
     log.Fatal(err)
 }
-tlsCliConf, err := xrpc.LoadTLSClientConfig("/certificates/ca.pem", "/certificates/client.pem", "/certificates/client.key")
+tlsClientConf, err := xrpc.LoadClientTLSConfig("/certificates/ca.pem", "/certificates/client.pem", "/certificates/client.key")
 if err != nil {
     log.Fatal(err)
 }
@@ -143,7 +143,7 @@ s := &xrpc.RpcServer{
     },
     Logger: &RpcLogger{SugaredLogger: zapLogger},
     TLSConfig: tlsConf,
-    TLSClientConfig: tlsCliConf,
+    TLSClientConfig: tlsClientConf,
 }
 s.Serve()
 ```
@@ -238,7 +238,7 @@ resp, err := client.RequestForRelease(ctx, &pb.ReleaseRequest{
 We need to use it when we write core financial services
 
 ```go
-tlsConf, err := xrpc.LoadTLSClientConfig("/certificates/ca.pem", "/certificates/client.pem", "/certificates/client.key")
+tlsConf, err := xrpc.LoadClientTLSConfig("/certificates/ca.pem", "/certificates/client.pem", "/certificates/client.key")
 if err != nil {
     log.Fatal(err)
 }
@@ -248,7 +248,7 @@ conn, err := xrpc.NewGrpcClient("127.0.0.1:50000", grpc.WithTransportCredentials
 ## TLS Gateway Client
 
 ```go
-tlsConf, err := xrpc.LoadTLSClientConfig("/certificates/ca.pem", "/certificates/client.pem", "/certificates/client.key")
+tlsConf, err := xrpc.LoadClientTLSConfig("/certificates/ca.pem", "/certificates/client.pem", "/certificates/client.key")
 if err != nil {
     log.Fatal(err)
 }
@@ -291,13 +291,13 @@ Code new TLS Config
 Load from file
 
 ```go
-tlsConf, err := xrpc.LoadTLSConfig("/certificates/ca.pem", "/certificates/server.pem", "/certificates/server.key")
+tlsConf, err := xrpc.LoadServerTLSConfig("/certificates/ca.pem", "/certificates/server.pem", "/certificates/server.key")
 ```
 
 New by bytes
 
 ```go
-tlsConf, err := xrpc.NewTLSConfig([]byte{}, []byte{}, []byte{})
+tlsConf, err := xrpc.NewServerTLSConfig([]byte{}, []byte{}, []byte{})
 ```
 
 - Client
@@ -305,11 +305,11 @@ tlsConf, err := xrpc.NewTLSConfig([]byte{}, []byte{}, []byte{})
 Load from file
 
 ```go
-tlsConf, err := xrpc.LoadTLSClientConfig("/certificates/ca.pem", "/certificates/client.pem", "/certificates/client.key")
+tlsConf, err := xrpc.LoadClientTLSConfig("/certificates/ca.pem", "/certificates/client.pem", "/certificates/client.key")
 ```
 
 New by bytes
 
 ```go
-tlsConf, err := xrpc.NewTLSClientConfig([]byte{}, []byte{}, []byte{})
+tlsConf, err := xrpc.NewClientTLSConfig([]byte{}, []byte{}, []byte{})
 ```
