@@ -14,6 +14,14 @@ type service struct {
 	pb.UnimplementedOrderServer
 }
 
+func (t *service) RequestForRelease(ctx context.Context, in *pb.ReleaseRequest) (*pb.ReleaseResponse, error) {
+	log.Printf("%+v", in)
+	return &pb.ReleaseResponse{
+		Code:    0,
+		Message: "ok",
+	}, nil
+}
+
 func TestRPCServer_Serve(t *testing.T) {
 	s := &RpcServer{
 		Grpc: &Grpc{

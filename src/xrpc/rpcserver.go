@@ -134,6 +134,7 @@ func (t *RpcServer) Serve() error {
 	}
 	if t.TLSConfig != nil {
 		gateway.TLSConfig = t.TLSConfig
+		return gateway.ListenAndServeTLS("", "")
 	}
 	return gateway.ListenAndServe()
 }
