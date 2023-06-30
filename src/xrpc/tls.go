@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+// LoadTLSConfig This is self-signed TLS
+// Normal TLS use credentials.NewServerTLSFromFile
 func LoadTLSConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
 	caPEMBlock, err := os.ReadFile(caFile)
 	if err != nil {
@@ -23,6 +25,7 @@ func LoadTLSConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
 	return NewTLSConfig(caPEMBlock, certPEMBlock, keyPEMBlock)
 }
 
+// NewTLSConfig This is self-signed TLS
 func NewTLSConfig(ca, cert, key []byte) (*tls.Config, error) {
 	certificate, err := tls.X509KeyPair(cert, key)
 	if err != nil {
@@ -39,6 +42,8 @@ func NewTLSConfig(ca, cert, key []byte) (*tls.Config, error) {
 	}, nil
 }
 
+// LoadTLSClientConfig This is self-signed TLS
+// Normal TLS use credentials.NewClientTLSFromFile
 func LoadTLSClientConfig(caFile, certFile, keyFile string) (*tls.Config, error) {
 	caPEMBlock, err := os.ReadFile(caFile)
 	if err != nil {
@@ -55,6 +60,7 @@ func LoadTLSClientConfig(caFile, certFile, keyFile string) (*tls.Config, error) 
 	return NewTLSClientConfig(caPEMBlock, certPEMBlock, keyPEMBlock)
 }
 
+// NewTLSClientConfig This is self-signed TLS
 func NewTLSClientConfig(ca, cert, key []byte) (*tls.Config, error) {
 	certificate, err := tls.X509KeyPair(cert, key)
 	if err != nil {
@@ -66,6 +72,7 @@ func NewTLSClientConfig(ca, cert, key []byte) (*tls.Config, error) {
 	}
 	return &tls.Config{
 		Certificates: []tls.Certificate{certificate},
+		ServerName:   "",
 		RootCAs:      caCertPool,
 	}, nil
 }
