@@ -16,37 +16,58 @@ import (
 )
 
 type RpcServer struct {
-	GrpcAddr    string
-	GatewayAddr string
+	// Required
+	*Grpc
+
+	// Optional
+	*Gateway
 
 	// Optional
 	Logger logging.Logger
+
+	// Optional, Use xrpc.NewTLSConfig or xrpc.LoadTLSConfig to create
+	TLSConfig *tls.Config
+
+	// Optional, Use xrpc.NewTLSClientConfig or xrpc.LoadTLSClientConfig to create
+	TLSClientConfig *tls.Config
+}
+
+type Gateway struct {
+	// Required
+	Addr string
+
+	// Required
+	Registrar func(mux *runtime.ServeMux, conn *grpc.ClientConn)
+
+	Server *http.Server
+}
+
+type Grpc struct {
+	// Required
+	Addr string
+
 	// No content: logging.StartCall, logging.FinishCall
 	// With content: logging.PayloadReceived, logging.PayloadSent
 	LoggableEvents []logging.LoggableEvent
 
-	GrpcRegistrar    func(server *grpc.Server)
-	GatewayRegistrar func(mux *runtime.ServeMux, conn *grpc.ClientConn)
+	// Required
+	Registrar func(server *grpc.Server)
 
-	GrpcServer    *grpc.Server
-	GatewayServer *http.Server
+	Listener net.Listener
 
-	// Use xrpc.NewTLSConfig or xrpc.LoadTLSConfig to create
-	TLSConfig *tls.Config
-	// Use xrpc.NewTLSClientConfig or xrpc.LoadTLSClientConfig to create
-	// Not empty, gateway require
-	TLSClientConfig *tls.Config
+	Server *grpc.Server
 
-	// Additional server config
+	// Optional, Additional server config
 	ServerOptions []grpc.ServerOption
 }
 
 func (t *RpcServer) Serve() error {
 	// listen
-	listen, err := net.Listen("tcp", t.GrpcAddr)
+	listen, err := net.Listen("tcp", t.Grpc.Addr)
 	if err != nil {
 		return err
 	}
+	t.Grpc.Listener = listen
 
 	// server
 	srvOpts := []grpc.ServerOption{
@@ -57,7 +78,7 @@ func (t *RpcServer) Serve() error {
 	}
 	if t.Logger != nil {
 		logOpts := []logging.Option{
-			logging.WithLogOnEvents(t.LoggableEvents...),
+			logging.WithLogOnEvents(t.Grpc.LoggableEvents...),
 		}
 		srvOpts = append(srvOpts,
 			grpc.ChainUnaryInterceptor(
@@ -70,16 +91,21 @@ func (t *RpcServer) Serve() error {
 	if t.TLSConfig != nil {
 		srvOpts = append(srvOpts, grpc.Creds(credentials.NewTLS(t.TLSConfig)))
 	}
-	if len(t.ServerOptions) > 0 {
-		srvOpts = append(srvOpts, t.ServerOptions...)
+	if len(t.Grpc.ServerOptions) > 0 {
+		srvOpts = append(srvOpts, t.Grpc.ServerOptions...)
 	}
 	s := grpc.NewServer(srvOpts...)
-	t.GrpcRegistrar(s)
-	go func() {
+	t.Grpc.Registrar(s)
+	serve := func() {
 		if err := s.Serve(listen); err != nil && !strings.Contains(err.Error(), "use of closed network connection") {
 			panic(err)
 		}
-	}()
+	}
+	if t.Gateway == nil {
+		serve()
+		return nil
+	}
+	go serve()
 
 	// gRPC-Gateway 就是通过它来代理请求（将HTTP请求转为RPC请求）
 	dialOpts := []grpc.DialOption{
@@ -94,25 +120,26 @@ func (t *RpcServer) Serve() error {
 	if t.TLSClientConfig != nil {
 		dialOpts = append(dialOpts, grpc.WithTransportCredentials(credentials.NewTLS(t.TLSClientConfig)))
 	}
-	addr := strings.ReplaceAll(t.GrpcAddr, "0.0.0.0", "127.0.0.1")
+	addr := strings.ReplaceAll(t.Grpc.Addr, "0.0.0.0", "127.0.0.1")
 	conn, err := grpc.Dial(addr, dialOpts...)
 	if err != nil {
 		return err
 	}
 
 	mux := runtime.NewServeMux()
-	t.GatewayRegistrar(mux, conn)
-	gwServer := &http.Server{
-		Addr:    t.GatewayAddr,
+	t.Gateway.Registrar(mux, conn)
+	gateway := &http.Server{
+		Addr:    t.Gateway.Addr,
 		Handler: mux,
 	}
 	if t.TLSConfig != nil {
-		gwServer.TLSConfig = t.TLSConfig
+		gateway.TLSConfig = t.TLSConfig
 	}
-	return gwServer.ListenAndServe()
+	return gateway.ListenAndServe()
 }
 
 func (t *RpcServer) Shutdown() error {
-	t.GrpcServer.Stop()
-	return t.GatewayServer.Shutdown(context.Background())
+	t.Grpc.Server.Stop()
+	_ = t.Grpc.Listener.Close()
+	return t.Gateway.Server.Shutdown(context.Background())
 }

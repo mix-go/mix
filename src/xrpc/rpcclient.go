@@ -3,6 +3,7 @@ package xrpc
 import (
 	"context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/keepalive"
 	"time"
 )
@@ -18,6 +19,7 @@ func NewGrpcClient(addr string, opts ...grpc.DialOption) (*grpc.ClientConn, erro
 	defer cancel()
 	dialOpts := []grpc.DialOption{
 		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithKeepaliveParams(keepalive.ClientParameters{
 			Time:                10 * time.Second,
 			Timeout:             time.Second,

@@ -92,15 +92,19 @@ The necessary functions are encapsulated internally for unified management
 
 ```go
 s := &xrpc.RpcServer{
-    GrpcAddr:    "0.0.0.0:50000",
-    GatewayAddr: "0.0.0.0:50001",
-    Logger:      &RpcLogger{SugaredLogger: zapLogger},
-    GrpcRegistrar: func(s *grpc.Server) {
-        pb.RegisterOrderServer(s, &service{})
+    Grpc: &xrpc.Grpc{
+        Addr: "0.0.0.0:50000",
+        Registrar: func(s *grpc.Server) {
+            pb.RegisterOrderServer(s, &service{})
+        },
     },
-    GatewayRegistrar: func(mux *runtime.ServeMux, conn *grpc.ClientConn) {
-        pb.RegisterOrderHandler(context.Background(), mux, conn)
+    Gateway: &xrpc.Gateway{ // Optional
+        Addr: "0.0.0.0:50001",
+        Registrar: func(mux *runtime.ServeMux, conn *grpc.ClientConn) {
+            pb.RegisterOrderHandler(context.Background(), mux, conn)
+        },
     },
+    Logger: &RpcLogger{SugaredLogger: zapLogger},
 }
 s.Serve()
 ```
@@ -125,17 +129,21 @@ if err != nil {
     log.Fatal(err)
 }
 s := &xrpc.RpcServer{
-    GrpcAddr:    "0.0.0.0:50000",
-    GatewayAddr: "0.0.0.0:50001",
-    Logger:      &RpcLogger{SugaredLogger: zapLogger},
-    GrpcRegistrar: func(s *grpc.Server) {
-        pb.RegisterOrderServer(s, &service{})
+    Grpc: &xrpc.Grpc{
+        Addr: "0.0.0.0:50000",
+        Registrar: func(s *grpc.Server) {
+            pb.RegisterOrderServer(s, &service{})
+        },
     },
-    GatewayRegistrar: func(mux *runtime.ServeMux, conn *grpc.ClientConn) {
-        pb.RegisterOrderHandler(context.Background(), mux, conn)
+    Gateway: &xrpc.Gateway{ // Optional
+        Addr: "0.0.0.0:50001",
+        Registrar: func(mux *runtime.ServeMux, conn *grpc.ClientConn) {
+            pb.RegisterOrderHandler(context.Background(), mux, conn)
+        },
     },
+    Logger: &RpcLogger{SugaredLogger: zapLogger},
     TLSConfig: tlsConf,
-    TLSClientConfig: tlsCliConf, // not empty, gateway requires
+    TLSClientConfig: tlsCliConf,
 }
 s.Serve()
 ```
@@ -157,7 +165,9 @@ Loggable Events
 
 ```go
 s := &xrpc.RpcServer{
-    LoggableEvents: []logging.LoggableEvent{logging.StartCall, logging.FinishCall},
+    Grpc: &xrpc.Grpc{
+        LoggableEvents: []logging.LoggableEvent{logging.StartCall, logging.FinishCall},
+    }
 }
 ```
 

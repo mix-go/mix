@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	pb "github.com/mix-go/xrpc/testdata"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 )
@@ -21,11 +23,18 @@ func TestNewGrpcClient(t *testing.T) {
 	resp, err := client.RequestForRelease(ctx, &pb.ReleaseRequest{
 		OrderNumber: "123456789",
 	})
-	fmt.Println(resp)
+	fmt.Println(resp, err)
 }
 
 func TestNewGatewayClient(t *testing.T) {
-	tlsConf, err := LoadTLSClientConfig("/certificates/ca.pem", "/certificates/client.pem", "/certificates/client.key")
+	client := &http.Client{}
+	resp, err := client.Post("http://127.0.0.1:50001/v1/request_for_release", "application/json", strings.NewReader(`{"order_number":"123456789"}`))
+	fmt.Println(resp.Body, err)
+}
+
+func TestNewGatewayTLSClient(t *testing.T) {
+	dir, _ := os.Getwd()
+	tlsConf, err := LoadTLSClientConfig(dir+"/certificates/ca.pem", dir+"/certificates/client.pem", dir+"/certificates/client.key")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,5 +44,6 @@ func TestNewGatewayClient(t *testing.T) {
 		},
 	}
 	resp, err := client.Post("http://127.0.0.1:50001/v1/request_for_release", "application/json", strings.NewReader(`{"order_number":"123456789"}`))
-	fmt.Println(resp.Body)
+	b, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(b), err)
 }
