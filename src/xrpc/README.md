@@ -276,7 +276,7 @@ $response = $client->request('POST', 'http://127.0.0.1:50001/v1/request_for_rele
 var_dump($response->getBody()->getContents());
 ```
 
-## Self Signed Certificates
+## Two-way TLS with Self-Signed Certificates
 
 Modify subjectAltName in `generate-rsa.cnf`, the generated files are in the `certificates` directory.
 
