@@ -21,6 +21,6 @@ message ReleaseRequest {
 }
 
 message ReleaseResponse {
-  int64 code = 1;
+  int32 code = 1;
   string message = 2;
 }
