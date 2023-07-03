@@ -257,7 +257,7 @@ client := &http.Client{
         TLSClientConfig: tlsConf,
     },
 }
-resp, err := client.Post("http://127.0.0.1:50001/v1/request_for_release", "application/json", strings.NewReader(`{"order_number":"123456789"}`))
+resp, err := client.Post("https://127.0.0.1:50001/v1/request_for_release", "application/json", strings.NewReader(`{"order_number":"123456789"}`))
 fmt.Println(resp.Body)
 ```
 
@@ -270,9 +270,11 @@ require __DIR__ . '/vendor/autoload.php';
 use GuzzleHttp\Client;
 
 $client = new Client([
-    'cert' => [ '/certificates/client.pem', '']
+    'cert' => '/certificates/client.pem',
+    'ssl_key' => '/certificates/client.key',
+    'verify' => '/certificates/ca.pem'
 ]);
-$response = $client->request('POST', 'http://127.0.0.1:50001/v1/request_for_release', ['body' => '{"order_number":"123456789"}']);
+$response = $client->request('POST', 'https://127.0.0.1:50001/v1/request_for_release', ['body' => '{"order_number":"123456789"}']);
 var_dump($response->getBody()->getContents());
 ```
 
