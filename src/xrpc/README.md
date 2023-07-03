@@ -245,6 +245,24 @@ if err != nil {
 conn, err := xrpc.NewGrpcClient("127.0.0.1:50000", grpc.WithTransportCredentials(credentials.NewTLS(tlsConf)))
 ```
 
+Examples of other languages
+
+```PHP
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+$opts = [
+    'credentials' => Grpc\ChannelCredentials::createSsl(file_get_contents('/certificates/server.pem'), file_get_contents('/certificates/client.key'), file_get_contents('/certificates/client.pem')),
+    // 'grpc.ssl_target_name_override' => '127.0.0.1:3456',
+    // 'grpc.default_authority' => '127.0.0.1:3456'
+];
+$client = new \Bitfloww\RexClient('127.0.0.1:3456', $opts);
+$request = new \Bitfloww\ReleaseRequest();
+$request->setOrderNumber('123456789');
+list($reply, $status) = $client->RequestForRelease($request)->wait();
+var_dump($reply, $status);
+```
+
 ## TLS Gateway Client
 
 ```go
