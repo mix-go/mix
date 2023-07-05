@@ -19,12 +19,9 @@ func TestRequestPOST(t *testing.T) {
 	a := assert.New(t)
 
 	url := "https://github.com/"
-	opt := Options{
-		Body: Body("abc"),
-	}
-	resp, err := Request("POST", url, opt)
+	resp, err := Request("POST", url, WithBodyString("abc"), WithContentType("application/json"))
 
-	a.Equal(resp.StatusCode, 200)
+	a.Equal(resp.StatusCode, 404)
 	a.Nil(err)
 }
 

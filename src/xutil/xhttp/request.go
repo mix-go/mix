@@ -34,8 +34,8 @@ func newResponse(r *http.Response) *Response {
 	return resp
 }
 
-func Request(method string, u string, opts ...Options) (*Response, error) {
-	opt := newOptions(opts)
+func Request(method string, u string, opts ...RequestOption) (*Response, error) {
+	opt := getOptions(opts)
 	cli := http.Client{
 		Timeout: opt.Timeout,
 	}

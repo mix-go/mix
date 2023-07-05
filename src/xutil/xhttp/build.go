@@ -5,15 +5,15 @@ import (
 	"net/url"
 )
 
-func BuildJSON(v interface{}) string {
+func BuildJSON(v interface{}) Body {
 	b, _ := json.Marshal(v)
-	return string(b)
+	return Body(b)
 }
 
-func BuildQuery(m map[string]string) string {
+func BuildQuery(m map[string]string) Body {
 	values := &url.Values{}
 	for k, v := range m {
 		values.Add(k, v)
 	}
-	return values.Encode()
+	return Body(values.Encode())
 }
