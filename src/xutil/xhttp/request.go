@@ -5,38 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 )
-
-var DefaultOptions = newDefaultOptions()
-
-func newDefaultOptions() Options {
-	h := http.Header{}
-	h.Set("Content-Type", "application/json")
-	return Options{
-		Header:  h,
-		Timeout: time.Second * 5,
-	}
-}
-
-type Options struct {
-	Header http.Header
-	Body   string
-
-	// 默认: time.Second * 5
-	Timeout time.Duration
-}
-
-func newOptions(opts []Options) Options {
-	current := DefaultOptions
-	for _, v := range opts {
-		current = v
-	}
-	if current.Timeout == 0 {
-		current.Timeout = DefaultOptions.Timeout
-	}
-	return current
-}
 
 type Response struct {
 	*http.Response
@@ -77,7 +46,7 @@ func Request(method string, u string, opts ...Options) (*Response, error) {
 	req := &http.Request{
 		Method: method,
 		URL:    URL,
-		Body:   io.NopCloser(strings.NewReader(opt.Body)),
+		Body:   io.NopCloser(strings.NewReader(opt.Body.String())),
 		Header: opt.Header,
 	}
 	r, err := cli.Do(req)
