@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/keepalive"
+	"google.golang.org/protobuf/encoding/protojson"
 	"net"
 	"net/http"
 	"strings"
@@ -69,7 +70,7 @@ func (t *RpcServer) Serve() error {
 	}
 	t.Grpc.Listener = listen
 
-	// server
+	// grpc server
 	srvOpts := []grpc.ServerOption{
 		grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
 			MinTime:             5 * time.Second, // If a client pings more than once every 5 seconds, terminate the connection
@@ -107,7 +108,7 @@ func (t *RpcServer) Serve() error {
 	}
 	go serve()
 
-	// gRPC-Gateway 就是通过它来代理请求（将HTTP请求转为RPC请求）
+	// grpc client
 	dialOpts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithBlock(),
@@ -126,7 +127,18 @@ func (t *RpcServer) Serve() error {
 		return err
 	}
 
-	mux := runtime.NewServeMux()
+	// http server
+	mux := runtime.NewServeMux(
+		// Using proto names in JSON https://grpc-ecosystem.github.io/grpc-gateway/docs/mapping/customizing_your_gateway/#using-proto-names-in-json
+		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
+			MarshalOptions: protojson.MarshalOptions{
+				UseProtoNames: true,
+			},
+			UnmarshalOptions: protojson.UnmarshalOptions{
+				DiscardUnknown: true,
+			},
+		}),
+	)
 	t.Gateway.Registrar(mux, conn)
 	gateway := &http.Server{
 		Addr:    t.Gateway.Addr,
