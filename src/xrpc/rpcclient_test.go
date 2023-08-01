@@ -68,6 +68,7 @@ func TestNewGatewayTLSClient(t *testing.T) {
 			TLSClientConfig: tlsConf,
 		},
 	}
+	defer client.CloseIdleConnections()
 	resp, err := client.Post("https://127.0.0.1:50001/v1/request_for_release", "application/json", strings.NewReader(`{"order_number":"123456789"}`))
 	b, _ := io.ReadAll(resp.Body)
 	fmt.Println(string(b), err)
