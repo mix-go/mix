@@ -129,10 +129,11 @@ func (t *RpcServer) Serve() error {
 
 	// http server
 	mux := runtime.NewServeMux(
-		// Using proto names in JSON https://grpc-ecosystem.github.io/grpc-gateway/docs/mapping/customizing_your_gateway/#using-proto-names-in-json
+		// Format for using proto names in json https://grpc-ecosystem.github.io/grpc-gateway/docs/mapping/customizing_your_gateway/#using-proto-names-in-json
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 			MarshalOptions: protojson.MarshalOptions{
-				UseProtoNames: true,
+				UseProtoNames:   true,
+				EmitUnpopulated: true, // Omit 0 values, such as 0, "" or null
 			},
 			UnmarshalOptions: protojson.UnmarshalOptions{
 				DiscardUnknown: true,
