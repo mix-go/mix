@@ -37,6 +37,13 @@ go get github.com/mix-go/xutil
 |---------------------------------------------------------|------------------------|
 | xconv.StructToMap(i interface{}) map[string]interface{} | Convert struct to map. |
 
+## xcrypt
+
+| Function                                                            | Description    |  
+|---------------------------------------------------------------------|----------------|
+| xcrypt.AESEncrypt(plainText, mode, key, iv string) (string, error)  | AES encryption |
+| xcrypt.AESDecrypt(cipherText, mode, key, iv string) (string, error) | AES Decryption |
+
 ## xfmt
 
 A formatting library that can print data inside nested pointer addresses of structures, [see more](xfmt/README.md).
