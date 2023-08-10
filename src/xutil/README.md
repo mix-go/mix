@@ -31,6 +31,12 @@ go get github.com/mix-go/xutil
 | xstrings.IsNumeric(s string) bool                          | Used to check if the variable is a number or a numeric string. |
 | xstrings.SubString(s string, start int, length int) string | Return part of a string                                        |
 
+## xconv
+
+| Function                                                | Description            |  
+|---------------------------------------------------------|------------------------|
+| xconv.StructToMap(i interface{}) map[string]interface{} | Convert struct to map. |
+
 ## xfmt
 
 A formatting library that can print data inside nested pointer addresses of structures, [see more](xfmt/README.md).
