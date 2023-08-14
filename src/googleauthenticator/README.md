@@ -1,4 +1,4 @@
-> OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
+> Produced by OpenMix: [https://openmix.org](https://openmix.org/mix-go)
 
 ## Mix Google Authenticator
 
