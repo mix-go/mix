@@ -2,6 +2,12 @@
 
 ## Mix Google Authenticator
 
+Install
+
+```
+go get github.com/mix-go/googleauthenticator@latest
+```
+
 Generate Secret
 
 ```go
