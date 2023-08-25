@@ -2,13 +2,6 @@ module github.com/mix-go/grpc-skeleton
 
 go 1.20
 
-replace (
-	github.com/mix-go/xcli => ../../src/xcli
-	github.com/mix-go/xdi => ../../src/xdi
-	github.com/mix-go/xsql => ../../src/xsql
-	github.com/mix-go/xutil => ../../src/xutil
-)
-
 require (
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/jinzhu/configor v1.2.1

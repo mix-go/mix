@@ -404,6 +404,14 @@ github.com/mitchellh/mapstructure v0.0.0-20160808181253-ca63d7c062ee/go.mod h1:F
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
+github.com/mix-go/xcli v1.1.21 h1:MJwuq2RVlmKOkKsrSk/0xOav4DlW98kSuMtubAYAsMo=
+github.com/mix-go/xcli v1.1.21/go.mod h1:33kHro/CBkPMDCfqpm0Uc327GMInI3PFdFBb835kC3Q=
+github.com/mix-go/xdi v1.1.17 h1:d5UwgZeDmUsdKcJOHY9YZoSwJDTb+puyYPwQf23w0fc=
+github.com/mix-go/xdi v1.1.17/go.mod h1:8S3f3wRMX/GqD06g9qG0JX7Mcn2poy8yaKlfTdyhDVI=
+github.com/mix-go/xsql v1.1.11 h1:I1kDXOIpoB87U2CrlcP4LwIaSJlNLM+izDP3/kAEDYU=
+github.com/mix-go/xsql v1.1.11/go.mod h1:KNb6PkO022PVsf3Yivpn1TNTpingWSduBItp23XpVjI=
+github.com/mix-go/xutil v1.1.6 h1:/oz/pjnFbA2p166g0Bwl7b1ZyVBu4R+VnSwe/Kl74dQ=
+github.com/mix-go/xutil v1.1.6/go.mod h1:kT+0PkFrsspLpvNROhJYTXuNPjwawRu3QIwmsiC4PHg=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd h1:TRLaZ9cD/w8PVh93nsPXa1VrQ6jlwL5oN8l14QlcNfg=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=

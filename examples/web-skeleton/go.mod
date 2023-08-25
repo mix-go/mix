@@ -2,13 +2,6 @@ module github.com/mix-go/web-skeleton
 
 go 1.20
 
-replace (
-	github.com/mix-go/xcli => ../../src/xcli
-	github.com/mix-go/xdi => ../../src/xdi
-	github.com/mix-go/xsql => ../../src/xsql
-	github.com/mix-go/xutil => ../../src/xutil
-)
-
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-session/redis v3.0.1+incompatible
