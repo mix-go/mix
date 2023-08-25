@@ -7,7 +7,7 @@
 - Install
 
 ~~~
-go get -u github.com/mix-go/mixcli
+go install -u github.com/mix-go/mixcli
 ~~~
 
 - New project
