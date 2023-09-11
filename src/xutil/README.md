@@ -15,6 +15,7 @@ go get github.com/mix-go/xutil
 | Function                                                                         | Description                      |  
 |----------------------------------------------------------------------------------|----------------------------------|
 | xhttp.Request(method string, u string, opts ...RequestOption) (*Response, error) | Execute an http request.         |
+| xhttp.Do(req *http.Request, opts ...RequestOption) (*Response, error)            | Execute an http request.         |
 | xhttp.WithBody(body Body) RequestOption                                          | Set configuration item           |
 | xhttp.WithHeader(header http.Header) RequestOption                               | Set configuration item           |
 | xhttp.WithContentType(contentType string) RequestOption                          | Set configuration item           |

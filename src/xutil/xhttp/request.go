@@ -56,3 +56,13 @@ func Request(method string, u string, opts ...RequestOption) (*Response, error) 
 	resp := newResponse(r)
 	return resp, err
 }
+
+func Do(req *http.Request, opts ...RequestOption) (*Response, error) {
+	opt := getOptions(opts)
+	cli := http.Client{
+		Timeout: opt.Timeout,
+	}
+	r, err := cli.Do(req)
+	resp := newResponse(r)
+	return resp, err
+}
