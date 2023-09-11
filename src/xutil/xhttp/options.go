@@ -1,6 +1,7 @@
 package xhttp
 
 import (
+	"github.com/mix-go/xutil/xconv"
 	"net/http"
 	"time"
 )
@@ -67,8 +68,14 @@ func WithBody(body Body) RequestOption {
 	}}
 }
 
+func WithBodyBytes(body []byte) RequestOption {
+	return &funcRequestOption{func(opt *requestOptions) {
+		opt.Body = body
+	}}
+}
+
 func WithBodyString(body string) RequestOption {
 	return &funcRequestOption{func(opt *requestOptions) {
-		opt.Body = Body(body)
+		opt.Body = xconv.StringToBytes(body)
 	}}
 }

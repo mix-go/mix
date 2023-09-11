@@ -3,7 +3,23 @@ package xconv
 import (
 	"reflect"
 	"strings"
+	"unsafe"
 )
+
+// StringToBytes converts string to byte slice without a memory allocation.
+func StringToBytes(s string) []byte {
+	return *(*[]byte)(unsafe.Pointer(
+		&struct {
+			string
+			Cap int
+		}{s, len(s)},
+	))
+}
+
+// BytesToString converts byte slice to string without a memory allocation.
+func BytesToString(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
+}
 
 // StructToMap Convert struct to map.
 // This function first tries to use the bson tag, and if the bson tag does not exist, it will use the json tag.

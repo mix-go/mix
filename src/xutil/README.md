@@ -15,6 +15,10 @@ go get github.com/mix-go/xutil
 | Function                                                                         | Description                      |  
 |----------------------------------------------------------------------------------|----------------------------------|
 | xhttp.Request(method string, u string, opts ...RequestOption) (*Response, error) | Execute an http request.         |
+| xhttp.WithBody(body Body) RequestOption                                          | Set configuration item           |
+| WithHeader(header http.Header) RequestOption                                     | Set configuration item           |
+| WithContentType(contentType string) RequestOption                                | Set configuration item           |
+| WithTimeout(timeout time.Duration) RequestOption                                 | Set configuration item           |
 | xhttp.BuildJSON(v interface{}) Body                                              | Generate json string             |
 | xhttp.BuildQuery(m map[string]string) Body                                       | Generate urlencoded query string |
 
@@ -33,9 +37,11 @@ go get github.com/mix-go/xutil
 
 ## xconv
 
-| Function                                                | Description            |  
-|---------------------------------------------------------|------------------------|
-| xconv.StructToMap(i interface{}) map[string]interface{} | Convert struct to map. |
+| Function                                                | Description                       |  
+|---------------------------------------------------------|-----------------------------------|
+| xconv.StructToMap(i interface{}) map[string]interface{} | Convert struct to map.            |
+| xconv.StringToBytes(s string) []byte                    | Convert string to bytes (0 copy). |
+| xconv.BytesToString(b []byte) string                    | Convert bytes to bytes (0 copy).  |
 
 ## xcrypt
 

@@ -1,6 +1,7 @@
 package xhttp
 
 import (
+	"github.com/mix-go/xutil/xconv"
 	"io"
 	"net/http"
 	"net/url"
@@ -15,7 +16,7 @@ type Response struct {
 type Body []byte
 
 func (t Body) String() string {
-	return string(t)
+	return xconv.BytesToString(t)
 }
 
 func newResponse(r *http.Response) *Response {
@@ -46,8 +47,10 @@ func Request(method string, u string, opts ...RequestOption) (*Response, error) 
 	req := &http.Request{
 		Method: method,
 		URL:    URL,
-		Body:   io.NopCloser(strings.NewReader(opt.Body.String())),
 		Header: opt.Header,
+	}
+	if opt.Body != nil {
+		req.Body = io.NopCloser(strings.NewReader(opt.Body.String()))
 	}
 	r, err := cli.Do(req)
 	resp := newResponse(r)
