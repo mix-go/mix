@@ -38,9 +38,6 @@ func newResponse(r *http.Response) *Response {
 
 func Request(method string, u string, opts ...RequestOption) (*Response, error) {
 	opt := getOptions(opts)
-	cli := http.Client{
-		Timeout: opt.Timeout,
-	}
 	URL, err := url.Parse(u)
 	if err != nil {
 		return nil, err
@@ -53,43 +50,37 @@ func Request(method string, u string, opts ...RequestOption) (*Response, error) 
 	if opt.Body != nil {
 		req.Body = io.NopCloser(strings.NewReader(opt.Body.String()))
 	}
-	startTime := time.Now()
-	r, err := cli.Do(req)
-	if err != nil {
-		debug(opt, time.Now().Sub(startTime), req, nil, err)
-		return nil, err
+
+	if opt.RetryOptions != nil {
+		return doRetry(opt, func() (*Response, error) {
+			return do(opt, req)
+		})
 	}
-	resp := newResponse(r)
-	debug(opt, time.Now().Sub(startTime), req, resp, nil)
-	return resp, nil
+	return do(opt, req)
 }
 
 func Do(req *http.Request, opts ...RequestOption) (*Response, error) {
 	opt := getOptions(opts)
+
+	if opt.RetryOptions != nil {
+		return doRetry(opt, func() (*Response, error) {
+			return do(opt, req)
+		})
+	}
+	return do(opt, req)
+}
+
+func do(opt *requestOptions, req *http.Request) (*Response, error) {
 	cli := http.Client{
 		Timeout: opt.Timeout,
 	}
 	startTime := time.Now()
 	r, err := cli.Do(req)
 	if err != nil {
-		debug(opt, time.Now().Sub(startTime), req, nil, err)
+		doDebug(opt, time.Now().Sub(startTime), req, nil, err)
 		return nil, err
 	}
 	resp := newResponse(r)
-	debug(opt, time.Now().Sub(startTime), req, resp, nil)
+	doDebug(opt, time.Now().Sub(startTime), req, resp, nil)
 	return resp, nil
-}
-
-func debug(opt *requestOptions, duration time.Duration, req *http.Request, resp *Response, err error) {
-	if opt.DebugFunc == nil {
-		return
-	}
-
-	l := &Log{
-		Duration: duration,
-		Request:  req,
-		Response: resp,
-		Error:    err,
-	}
-	opt.DebugFunc(l)
 }

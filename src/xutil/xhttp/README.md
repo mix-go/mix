@@ -41,3 +41,21 @@ type Log struct {
     Error    error         `json:"error"`
 }
 ```
+
+## Retry
+
+Set the conditions for determining retries, and specify various options such as the number of attempts.
+
+```go
+url := "https://aaaaa.com/"
+retryIf := func(resp *xhttp.Response, err error) error {
+    if err != nil {
+        return err
+    }
+    if resp.StatusCode != 200 {
+        return fmt.Errorf("invalid status_code: %d", resp.StatusCode)
+    }
+    return nil
+}
+resp, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+```

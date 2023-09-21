@@ -1,6 +1,7 @@
 package xhttp
 
 import (
+	"github.com/avast/retry-go"
 	"github.com/mix-go/xutil/xconv"
 	"net/http"
 	"time"
@@ -24,6 +25,10 @@ type requestOptions struct {
 	Timeout time.Duration
 
 	DebugFunc DebugFunc
+
+	// Retry
+	RetryIfFunc  RetryIfFunc
+	RetryOptions []retry.Option
 }
 
 func getOptions(opts []RequestOption) *requestOptions {
@@ -85,5 +90,12 @@ func WithBodyString(body string) RequestOption {
 func WithDebugFunc(f DebugFunc) RequestOption {
 	return &funcRequestOption{func(opt *requestOptions) {
 		opt.DebugFunc = f
+	}}
+}
+
+func WithRetry(f RetryIfFunc, opts ...retry.Option) RequestOption {
+	return &funcRequestOption{func(opt *requestOptions) {
+		opt.RetryIfFunc = f
+		opt.RetryOptions = opts
 	}}
 }
