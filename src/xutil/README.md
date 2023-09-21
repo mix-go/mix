@@ -10,7 +10,7 @@ A set of tools that keep Golang sweet.
 go get github.com/mix-go/xutil
 ```
 
-## xhttp
+## xhttp [[more]](xhttp/README.md)
 
 | Function                                                                         | Description                      |  
 |----------------------------------------------------------------------------------|----------------------------------|
@@ -52,9 +52,9 @@ go get github.com/mix-go/xutil
 | xcrypt.AESEncrypt(plainText, mode, key, iv string) (string, error)  | AES encryption |
 | xcrypt.AESDecrypt(cipherText, mode, key, iv string) (string, error) | AES Decryption |
 
-## xfmt
+## xfmt [[more]](xfmt/README.md)
 
-A formatting library that can print data inside nested pointer addresses of structures, [see more](xfmt/README.md).
+A formatting library that can print data inside nested pointer addresses of structures.
 
 The supported methods are identical to the `fmt` system library
 
@@ -69,9 +69,9 @@ The supported methods are identical to the `fmt` system library
 | xfmt.Disable()                                          | Equivalent to fmt when disabled |
 | xfmt.Enable()                                           |                                 |
 
-## xenv
+## xenv [[more]](xenv/README.md)
 
-Environment configuration library with type conversion, [see more](xenv/README.md).
+Environment configuration library with type conversion.
 
 | Function                                  | Description |  
 |-------------------------------------------|-------------|
