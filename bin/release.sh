@@ -8,7 +8,7 @@ if (("$#" != 1)); then
 fi
 
 NOW=$(date +%s)
-TOKEN=""
+TOKEN=$(cat .git/config | grep url | head -n 1 | awk -F'@' '{split($1,a,"//"); print a[2]}')
 CURRENT_BRANCH="master"
 VERSION=$1
 BASEPATH=$(
