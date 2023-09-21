@@ -22,14 +22,16 @@ type requestOptions struct {
 
 	// 默认: time.Second * 5
 	Timeout time.Duration
+
+	DebugFunc DebugFunc
 }
 
-func getOptions(opts []RequestOption) requestOptions {
+func getOptions(opts []RequestOption) *requestOptions {
 	opt := DefaultOptions
 	for _, o := range opts {
 		o.apply(&opt)
 	}
-	return opt
+	return &opt
 }
 
 type RequestOption interface {
@@ -77,5 +79,11 @@ func WithBodyBytes(body []byte) RequestOption {
 func WithBodyString(body string) RequestOption {
 	return &funcRequestOption{func(opt *requestOptions) {
 		opt.Body = xconv.StringToBytes(body)
+	}}
+}
+
+func WithDebugFunc(f DebugFunc) RequestOption {
+	return &funcRequestOption{func(opt *requestOptions) {
+		opt.DebugFunc = f
 	}}
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 type Response struct {
@@ -52,9 +53,15 @@ func Request(method string, u string, opts ...RequestOption) (*Response, error) 
 	if opt.Body != nil {
 		req.Body = io.NopCloser(strings.NewReader(opt.Body.String()))
 	}
+	startTime := time.Now()
 	r, err := cli.Do(req)
+	if err != nil {
+		debug(opt, time.Now().Sub(startTime), req, nil, err)
+		return nil, err
+	}
 	resp := newResponse(r)
-	return resp, err
+	debug(opt, time.Now().Sub(startTime), req, resp, nil)
+	return resp, nil
 }
 
 func Do(req *http.Request, opts ...RequestOption) (*Response, error) {
@@ -62,7 +69,27 @@ func Do(req *http.Request, opts ...RequestOption) (*Response, error) {
 	cli := http.Client{
 		Timeout: opt.Timeout,
 	}
+	startTime := time.Now()
 	r, err := cli.Do(req)
+	if err != nil {
+		debug(opt, time.Now().Sub(startTime), req, nil, err)
+		return nil, err
+	}
 	resp := newResponse(r)
-	return resp, err
+	debug(opt, time.Now().Sub(startTime), req, resp, nil)
+	return resp, nil
+}
+
+func debug(opt *requestOptions, duration time.Duration, req *http.Request, resp *Response, err error) {
+	if opt.DebugFunc == nil {
+		return
+	}
+
+	l := &Log{
+		Duration: duration,
+		Request:  req,
+		Response: resp,
+		Error:    err,
+	}
+	opt.DebugFunc(l)
 }
