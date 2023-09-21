@@ -21,6 +21,7 @@ go get github.com/mix-go/xutil
 | xhttp.WithContentType(contentType string) RequestOption                          | Set configuration item           |
 | xhttp.WithTimeout(timeout time.Duration) RequestOption                           | Set configuration item           |
 | xhttp.WithDebugFunc(f DebugFunc) RequestOption                                   | Set configuration item           |
+| xhttp.WithRetry(f RetryIfFunc, opts ...retry.Option) RequestOption               | Set configuration item           |
 | xhttp.BuildJSON(v interface{}) Body                                              | Generate json string             |
 | xhttp.BuildQuery(m map[string]string) Body                                       | Generate urlencoded query string |
 
