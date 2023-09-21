@@ -10,7 +10,7 @@ A highly efficient HTTP library.
 go get github.com/mix-go/xutil
 ```
 
-## Log
+## Debug Log
 
 By configuring `DebugFunc`, you can use any logging library to print SQL information here.
 
