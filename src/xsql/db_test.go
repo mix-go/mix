@@ -6,12 +6,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"strings"
 	"testing"
 	"time"
 )
 
 func newDB() *DB {
-	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8")
+	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8&multiStatements=true")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -21,6 +22,23 @@ func newDB() *DB {
 		},
 	}
 	return New(db, opts)
+}
+
+func TestCreateTable(t *testing.T) {
+	a := assert.New(t)
+	q := `DROP TABLE IF EXISTS #xsql#;
+CREATE TABLE #xsql# (
+  #id# int unsigned NOT NULL AUTO_INCREMENT,
+  #foo# varchar(255) DEFAULT NULL,
+  #bar# datetime DEFAULT NULL,
+  PRIMARY KEY (#id#)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT INTO #xsql# (#id#, #foo#, #bar#) VALUES (1, 'v', '2022-04-14 23:49:48');
+INSERT INTO #xsql# (#id#, #foo#, #bar#) VALUES (2, 'v1', '2022-04-14 23:50:00');
+`
+	DB := newDB()
+	_, err := DB.Exec(strings.ReplaceAll(q, "#", "`"))
+	a.Empty(err)
 }
 
 func TestClear(t *testing.T) {
