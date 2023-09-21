@@ -12,7 +12,7 @@ go get github.com/mix-go/xutil
 
 ## Debug Log
 
-By configuring `DebugFunc`, you can use any logging library to print SQL information here.
+By configuring `DebugFunc`, you can use any logging library to print log information here.
 
 - Global configuration
 
