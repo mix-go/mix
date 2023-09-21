@@ -2,6 +2,7 @@ package xsql
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
@@ -164,7 +165,27 @@ func TestFirst(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	a.Equal(fmt.Sprintf("%+v", test), "{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0800 CST}")
+	b, _ := json.Marshal(test)
+	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48+08:00"}`)
+}
+
+type EmbeddingTest struct {
+	Test
+}
+
+func TestEmbeddingFirst(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	var test EmbeddingTest
+	err := DB.First(&test, "SELECT * FROM xsql")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	b, _ := json.Marshal(test)
+	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48+08:00"}`)
 }
 
 func TestFirstPart(t *testing.T) {

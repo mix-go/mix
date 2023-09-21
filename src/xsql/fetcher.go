@@ -21,7 +21,8 @@ func (t *Fetcher) First(i interface{}) error {
 	if value.Kind() != reflect.Ptr {
 		return errors.New("sql: argument can only be pointer type")
 	}
-	root := value.Elem()
+	rootValue := value.Elem()
+	rootType := reflect.TypeOf(i).Elem()
 
 	rows, err := t.Rows()
 	if err != nil {
@@ -32,19 +33,26 @@ func (t *Fetcher) First(i interface{}) error {
 	}
 	row := rows[0]
 
-	for n := 0; n < root.NumField(); n++ {
-		field := root.Field(n)
-		if !field.CanSet() {
+FOREACH:
+	for n := 0; n < rootType.NumField(); n++ {
+		fieldValue := rootValue.Field(n)
+		fieldType := rootType.Field(n)
+		if fieldType.Anonymous {
+			rootValue = fieldValue
+			rootType = reflect.TypeOf(fieldValue.Interface())
+			goto FOREACH
+		}
+		if !fieldValue.CanSet() {
 			continue
 		}
-		tag := root.Type().Field(n).Tag.Get("xsql")
+		tag := rootValue.Type().Field(n).Tag.Get("xsql")
 		if tag == "-" || tag == "_" {
 			continue
 		}
 		if !row.Exist(tag) {
 			continue
 		}
-		if err = mapped(field, row, tag, t.Options); err != nil {
+		if err = mapped(fieldValue, row, tag, t.Options); err != nil {
 			return err
 		}
 	}
