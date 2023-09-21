@@ -105,7 +105,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 		rowsAffected, _ = res.RowsAffected()
 	}
 	l := &Log{
-		Time:         time.Now().Sub(startTime),
+		Duration:     time.Now().Sub(startTime),
 		SQL:          SQL,
 		Bindings:     bindArgs,
 		RowsAffected: rowsAffected,
@@ -243,7 +243,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 		rowsAffected, _ = res.RowsAffected()
 	}
 	l := &Log{
-		Time:         time.Now().Sub(startTime),
+		Duration:     time.Now().Sub(startTime),
 		SQL:          SQL,
 		Bindings:     bindArgs,
 		RowsAffected: rowsAffected,
@@ -337,7 +337,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 		rowsAffected, _ = res.RowsAffected()
 	}
 	l := &Log{
-		Time:         time.Now().Sub(startTime),
+		Duration:     time.Now().Sub(startTime),
 		SQL:          SQL,
 		Bindings:     bindArgs,
 		RowsAffected: rowsAffected,
@@ -366,7 +366,7 @@ func (t *executor) Exec(query string, args []interface{}, opts *Options) (sql.Re
 		rowsAffected, _ = res.RowsAffected()
 	}
 	l := &Log{
-		Time:         time.Now().Sub(startTime),
+		Duration:     time.Now().Sub(startTime),
 		SQL:          query,
 		Bindings:     args,
 		RowsAffected: rowsAffected,

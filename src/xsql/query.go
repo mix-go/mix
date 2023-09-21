@@ -12,7 +12,7 @@ func (t *query) Fetch(query string, args []interface{}, opts *Options) (*Fetcher
 	startTime := time.Now()
 	r, err := t.Query.Query(query, args...)
 	l := &Log{
-		Time:         time.Now().Sub(startTime),
+		Duration:     time.Now().Sub(startTime),
 		SQL:          query,
 		Bindings:     args,
 		RowsAffected: 0,
