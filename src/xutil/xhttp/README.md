@@ -59,3 +59,7 @@ retryIf := func(resp *xhttp.Response, err error) error {
 }
 resp, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
 ```
+
+## License
+
+Apache License Version 2.0, http://www.apache.org/licenses/
