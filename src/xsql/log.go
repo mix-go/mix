@@ -3,7 +3,7 @@ package xsql
 import "time"
 
 type Log struct {
-	Duration     time.Duration `json:"time"`
+	Duration     time.Duration `json:"duration"`
 	SQL          string        `json:"sql"`
 	Bindings     []interface{} `json:"bindings"`
 	RowsAffected int64         `json:"rowsAffected"`
