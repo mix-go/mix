@@ -125,6 +125,25 @@ func TestInsert(t *testing.T) {
 	a.Empty(err)
 }
 
+func TestEmbeddingInsert(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	test := EmbeddingTest{
+		Test1: Test1{
+			Id: 0,
+		},
+		Test2: Test2{
+			Foo: "test",
+			Bar: time.Now(),
+		},
+	}
+	_, err := DB.Insert(&test)
+
+	a.Empty(err)
+}
+
 func TestBatchInsert(t *testing.T) {
 	a := assert.New(t)
 

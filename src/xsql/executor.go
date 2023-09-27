@@ -63,6 +63,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 	table := ""
 
 	value := reflect.ValueOf(data)
+	typ := reflect.TypeOf(data)
 	switch value.Kind() {
 	case reflect.Ptr:
 		return t.Insert(value.Elem().Interface(), opts)
@@ -73,37 +74,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 			table = value.Type().Name()
 		}
 
-		for i := 0; i < value.NumField(); i++ {
-			if !value.Field(i).CanInterface() {
-				continue
-			}
-			isTime := value.Field(i).Type().String() == "time.Time"
-
-			tag := value.Type().Field(i).Tag.Get("xsql")
-			if tag == "" || tag == "-" || tag == "_" {
-				continue
-			}
-			fields = append(fields, tag)
-
-			v := ""
-			if opts.Placeholder == "?" {
-				v = opts.Placeholder
-			} else {
-				v = fmt.Sprintf(opts.Placeholder, i)
-			}
-			if isTime {
-				vars = append(vars, opts.TimeFunc(v))
-			} else {
-				vars = append(vars, v)
-			}
-
-			if isTime {
-				ti := value.Field(i).Interface().(time.Time)
-				bindArgs = append(bindArgs, ti.Format(opts.TimeLayout))
-			} else {
-				bindArgs = append(bindArgs, value.Field(i).Interface())
-			}
-		}
+		fields, vars, bindArgs = t.insertForeach(value, typ, opts)
 		break
 	default:
 		return nil, errors.New("sql: only for struct type")
@@ -273,7 +244,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 			table = value.Type().Name()
 		}
 
-		set, bindArgs = t.foreach(value, typ, opts)
+		set, bindArgs = t.updateForeach(value, typ, opts)
 		break
 	default:
 		return nil, errors.New("sql: only for struct type")
@@ -336,12 +307,57 @@ func (t *executor) Exec(query string, args []interface{}, opts *Options) (sql.Re
 	return res, err
 }
 
-func (t *executor) foreach(value reflect.Value, typ reflect.Type, opts *Options) (set []string, bindArgs []interface{}) {
+func (t *executor) insertForeach(value reflect.Value, typ reflect.Type, opts *Options) (fields, vars []string, bindArgs []interface{}) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
 		if fieldStruct.Anonymous {
-			s, b := t.foreach(fieldValue, fieldValue.Type(), opts)
+			f, v, b := t.insertForeach(fieldValue, fieldValue.Type(), opts)
+			fields = append(fields, f...)
+			vars = append(vars, v...)
+			bindArgs = append(bindArgs, b...)
+			continue
+		}
+
+		if !value.Field(n).CanInterface() {
+			continue
+		}
+		isTime := value.Field(n).Type().String() == "time.Time"
+
+		tag := value.Type().Field(n).Tag.Get("xsql")
+		if tag == "" || tag == "-" || tag == "_" {
+			continue
+		}
+		fields = append(fields, tag)
+
+		v := ""
+		if opts.Placeholder == "?" {
+			v = opts.Placeholder
+		} else {
+			v = fmt.Sprintf(opts.Placeholder, n)
+		}
+		if isTime {
+			vars = append(vars, opts.TimeFunc(v))
+		} else {
+			vars = append(vars, v)
+		}
+
+		if isTime {
+			ti := value.Field(n).Interface().(time.Time)
+			bindArgs = append(bindArgs, ti.Format(opts.TimeLayout))
+		} else {
+			bindArgs = append(bindArgs, value.Field(n).Interface())
+		}
+	}
+	return
+}
+
+func (t *executor) updateForeach(value reflect.Value, typ reflect.Type, opts *Options) (set []string, bindArgs []interface{}) {
+	for n := 0; n < value.NumField(); n++ {
+		fieldValue := value.Field(n)
+		fieldStruct := typ.Field(n)
+		if fieldStruct.Anonymous {
+			s, b := t.updateForeach(fieldValue, fieldValue.Type(), opts)
 			set = append(set, s...)
 			bindArgs = append(bindArgs, b...)
 			continue
