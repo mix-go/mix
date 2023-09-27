@@ -37,7 +37,7 @@ func newResponse(r *http.Response) *Response {
 }
 
 func Request(method string, u string, opts ...RequestOption) (*Response, error) {
-	opt := getOptions(opts)
+	opt := mergeOptions(opts)
 	URL, err := url.Parse(u)
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func Request(method string, u string, opts ...RequestOption) (*Response, error) 
 }
 
 func Do(req *http.Request, opts ...RequestOption) (*Response, error) {
-	opt := getOptions(opts)
+	opt := mergeOptions(opts)
 
 	if opt.RetryOptions != nil {
 		return doRetry(opt, func() (*Response, error) {

@@ -31,8 +31,8 @@ type requestOptions struct {
 	RetryOptions []retry.Option
 }
 
-func getOptions(opts []RequestOption) *requestOptions {
-	opt := DefaultOptions
+func mergeOptions(opts []RequestOption) *requestOptions {
+	opt := DefaultOptions // copy
 	for _, o := range opts {
 		o.apply(&opt)
 	}
