@@ -191,6 +191,9 @@ You can pass the following configuration object in the `xsql.New()` method
 
 ```go
 type Options struct {
+    // Default: xsql
+    Tag string
+    
     // Default: INSERT INTO
     InsertKey string
     
