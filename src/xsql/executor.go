@@ -74,7 +74,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 			table = value.Type().Name()
 		}
 
-		fields, vars, bindArgs = t.insertForeach(value, typ, opts)
+		fields, vars, bindArgs = t.foreachInsert(value, typ, opts)
 		break
 	default:
 		return nil, errors.New("sql: only for struct type")
@@ -140,7 +140,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 			table = subValue.Type().Name()
 		}
 
-		fields = t.batchInsertFields(subValue, subType)
+		fields = t.foreachBatchInsertFields(subValue, subType)
 		break
 	default:
 		return nil, errors.New("sql: only for struct array/slice type")
@@ -153,7 +153,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 			switch value.Index(r).Kind() {
 			case reflect.Struct:
 				subValue := value.Index(r)
-				vars, b := t.batchInsertForeach(0, subValue, subValue.Type(), opts)
+				vars, b := t.foreachBatchInsertVars(0, subValue, subValue.Type(), opts)
 				bindArgs = append(bindArgs, b...)
 				valueSql = append(valueSql, fmt.Sprintf("(%s)", strings.Join(vars, `, `)))
 				break
@@ -211,7 +211,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 			table = value.Type().Name()
 		}
 
-		set, bindArgs = t.updateForeach(value, typ, opts)
+		set, bindArgs = t.foreachUpdate(value, typ, opts)
 		break
 	default:
 		return nil, errors.New("sql: only for struct type")
@@ -274,12 +274,12 @@ func (t *executor) Exec(query string, args []interface{}, opts *Options) (sql.Re
 	return res, err
 }
 
-func (t *executor) insertForeach(value reflect.Value, typ reflect.Type, opts *Options) (fields, vars []string, bindArgs []interface{}) {
+func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *Options) (fields, vars []string, bindArgs []interface{}) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
 		if fieldStruct.Anonymous {
-			f, v, b := t.insertForeach(fieldValue, fieldValue.Type(), opts)
+			f, v, b := t.foreachInsert(fieldValue, fieldValue.Type(), opts)
 			fields = append(fields, f...)
 			vars = append(vars, v...)
 			bindArgs = append(bindArgs, b...)
@@ -319,12 +319,12 @@ func (t *executor) insertForeach(value reflect.Value, typ reflect.Type, opts *Op
 	return
 }
 
-func (t *executor) batchInsertFields(value reflect.Value, typ reflect.Type) (fields []string) {
+func (t *executor) foreachBatchInsertFields(value reflect.Value, typ reflect.Type) (fields []string) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
 		if fieldStruct.Anonymous {
-			f := t.batchInsertFields(fieldValue, fieldValue.Type())
+			f := t.foreachBatchInsertFields(fieldValue, fieldValue.Type())
 			fields = append(fields, f...)
 			continue
 		}
@@ -343,12 +343,12 @@ func (t *executor) batchInsertFields(value reflect.Value, typ reflect.Type) (fie
 	return
 }
 
-func (t *executor) batchInsertForeach(ai int, value reflect.Value, typ reflect.Type, opts *Options) (vars []string, bindArgs []interface{}) {
+func (t *executor) foreachBatchInsertVars(ai int, value reflect.Value, typ reflect.Type, opts *Options) (vars []string, bindArgs []interface{}) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
 		if fieldStruct.Anonymous {
-			v, b := t.batchInsertForeach(ai+1000, fieldValue, fieldValue.Type(), opts)
+			v, b := t.foreachBatchInsertVars(ai+1000, fieldValue, fieldValue.Type(), opts)
 			vars = append(vars, v...)
 			bindArgs = append(bindArgs, b...)
 			continue
@@ -381,12 +381,12 @@ func (t *executor) batchInsertForeach(ai int, value reflect.Value, typ reflect.T
 	return
 }
 
-func (t *executor) updateForeach(value reflect.Value, typ reflect.Type, opts *Options) (set []string, bindArgs []interface{}) {
+func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *Options) (set []string, bindArgs []interface{}) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
 		if fieldStruct.Anonymous {
-			s, b := t.updateForeach(fieldValue, fieldValue.Type(), opts)
+			s, b := t.foreachUpdate(fieldValue, fieldValue.Type(), opts)
 			set = append(set, s...)
 			bindArgs = append(bindArgs, b...)
 			continue
