@@ -19,28 +19,28 @@ func newDefaultOptions() sqlOptions {
 }
 
 type sqlOptions struct {
-	// 默认: xsql
+	// Default: xsql
 	Tag string
 
-	// 默认: INSERT INTO
+	// Default: INSERT INTO
 	InsertKey string
 
-	// 默认: ?
-	// oracle 可配置为 :%d
+	// Default: ?
+	// For oracle, can be configured as :%d
 	Placeholder string
 
-	// 默认：`
-	// oracle 可配置为 "
+	// Default: `
+	// For oracle, can be configured as "
 	ColumnQuotes string
 
-	// 默认：== DefaultTimeLayout
+	// Default: == DefaultTimeLayout
 	TimeLayout string
 
-	// 默认：== DefaultTimeFunc
-	// oracle 可修改这个闭包增加 TO_TIMESTAMP
+	// Default: == DefaultTimeFunc
+	// For oracle, this closure can be modified to add TO_TIMESTAMP
 	TimeFunc TimeFunc
 
-	// 全局 debug SQL
+	// Global debug SQL
 	DebugFunc DebugFunc
 }
 
