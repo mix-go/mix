@@ -132,6 +132,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 	switch value.Index(0).Kind() {
 	case reflect.Struct:
 		subValue := value.Index(0)
+		subType := subValue.Type()
 
 		if tab, ok := subValue.Interface().(Table); ok {
 			table = tab.TableName()
@@ -139,16 +140,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 			table = subValue.Type().Name()
 		}
 
-		for i := 0; i < subValue.NumField(); i++ {
-			if !subValue.Field(i).CanInterface() {
-				continue
-			}
-			tag := subValue.Type().Field(i).Tag.Get("xsql")
-			if tag == "" || tag == "-" || tag == "_" {
-				continue
-			}
-			fields = append(fields, tag)
-		}
+		fields = t.batchInsertFields(subValue, subType)
 		break
 	default:
 		return nil, errors.New("sql: only for struct array/slice type")
@@ -157,37 +149,12 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 	// values
 	switch value.Kind() {
 	case reflect.Slice, reflect.Array:
-		ai := 0
 		for r := 0; r < value.Len(); r++ {
 			switch value.Index(r).Kind() {
 			case reflect.Struct:
 				subValue := value.Index(r)
-				vars := make([]string, 0)
-				for c := 0; c < subValue.NumField(); c++ {
-					if !subValue.Field(c).CanInterface() {
-						continue
-					}
-
-					tag := subValue.Type().Field(c).Tag.Get("xsql")
-					if tag == "" || tag == "-" || tag == "_" {
-						continue
-					}
-
-					if opts.Placeholder == "?" {
-						vars = append(vars, opts.Placeholder)
-					} else {
-						vars = append(vars, fmt.Sprintf(opts.Placeholder, ai))
-						ai += 1
-					}
-
-					// time特殊处理
-					if subValue.Field(c).Type().String() == "time.Time" {
-						ti := subValue.Field(c).Interface().(time.Time)
-						bindArgs = append(bindArgs, ti.Format(opts.TimeLayout))
-					} else {
-						bindArgs = append(bindArgs, subValue.Field(c).Interface())
-					}
-				}
+				vars, b := t.batchInsertForeach(0, subValue, subValue.Type(), opts)
+				bindArgs = append(bindArgs, b...)
 				valueSql = append(valueSql, fmt.Sprintf("(%s)", strings.Join(vars, `, `)))
 				break
 			default:
@@ -343,6 +310,68 @@ func (t *executor) insertForeach(value reflect.Value, typ reflect.Type, opts *Op
 		}
 
 		if isTime {
+			ti := value.Field(n).Interface().(time.Time)
+			bindArgs = append(bindArgs, ti.Format(opts.TimeLayout))
+		} else {
+			bindArgs = append(bindArgs, value.Field(n).Interface())
+		}
+	}
+	return
+}
+
+func (t *executor) batchInsertFields(value reflect.Value, typ reflect.Type) (fields []string) {
+	for n := 0; n < value.NumField(); n++ {
+		fieldValue := value.Field(n)
+		fieldStruct := typ.Field(n)
+		if fieldStruct.Anonymous {
+			f := t.batchInsertFields(fieldValue, fieldValue.Type())
+			fields = append(fields, f...)
+			continue
+		}
+
+		if !value.Field(n).CanInterface() {
+			continue
+		}
+
+		tag := value.Type().Field(n).Tag.Get("xsql")
+		if tag == "" || tag == "-" || tag == "_" {
+			continue
+		}
+
+		fields = append(fields, tag)
+	}
+	return
+}
+
+func (t *executor) batchInsertForeach(ai int, value reflect.Value, typ reflect.Type, opts *Options) (vars []string, bindArgs []interface{}) {
+	for n := 0; n < value.NumField(); n++ {
+		fieldValue := value.Field(n)
+		fieldStruct := typ.Field(n)
+		if fieldStruct.Anonymous {
+			v, b := t.batchInsertForeach(ai+1000, fieldValue, fieldValue.Type(), opts)
+			vars = append(vars, v...)
+			bindArgs = append(bindArgs, b...)
+			continue
+		}
+
+		if !value.Field(n).CanInterface() {
+			continue
+		}
+
+		tag := value.Type().Field(n).Tag.Get("xsql")
+		if tag == "" || tag == "-" || tag == "_" {
+			continue
+		}
+
+		if opts.Placeholder == "?" {
+			vars = append(vars, opts.Placeholder)
+		} else {
+			vars = append(vars, fmt.Sprintf(opts.Placeholder, ai))
+			ai += 1
+		}
+
+		// time特殊处理
+		if value.Field(n).Type().String() == "time.Time" {
 			ti := value.Field(n).Interface().(time.Time)
 			bindArgs = append(bindArgs, ti.Format(opts.TimeLayout))
 		} else {

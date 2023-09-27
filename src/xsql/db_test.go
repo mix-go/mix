@@ -152,13 +152,43 @@ func TestBatchInsert(t *testing.T) {
 	tests := []Test{
 		{
 			Id:  0,
-			Foo: "test",
+			Foo: "test1",
 			Bar: time.Now(),
 		},
 		{
 			Id:  0,
-			Foo: "test",
+			Foo: "test2",
 			Bar: time.Now(),
+		},
+	}
+	_, err := DB.BatchInsert(&tests)
+
+	a.Empty(err)
+}
+
+func TestEmbeddingBatchInsert(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	tests := []EmbeddingTest{
+		{
+			Test1: Test1{
+				Id: 0,
+			},
+			Test2: Test2{
+				Foo: "test1",
+				Bar: time.Now(),
+			},
+		},
+		{
+			Test1: Test1{
+				Id: 0,
+			},
+			Test2: Test2{
+				Foo: "test2",
+				Bar: time.Now(),
+			},
 		},
 	}
 	_, err := DB.BatchInsert(&tests)
