@@ -190,7 +190,7 @@ You can pass the following configuration object in the `xsql.New()` method
 - `Insert()`, `BatchInsert()` can pass in configuration during execution to override insert related configuration, such as modifying InsertKey to REPLACE INTO
 
 ```go
-type Options struct {
+type sqlOptions struct {
     // Default: xsql
     Tag string
     
