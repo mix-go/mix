@@ -16,9 +16,13 @@ func newOracleDB() *xsql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return xsql.New(db, xsql.WithDebugFunc(func(l *xsql.Log) {
-		log.Println(l)
-	}), xsql.SwitchToOracle())
+	return xsql.New(
+		db,
+		xsql.WithDebugFunc(func(l *xsql.Log) {
+			log.Println(l)
+		}),
+		xsql.SwitchToOracle(),
+	)
 }
 
 func TestOracleClear(t *testing.T) {
