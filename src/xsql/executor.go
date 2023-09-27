@@ -17,45 +17,7 @@ type executor struct {
 	Executor
 }
 
-func (t *executor) defaultOptions(opts *Options) *Options {
-	insertKey := "INSERT INTO"
-	if opts.InsertKey != "" {
-		insertKey = opts.InsertKey
-	}
-	placeholder := "?"
-	if opts.Placeholder != "" {
-		placeholder = opts.Placeholder
-	}
-	timeLayout := DefaultTimeLayout
-	if opts.TimeLayout != "" {
-		timeLayout = opts.TimeLayout
-	}
-	timeFunc := DefaultTimeFunc
-	if opts.TimeFunc != nil {
-		timeFunc = opts.TimeFunc
-	}
-	columnQuotes := "`"
-	if opts.ColumnQuotes != "" {
-		columnQuotes = opts.ColumnQuotes
-	}
-	var debugFunc DebugFunc
-	if opts.DebugFunc != nil {
-		debugFunc = opts.DebugFunc
-	}
-	newOpts := Options{
-		InsertKey:    insertKey,
-		Placeholder:  placeholder,
-		ColumnQuotes: columnQuotes,
-		TimeLayout:   timeLayout,
-		TimeFunc:     timeFunc,
-		DebugFunc:    debugFunc,
-	}
-	return &newOpts
-}
-
-func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
-	opts = t.defaultOptions(opts)
-
+func (t *executor) Insert(data interface{}, opts *sqlOptions) (sql.Result, error) {
 	fields := make([]string, 0)
 	vars := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
@@ -105,9 +67,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 	return res, nil
 }
 
-func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, error) {
-	opts = t.defaultOptions(opts)
-
+func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result, error) {
 	fields := make([]string, 0)
 	valueSql := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
@@ -140,7 +100,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 			table = subValue.Type().Name()
 		}
 
-		fields = t.foreachBatchInsertFields(subValue, subType)
+		fields = t.foreachBatchInsertFields(subValue, subType, opts)
 		break
 	default:
 		return nil, errors.New("xsql: only for struct array/slice type")
@@ -191,9 +151,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 	return res, nil
 }
 
-func (t *executor) Update(data interface{}, expr string, args []interface{}, opts *Options) (sql.Result, error) {
-	opts = t.defaultOptions(opts)
-
+func (t *executor) Update(data interface{}, expr string, args []interface{}, opts *sqlOptions) (sql.Result, error) {
 	set := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
 
@@ -248,9 +206,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	return res, nil
 }
 
-func (t *executor) Exec(query string, args []interface{}, opts *Options) (sql.Result, error) {
-	opts = t.defaultOptions(opts)
-
+func (t *executor) Exec(query string, args []interface{}, opts *sqlOptions) (sql.Result, error) {
 	startTime := time.Now()
 	res, err := t.Executor.Exec(query, args...)
 	var rowsAffected int64
@@ -274,7 +230,7 @@ func (t *executor) Exec(query string, args []interface{}, opts *Options) (sql.Re
 	return res, err
 }
 
-func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *Options) (fields, vars []string, bindArgs []interface{}) {
+func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *sqlOptions) (fields, vars []string, bindArgs []interface{}) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
@@ -291,7 +247,7 @@ func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *Op
 		}
 		isTime := value.Field(n).Type().String() == "time.Time"
 
-		tag := value.Type().Field(n).Tag.Get(Tag)
+		tag := value.Type().Field(n).Tag.Get(opts.Tag)
 		if tag == "" || tag == "-" || tag == "_" {
 			continue
 		}
@@ -319,12 +275,12 @@ func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *Op
 	return
 }
 
-func (t *executor) foreachBatchInsertFields(value reflect.Value, typ reflect.Type) (fields []string) {
+func (t *executor) foreachBatchInsertFields(value reflect.Value, typ reflect.Type, opts *sqlOptions) (fields []string) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
 		if fieldStruct.Anonymous {
-			f := t.foreachBatchInsertFields(fieldValue, fieldValue.Type())
+			f := t.foreachBatchInsertFields(fieldValue, fieldValue.Type(), opts)
 			fields = append(fields, f...)
 			continue
 		}
@@ -333,7 +289,7 @@ func (t *executor) foreachBatchInsertFields(value reflect.Value, typ reflect.Typ
 			continue
 		}
 
-		tag := value.Type().Field(n).Tag.Get(Tag)
+		tag := value.Type().Field(n).Tag.Get(opts.Tag)
 		if tag == "" || tag == "-" || tag == "_" {
 			continue
 		}
@@ -343,7 +299,7 @@ func (t *executor) foreachBatchInsertFields(value reflect.Value, typ reflect.Typ
 	return
 }
 
-func (t *executor) foreachBatchInsertVars(ai int, value reflect.Value, typ reflect.Type, opts *Options) (vars []string, bindArgs []interface{}) {
+func (t *executor) foreachBatchInsertVars(ai int, value reflect.Value, typ reflect.Type, opts *sqlOptions) (vars []string, bindArgs []interface{}) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
@@ -358,7 +314,7 @@ func (t *executor) foreachBatchInsertVars(ai int, value reflect.Value, typ refle
 			continue
 		}
 
-		tag := value.Type().Field(n).Tag.Get(Tag)
+		tag := value.Type().Field(n).Tag.Get(opts.Tag)
 		if tag == "" || tag == "-" || tag == "_" {
 			continue
 		}
@@ -381,7 +337,7 @@ func (t *executor) foreachBatchInsertVars(ai int, value reflect.Value, typ refle
 	return
 }
 
-func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *Options) (set []string, bindArgs []interface{}) {
+func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *sqlOptions) (set []string, bindArgs []interface{}) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
@@ -396,7 +352,7 @@ func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *Op
 			continue
 		}
 
-		tag := value.Type().Field(n).Tag.Get(Tag)
+		tag := value.Type().Field(n).Tag.Get(opts.Tag)
 		if tag == "" || tag == "-" || tag == "_" {
 			continue
 		}

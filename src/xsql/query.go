@@ -8,7 +8,7 @@ type query struct {
 	Query
 }
 
-func (t *query) Fetch(query string, args []interface{}, opts *Options) (*Fetcher, error) {
+func (t *query) Fetch(query string, args []interface{}, opts *sqlOptions) (*Fetcher, error) {
 	startTime := time.Now()
 	r, err := t.Query.Query(query, args...)
 	l := &Log{

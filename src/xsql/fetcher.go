@@ -13,7 +13,7 @@ import (
 type Fetcher struct {
 	R       *sql.Rows
 	Log     *Log
-	Options *Options
+	Options *sqlOptions
 }
 
 func (t *Fetcher) First(i interface{}) error {
@@ -123,7 +123,7 @@ func (t *Fetcher) Rows() ([]Row, error) {
 
 type Row struct {
 	v       map[string]interface{}
-	options *Options
+	options *sqlOptions
 }
 
 func (t Row) Exist(field string) bool {
@@ -150,7 +150,7 @@ func (t Row) Value() map[string]interface{} {
 
 type RowResult struct {
 	v       interface{}
-	options *Options
+	options *sqlOptions
 }
 
 func (t *RowResult) Empty() bool {
@@ -261,11 +261,7 @@ func (t *RowResult) Int() int64 {
 }
 
 func (t *RowResult) Time() time.Time {
-	timeLayout := DefaultTimeLayout
-	if t.options.TimeLayout != "" {
-		timeLayout = t.options.TimeLayout
-	}
-
+	timeLayout := t.options.TimeLayout
 	typ := t.Type()
 	if typ == "string" || typ == "[]uint8" {
 		tt, _ := time.ParseInLocation(timeLayout, t.String(), time.Local)
@@ -288,7 +284,7 @@ func (t *RowResult) Type() string {
 	return reflect.TypeOf(t.v).String()
 }
 
-func (t *Fetcher) foreach(row *Row, value reflect.Value, typ reflect.Type, opts *Options) error {
+func (t *Fetcher) foreach(row *Row, value reflect.Value, typ reflect.Type, opts *sqlOptions) error {
 	for n := 0; n < typ.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
@@ -301,7 +297,7 @@ func (t *Fetcher) foreach(row *Row, value reflect.Value, typ reflect.Type, opts 
 		if !fieldValue.CanSet() {
 			continue
 		}
-		tag := value.Type().Field(n).Tag.Get(Tag)
+		tag := value.Type().Field(n).Tag.Get(opts.Tag)
 		if tag == "-" || tag == "_" {
 			continue
 		}
@@ -315,11 +311,8 @@ func (t *Fetcher) foreach(row *Row, value reflect.Value, typ reflect.Type, opts 
 	return nil
 }
 
-func (t *Fetcher) mapped(field reflect.Value, row *Row, tag string, opts *Options) (err error) {
-	timeLayout := DefaultTimeLayout
-	if opts.TimeLayout != "" {
-		timeLayout = opts.TimeLayout
-	}
+func (t *Fetcher) mapped(field reflect.Value, row *Row, tag string, opts *sqlOptions) (err error) {
+	timeLayout := opts.TimeLayout
 
 	res := row.Get(tag)
 	v := res.Value()

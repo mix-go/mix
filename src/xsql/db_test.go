@@ -45,12 +45,9 @@ func newDB() *DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	opts := Options{
-		DebugFunc: func(l *Log) {
-			log.Println(l)
-		},
-	}
-	return New(db, opts)
+	return New(db, WithDebugFunc(func(l *Log) {
+		log.Println(l)
+	}))
 }
 
 func TestCreateTable(t *testing.T) {

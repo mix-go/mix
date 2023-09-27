@@ -15,11 +15,9 @@ func newOracleDB() *DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	opts := Oracle()
-	opts.DebugFunc = func(l *Log) {
+	return New(db, WithDebugFunc(func(l *Log) {
 		log.Println(l)
-	}
-	return New(db, opts)
+	}), SwitchToOracle())
 }
 
 func TestOracleClear(t *testing.T) {
@@ -41,7 +39,7 @@ func TestOracleQuery(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	bar := rows[0].Get("BAR").Time().Format(DefaultTimeLayout)
+	bar := rows[0].Get("BAR").Time().Format(DefaultOptions.TimeLayout)
 	fmt.Println(bar)
 
 	a.Equal(bar, "2022-04-14 23:49:48")
