@@ -76,7 +76,7 @@ func (t Test) TableName() string {
 }
 ```
 
-### `First()`
+### First()
 
 Map the first row
 
@@ -90,7 +90,7 @@ if err != nil {
 }
 ```
 
-### `Find()`
+### Find()
 
 Map all rows
 
@@ -104,7 +104,7 @@ if err != nil {
 
 ## Insert
 
-### `Insert()`
+### Insert()
 
 ```go
 test := Test{
@@ -118,7 +118,7 @@ if err != nil {
 }
 ```
 
-### `BatchInsert()`
+### BatchInsert()
 
 ```go
 tests := []Test{
