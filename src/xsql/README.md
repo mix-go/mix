@@ -222,12 +222,12 @@ type sqlOptions struct {
 Pass in the configuration `DebugFunc` when using the `xsql.New()` method, you can print SQL information using any log library here.
 
 ```go
-opts := Options{
-    DebugFunc: func(l *Log) {
+DB := xsql.New(
+    db,
+    xsql.WithDebugFunc(func(l *xsql.Log) {
         log.Println(l)
-    },
-}
-DB := New(db, opts)
+    }),
+)
 ```
 
 The log object contains the following fields
