@@ -32,29 +32,8 @@ func (t *Fetcher) First(i interface{}) error {
 		return sql.ErrNoRows
 	}
 	row := rows[0]
-
-FOREACH:
-	for n := 0; n < rootType.NumField(); n++ {
-		fieldValue := rootValue.Field(n)
-		fieldType := rootType.Field(n)
-		if fieldType.Anonymous {
-			rootValue = fieldValue
-			rootType = reflect.TypeOf(fieldValue.Interface())
-			goto FOREACH
-		}
-		if !fieldValue.CanSet() {
-			continue
-		}
-		tag := rootValue.Type().Field(n).Tag.Get("xsql")
-		if tag == "-" || tag == "_" {
-			continue
-		}
-		if !row.Exist(tag) {
-			continue
-		}
-		if err = mapped(fieldValue, row, tag, t.Options); err != nil {
-			return err
-		}
+	if err := t.foreach(&row, rootValue, rootType, t.Options); err != nil {
+		return err
 	}
 
 	return nil
@@ -74,27 +53,15 @@ func (t *Fetcher) Find(i interface{}) error {
 	}
 
 	for r := 0; r < len(rows); r++ {
-		newItem := reflect.New(itemType)
-		if newItem.Kind() == reflect.Ptr {
-			newItem = newItem.Elem()
+		itemValue := reflect.New(itemType)
+		if itemValue.Kind() == reflect.Ptr {
+			itemValue = itemValue.Elem()
 		}
-		for n := 0; n < newItem.NumField(); n++ {
-			field := newItem.Field(n)
-			if !field.CanSet() {
-				continue
-			}
-			tag := newItem.Type().Field(n).Tag.Get("xsql")
-			if tag == "-" || tag == "_" {
-				continue
-			}
-			if !rows[r].Exist(tag) {
-				continue
-			}
-			if err = mapped(field, rows[r], tag, t.Options); err != nil {
-				return err
-			}
+		itemType := itemValue.Type()
+		if err := t.foreach(&rows[r], itemValue, itemType, t.Options); err != nil {
+			return err
 		}
-		root.Set(reflect.Append(root, newItem))
+		root.Set(reflect.Append(root, itemValue))
 	}
 
 	return nil
@@ -321,7 +288,34 @@ func (t *RowResult) Type() string {
 	return reflect.TypeOf(t.v).String()
 }
 
-func mapped(field reflect.Value, row Row, tag string, opts *Options) (err error) {
+func (t *Fetcher) foreach(row *Row, value reflect.Value, typ reflect.Type, opts *Options) error {
+	for n := 0; n < typ.NumField(); n++ {
+		fieldValue := value.Field(n)
+		fieldStruct := typ.Field(n)
+		if fieldStruct.Anonymous {
+			if err := t.foreach(row, fieldValue, fieldValue.Type(), opts); err != nil {
+				return err
+			}
+			continue
+		}
+		if !fieldValue.CanSet() {
+			continue
+		}
+		tag := value.Type().Field(n).Tag.Get("xsql")
+		if tag == "-" || tag == "_" {
+			continue
+		}
+		if !row.Exist(tag) {
+			continue
+		}
+		if err := t.mapped(fieldValue, row, tag, opts); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (t *Fetcher) mapped(field reflect.Value, row *Row, tag string, opts *Options) (err error) {
 	timeLayout := DefaultTimeLayout
 	if opts.TimeLayout != "" {
 		timeLayout = opts.TimeLayout

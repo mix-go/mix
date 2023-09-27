@@ -17,7 +17,7 @@ type executor struct {
 	Executor
 }
 
-func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
+func (t *executor) defaultOptions(opts *Options) *Options {
 	insertKey := "INSERT INTO"
 	if opts.InsertKey != "" {
 		insertKey = opts.InsertKey
@@ -42,6 +42,19 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 	if opts.DebugFunc != nil {
 		debugFunc = opts.DebugFunc
 	}
+	newOpts := Options{
+		InsertKey:    insertKey,
+		Placeholder:  placeholder,
+		ColumnQuotes: columnQuotes,
+		TimeLayout:   timeLayout,
+		TimeFunc:     timeFunc,
+		DebugFunc:    debugFunc,
+	}
+	return &newOpts
+}
+
+func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
+	opts = t.defaultOptions(opts)
 
 	fields := make([]string, 0)
 	vars := make([]string, 0)
@@ -73,20 +86,20 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 			fields = append(fields, tag)
 
 			v := ""
-			if placeholder == "?" {
-				v = placeholder
+			if opts.Placeholder == "?" {
+				v = opts.Placeholder
 			} else {
-				v = fmt.Sprintf(placeholder, i)
+				v = fmt.Sprintf(opts.Placeholder, i)
 			}
 			if isTime {
-				vars = append(vars, timeFunc(v))
+				vars = append(vars, opts.TimeFunc(v))
 			} else {
 				vars = append(vars, v)
 			}
 
 			if isTime {
 				ti := value.Field(i).Interface().(time.Time)
-				bindArgs = append(bindArgs, ti.Format(timeLayout))
+				bindArgs = append(bindArgs, ti.Format(opts.TimeLayout))
 			} else {
 				bindArgs = append(bindArgs, value.Field(i).Interface())
 			}
@@ -96,7 +109,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 		return nil, errors.New("sql: only for struct type")
 	}
 
-	SQL := fmt.Sprintf(`%s %s (%s) VALUES (%s)`, insertKey, table, columnQuotes+strings.Join(fields, columnQuotes+", "+columnQuotes)+columnQuotes, strings.Join(vars, `, `))
+	SQL := fmt.Sprintf(`%s %s (%s) VALUES (%s)`, opts.InsertKey, table, opts.ColumnQuotes+strings.Join(fields, opts.ColumnQuotes+", "+opts.ColumnQuotes)+opts.ColumnQuotes, strings.Join(vars, `, `))
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(SQL, bindArgs...)
@@ -111,8 +124,8 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 		RowsAffected: rowsAffected,
 		Error:        err,
 	}
-	if debugFunc != nil {
-		debugFunc(l)
+	if opts.DebugFunc != nil {
+		opts.DebugFunc(l)
 	}
 	if err != nil {
 		return nil, err
@@ -122,26 +135,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 }
 
 func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, error) {
-	insertKey := "INSERT INTO"
-	if opts.InsertKey != "" {
-		insertKey = opts.InsertKey
-	}
-	placeholder := "?"
-	if opts.Placeholder != "" {
-		placeholder = opts.Placeholder
-	}
-	timeLayout := DefaultTimeLayout
-	if opts.TimeLayout != "" {
-		timeLayout = opts.TimeLayout
-	}
-	columnQuotes := "`"
-	if opts.ColumnQuotes != "" {
-		columnQuotes = opts.ColumnQuotes
-	}
-	var debugFunc DebugFunc
-	if opts.DebugFunc != nil {
-		debugFunc = opts.DebugFunc
-	}
+	opts = t.defaultOptions(opts)
 
 	fields := make([]string, 0)
 	valueSql := make([]string, 0)
@@ -208,17 +202,17 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 						continue
 					}
 
-					if placeholder == "?" {
-						vars = append(vars, placeholder)
+					if opts.Placeholder == "?" {
+						vars = append(vars, opts.Placeholder)
 					} else {
-						vars = append(vars, fmt.Sprintf(placeholder, ai))
+						vars = append(vars, fmt.Sprintf(opts.Placeholder, ai))
 						ai += 1
 					}
 
 					// time特殊处理
 					if subValue.Field(c).Type().String() == "time.Time" {
 						ti := subValue.Field(c).Interface().(time.Time)
-						bindArgs = append(bindArgs, ti.Format(timeLayout))
+						bindArgs = append(bindArgs, ti.Format(opts.TimeLayout))
 					} else {
 						bindArgs = append(bindArgs, subValue.Field(c).Interface())
 					}
@@ -234,7 +228,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 		return nil, errors.New("sql: only for struct array/slice type")
 	}
 
-	SQL := fmt.Sprintf(`%s %s (%s) VALUES %s`, insertKey, table, columnQuotes+strings.Join(fields, columnQuotes+", "+columnQuotes)+columnQuotes, strings.Join(valueSql, ", "))
+	SQL := fmt.Sprintf(`%s %s (%s) VALUES %s`, opts.InsertKey, table, opts.ColumnQuotes+strings.Join(fields, opts.ColumnQuotes+", "+opts.ColumnQuotes)+opts.ColumnQuotes, strings.Join(valueSql, ", "))
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(SQL, bindArgs...)
@@ -249,8 +243,8 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 		RowsAffected: rowsAffected,
 		Error:        err,
 	}
-	if debugFunc != nil {
-		debugFunc(l)
+	if opts.DebugFunc != nil {
+		opts.DebugFunc(l)
 	}
 	if err != nil {
 		return nil, err
@@ -260,22 +254,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 }
 
 func (t *executor) Update(data interface{}, expr string, args []interface{}, opts *Options) (sql.Result, error) {
-	placeholder := "?"
-	if opts.Placeholder != "" {
-		placeholder = opts.Placeholder
-	}
-	timeLayout := DefaultTimeLayout
-	if opts.TimeLayout != "" {
-		timeLayout = opts.TimeLayout
-	}
-	columnQuotes := "`"
-	if opts.ColumnQuotes != "" {
-		columnQuotes = opts.ColumnQuotes
-	}
-	var debugFunc DebugFunc
-	if opts.DebugFunc != nil {
-		debugFunc = opts.DebugFunc
-	}
+	opts = t.defaultOptions(opts)
 
 	set := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
@@ -283,6 +262,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	table := ""
 
 	value := reflect.ValueOf(data)
+	typ := reflect.TypeOf(data)
 	switch value.Kind() {
 	case reflect.Ptr:
 		return t.Update(value.Elem().Interface(), expr, args, opts)
@@ -293,30 +273,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 			table = value.Type().Name()
 		}
 
-		for i := 0; i < value.NumField(); i++ {
-			if !value.Field(i).CanInterface() {
-				continue
-			}
-
-			tag := value.Type().Field(i).Tag.Get("xsql")
-			if tag == "" || tag == "-" || tag == "_" {
-				continue
-			}
-
-			if placeholder == "?" {
-				set = append(set, fmt.Sprintf("%s = %s", columnQuotes+tag+columnQuotes, placeholder))
-			} else {
-				set = append(set, fmt.Sprintf("%s = %s", columnQuotes+tag+columnQuotes, fmt.Sprintf(placeholder, i)))
-			}
-
-			// time特殊处理
-			if value.Field(i).Type().String() == "time.Time" {
-				ti := value.Field(i).Interface().(time.Time)
-				bindArgs = append(bindArgs, ti.Format(timeLayout))
-			} else {
-				bindArgs = append(bindArgs, value.Field(i).Interface())
-			}
-		}
+		set, bindArgs = t.foreach(value, typ, opts)
 		break
 	default:
 		return nil, errors.New("sql: only for struct type")
@@ -343,8 +300,8 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 		RowsAffected: rowsAffected,
 		Error:        err,
 	}
-	if debugFunc != nil {
-		debugFunc(l)
+	if opts.DebugFunc != nil {
+		opts.DebugFunc(l)
 	}
 	if err != nil {
 		return nil, err
@@ -354,10 +311,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 }
 
 func (t *executor) Exec(query string, args []interface{}, opts *Options) (sql.Result, error) {
-	var debugFunc DebugFunc
-	if opts.DebugFunc != nil {
-		debugFunc = opts.DebugFunc
-	}
+	opts = t.defaultOptions(opts)
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(query, args...)
@@ -372,12 +326,49 @@ func (t *executor) Exec(query string, args []interface{}, opts *Options) (sql.Re
 		RowsAffected: rowsAffected,
 		Error:        err,
 	}
-	if debugFunc != nil {
-		debugFunc(l)
+	if opts.DebugFunc != nil {
+		opts.DebugFunc(l)
 	}
 	if err != nil {
 		return nil, err
 	}
 
 	return res, err
+}
+
+func (t *executor) foreach(value reflect.Value, typ reflect.Type, opts *Options) (set []string, bindArgs []interface{}) {
+	for n := 0; n < value.NumField(); n++ {
+		fieldValue := value.Field(n)
+		fieldStruct := typ.Field(n)
+		if fieldStruct.Anonymous {
+			s, b := t.foreach(fieldValue, fieldValue.Type(), opts)
+			set = append(set, s...)
+			bindArgs = append(bindArgs, b...)
+			continue
+		}
+
+		if !value.Field(n).CanInterface() {
+			continue
+		}
+
+		tag := value.Type().Field(n).Tag.Get("xsql")
+		if tag == "" || tag == "-" || tag == "_" {
+			continue
+		}
+
+		if opts.Placeholder == "?" {
+			set = append(set, fmt.Sprintf("%s = %s", opts.ColumnQuotes+tag+opts.ColumnQuotes, opts.Placeholder))
+		} else {
+			set = append(set, fmt.Sprintf("%s = %s", opts.ColumnQuotes+tag+opts.ColumnQuotes, fmt.Sprintf(opts.Placeholder, n)))
+		}
+
+		// time特殊处理
+		if value.Field(n).Type().String() == "time.Time" {
+			ti := value.Field(n).Interface().(time.Time)
+			bindArgs = append(bindArgs, ti.Format(opts.TimeLayout))
+		} else {
+			bindArgs = append(bindArgs, value.Field(n).Interface())
+		}
+	}
+	return
 }

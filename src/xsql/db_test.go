@@ -12,6 +12,34 @@ import (
 	"time"
 )
 
+type Test struct {
+	Id  int       `xsql:"id"`
+	Foo string    `xsql:"foo"`
+	Bar time.Time `xsql:"bar"`
+}
+
+func (t Test) TableName() string {
+	return "xsql"
+}
+
+type Test1 struct {
+	Id int `xsql:"id"`
+}
+
+func (t Test1) TableName() string {
+	return "xsql"
+}
+
+type Test2 struct {
+	Foo string    `xsql:"foo"`
+	Bar time.Time `xsql:"bar"`
+}
+
+type EmbeddingTest struct {
+	Test1
+	Test2
+}
+
 func newDB() *DB {
 	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8&multiStatements=true")
 	if err != nil {
@@ -82,16 +110,6 @@ func TestQuery(t *testing.T) {
 	a.Equal(bar, "2022-04-14 23:49:48")
 }
 
-type Test struct {
-	Id  int       `xsql:"id"`
-	Foo string    `xsql:"foo"`
-	Bar time.Time `xsql:"bar"`
-}
-
-func (t Test) TableName() string {
-	return "xsql"
-}
-
 func TestInsert(t *testing.T) {
 	a := assert.New(t)
 
@@ -125,6 +143,24 @@ func TestBatchInsert(t *testing.T) {
 		},
 	}
 	_, err := DB.BatchInsert(&tests)
+
+	a.Empty(err)
+}
+
+func TestEmbeddingUpdate(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+	test := EmbeddingTest{
+		Test1: Test1{
+			Id: 999,
+		},
+		Test2: Test2{
+			Foo: "test update",
+			Bar: time.Now(),
+		},
+	}
+	_, err := DB.Update(&test, "id = ?", 10)
 
 	a.Empty(err)
 }
@@ -169,10 +205,6 @@ func TestFirst(t *testing.T) {
 	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48+08:00"}`)
 }
 
-type EmbeddingTest struct {
-	Test
-}
-
 func TestEmbeddingFirst(t *testing.T) {
 	a := assert.New(t)
 
@@ -214,6 +246,21 @@ func TestFind(t *testing.T) {
 	}
 
 	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0800 CST} {Id:2 Foo:v1 Bar:2022-04-14 23:50:00 +0800 CST}]`)
+}
+
+func TestEmbeddingFind(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	var tests []EmbeddingTest
+	err := DB.Find(&tests, "SELECT * FROM xsql LIMIT 2")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	b, _ := json.Marshal(tests)
+	a.Equal(string(b), `[{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48+08:00"},{"Id":2,"Foo":"v1","Bar":"2022-04-14T23:50:00+08:00"}]`)
 }
 
 func TestFindPart(t *testing.T) {
