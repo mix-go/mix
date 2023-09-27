@@ -301,7 +301,7 @@ func (t *Fetcher) foreach(row *Row, value reflect.Value, typ reflect.Type, opts 
 		if !fieldValue.CanSet() {
 			continue
 		}
-		tag := value.Type().Field(n).Tag.Get("xsql")
+		tag := value.Type().Field(n).Tag.Get(Tag)
 		if tag == "-" || tag == "_" {
 			continue
 		}

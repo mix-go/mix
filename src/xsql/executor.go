@@ -291,7 +291,7 @@ func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *Op
 		}
 		isTime := value.Field(n).Type().String() == "time.Time"
 
-		tag := value.Type().Field(n).Tag.Get("xsql")
+		tag := value.Type().Field(n).Tag.Get(Tag)
 		if tag == "" || tag == "-" || tag == "_" {
 			continue
 		}
@@ -333,7 +333,7 @@ func (t *executor) foreachBatchInsertFields(value reflect.Value, typ reflect.Typ
 			continue
 		}
 
-		tag := value.Type().Field(n).Tag.Get("xsql")
+		tag := value.Type().Field(n).Tag.Get(Tag)
 		if tag == "" || tag == "-" || tag == "_" {
 			continue
 		}
@@ -358,7 +358,7 @@ func (t *executor) foreachBatchInsertVars(ai int, value reflect.Value, typ refle
 			continue
 		}
 
-		tag := value.Type().Field(n).Tag.Get("xsql")
+		tag := value.Type().Field(n).Tag.Get(Tag)
 		if tag == "" || tag == "-" || tag == "_" {
 			continue
 		}
@@ -396,7 +396,7 @@ func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *Op
 			continue
 		}
 
-		tag := value.Type().Field(n).Tag.Get("xsql")
+		tag := value.Type().Field(n).Tag.Get(Tag)
 		if tag == "" || tag == "-" || tag == "_" {
 			continue
 		}
