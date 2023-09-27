@@ -1,20 +1,18 @@
-> OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
+> OpenMix Production: [https://openmix.org](https://openmix.org/mix-go)
 
 ## Mix XSQL
 
-基于 database/sql 的轻量数据库，功能完备且支持任何数据库驱动。
+A lightweight database based on database/sql, feature complete and supports any database driver.
 
-A lightweight database based on database/sql
-
-## 安装
+## Installation
 
 ```
 go get github.com/mix-go/xsql
 ```
 
-## 初始化
+## Initialization
 
-- mysql 初始化，使用 [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) 驱动。
+- MySQL initialization, using [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) driver.
 
 ```go
 import _ "github.com/go-sql-driver/mysql"
@@ -27,7 +25,7 @@ if err != nil {
 DB := xsql.New(db)
 ```
 
-- oracle 初始化，使用 [sijms/go-ora/v2](https://github.com/sijms/go-ora) 驱动 (无需安装 instantclient)。
+- Oracle initialization, using [sijms/go-ora/v2](https://github.com/sijms/go-ora) driver (no need to install instantclient).
 
 ```go
 import _ "github.com/sijms/go-ora/v2"
@@ -37,16 +35,16 @@ if err != nil {
     log.Fatal(err)
 }
 
-DB := xsql.New(db, xsql.Oracle())
+DB := xsql.New(db, xsql.SwitchToOracle())
 ```
 
-- [xorm#drivers](https://github.com/go-xorm/xorm#drivers-support) 这些驱动也都支持
+- [xorm#drivers](https://github.com/go-xorm/xorm#drivers-support) These drivers are also supported
 
-## 查询
+## Query
 
-可以像脚本语言一样使用，不绑定结构体，直接自由获取每个字段的值。
+You can use it like a scripting language, not binding the struct, directly and freely get the value of each field.
 
-> oracle 字段、表名需要大写
+> Oracle field, table name needs to be uppercase
 
 ```go
 rows, err := DB.Query("SELECT * FROM xsql")
@@ -60,17 +58,17 @@ bar := rows[0].Get("bar").Time() // time.Time
 val := rows[0].Get("bar").Value() // interface{}
 ```
 
-### 映射
+### Mapping
 
-当然你也可以像 `gorm`, `xorm` 一样映射使用。
+Of course, you can also map usage like `gorm`, `xorm`.
 
-> oracle 字段、表名需要大写
+> Oracle field, table name needs to be uppercase
 
 ```go
 type Test struct {
 	Id  int       `xsql:"id"`
 	Foo string    `xsql:"foo"`
-	Bar time.Time `xsql:"bar"` // oracle 使用 goora.TimeStamp
+	Bar time.Time `xsql:"bar"` // oracle uses goora.TimeStamp
 }
 
 func (t Test) TableName() string {
@@ -80,9 +78,9 @@ func (t Test) TableName() string {
 
 ### `First()`
 
-映射第一行
+Map the first row
 
-> oracle 占位符需修改为 :id
+> Oracle placeholder needs to be modified to :id
 
 ```go
 var test Test
@@ -94,7 +92,7 @@ if err != nil {
 
 ### `Find()`
 
-映射全部行
+Map all rows
 
 ```go
 var tests []Test
@@ -104,7 +102,7 @@ if err != nil {
 }
 ```
 
-## 插入
+## Insert
 
 ### `Insert()`
 
@@ -141,9 +139,9 @@ if err != nil {
 }
 ```
 
-## 更新
+## Update
 
-> oracle 占位符需修改为 :id
+> Oracle placeholder needs to be modified to :id
 
 ```go
 test := Test{
@@ -154,17 +152,17 @@ test := Test{
 res, err := DB.Update(&test, "id = ?", 10)
 ```
 
-## 删除
+## Delete
 
-采用 `Exec()` 手动执行删除，也可手动执行更新操作。
+Use `Exec()` to manually execute the delete, you can also manually execute the update operation.
 
-> oracle 占位符需修改为 :id
+> Oracle placeholder needs to be modified to :id
 
 ```go
 res, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 10)
 ```
 
-## 事务
+## Transaction
 
 ```go
 tx, err := DB.Begin()
@@ -184,41 +182,41 @@ if err != nil {
 tx.Commit()
 ```
 
-## 配置
+## Configuration
 
-在 `xsql.New()` 方法中可以传入以下配置对象
+You can pass the following configuration object in the `xsql.New()` method
 
-- 默认为 mysql 模式，当切换到 oracle 时，需要[修改配置](https://github.com/mix-go/mix/blob/master/src/xsql/dbora_test.go#L18)
-- `Insert()`、`BatchInsert()` 可在执行时传入配置，覆盖 insert 相关的配置，比如将 InsertKey 修改为 REPLACE INTO
+- Default to mysql mode, when switching to oracle, you need to [modify the configuration](https://github.com/mix-go/mix/blob/master/src/xsql/dbora_test.go#L18)
+- `Insert()`, `BatchInsert()` can pass in configuration during execution to override insert related configuration, such as modifying InsertKey to REPLACE INTO
 
 ```go
 type Options struct {
-    // 默认: INSERT INTO
+    // Default: INSERT INTO
     InsertKey string
     
-    // 默认: ?
-    // oracle 可配置为 :%d
+    // Default: ?
+    // oracle can be configured as :%d
     Placeholder string
     
-    // 默认：`
-    // oracle 可配置为 "
+    // Default: `
+    // oracle can be configured as "
     ColumnQuotes string
     
-    // 默认：== DefaultTimeLayout
+    // Default: == DefaultTimeLayout
     TimeLayout string
 
-    // 默认：== DefaultTimeFunc
-    // oracle 可修改这个闭包增加 TO_TIMESTAMP
+    // Default: == DefaultTimeFunc
+    // oracle can modify this closure to add TO_TIMESTAMP
     TimeFunc TimeFunc
 
-    // 全局 debug SQL
+    // Global debug SQL
     DebugFunc DebugFunc
 }
 ```
 
-## 日志
+## Log
 
-在 `xsql.New()` 方法时传入配置 `DebugFunc`，可以在这里使用任何日志库打印SQL信息。
+Pass in the configuration `DebugFunc` when using the `xsql.New()` method, you can print SQL information using any log library here.
 
 ```go
 opts := Options{
@@ -229,7 +227,7 @@ opts := Options{
 DB := New(db, opts)
 ```
 
-日志对象包含以下字段
+The log object contains the following fields
 
 ```go
 type Log struct {
