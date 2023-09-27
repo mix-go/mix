@@ -19,7 +19,7 @@ type Fetcher struct {
 func (t *Fetcher) First(i interface{}) error {
 	value := reflect.ValueOf(i)
 	if value.Kind() != reflect.Ptr {
-		return errors.New("sql: argument can only be pointer type")
+		return errors.New("xsql: argument can only be pointer type")
 	}
 	rootValue := value.Elem()
 	rootType := reflect.TypeOf(i).Elem()
@@ -42,7 +42,7 @@ func (t *Fetcher) First(i interface{}) error {
 func (t *Fetcher) Find(i interface{}) error {
 	value := reflect.ValueOf(i)
 	if value.Kind() != reflect.Ptr {
-		return errors.New("sql: argument can only be pointer type")
+		return errors.New("xsql: argument can only be pointer type")
 	}
 	root := value.Elem()
 	itemType := root.Type().Elem()

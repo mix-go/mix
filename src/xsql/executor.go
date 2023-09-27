@@ -77,7 +77,7 @@ func (t *executor) Insert(data interface{}, opts *Options) (sql.Result, error) {
 		fields, vars, bindArgs = t.foreachInsert(value, typ, opts)
 		break
 	default:
-		return nil, errors.New("sql: only for struct type")
+		return nil, errors.New("xsql: only for struct type")
 	}
 
 	SQL := fmt.Sprintf(`%s %s (%s) VALUES (%s)`, opts.InsertKey, table, opts.ColumnQuotes+strings.Join(fields, opts.ColumnQuotes+", "+opts.ColumnQuotes)+opts.ColumnQuotes, strings.Join(vars, `, `))
@@ -122,10 +122,10 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 	case reflect.Array, reflect.Slice:
 		break
 	default:
-		return nil, errors.New("sql: only for struct array/slice type")
+		return nil, errors.New("xsql: only for struct array/slice type")
 	}
 	if value.Len() == 0 {
-		return nil, errors.New("sql: array/slice length cannot be 0")
+		return nil, errors.New("xsql: array/slice length cannot be 0")
 	}
 
 	// fields
@@ -143,7 +143,7 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 		fields = t.foreachBatchInsertFields(subValue, subType)
 		break
 	default:
-		return nil, errors.New("sql: only for struct array/slice type")
+		return nil, errors.New("xsql: only for struct array/slice type")
 	}
 
 	// values
@@ -158,12 +158,12 @@ func (t *executor) BatchInsert(array interface{}, opts *Options) (sql.Result, er
 				valueSql = append(valueSql, fmt.Sprintf("(%s)", strings.Join(vars, `, `)))
 				break
 			default:
-				return nil, errors.New("sql: only for struct array/slice type")
+				return nil, errors.New("xsql: only for struct array/slice type")
 			}
 		}
 		break
 	default:
-		return nil, errors.New("sql: only for struct array/slice type")
+		return nil, errors.New("xsql: only for struct array/slice type")
 	}
 
 	SQL := fmt.Sprintf(`%s %s (%s) VALUES %s`, opts.InsertKey, table, opts.ColumnQuotes+strings.Join(fields, opts.ColumnQuotes+", "+opts.ColumnQuotes)+opts.ColumnQuotes, strings.Join(valueSql, ", "))
@@ -214,7 +214,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 		set, bindArgs = t.foreachUpdate(value, typ, opts)
 		break
 	default:
-		return nil, errors.New("sql: only for struct type")
+		return nil, errors.New("xsql: only for struct type")
 	}
 
 	where := ""
