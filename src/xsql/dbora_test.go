@@ -1,8 +1,9 @@
-package xsql
+package xsql_test
 
 import (
 	"database/sql"
 	"fmt"
+	"github.com/mix-go/xsql"
 	ora "github.com/sijms/go-ora/v2"
 	"github.com/stretchr/testify/assert"
 	"log"
@@ -10,14 +11,14 @@ import (
 	"time"
 )
 
-func newOracleDB() *DB {
+func newOracleDB() *xsql.DB {
 	db, err := sql.Open("oracle", "oracle://root:123456@127.0.0.1:1521/orcl")
 	if err != nil {
 		log.Fatal(err)
 	}
-	return New(db, WithDebugFunc(func(l *Log) {
+	return xsql.New(db, xsql.WithDebugFunc(func(l *xsql.Log) {
 		log.Println(l)
-	}), SwitchToOracle())
+	}), xsql.SwitchToOracle())
 }
 
 func TestOracleClear(t *testing.T) {
@@ -39,7 +40,7 @@ func TestOracleQuery(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	bar := rows[0].Get("BAR").Time().Format(DefaultOptions.TimeLayout)
+	bar := rows[0].Get("BAR").Time().Format(xsql.DefaultOptions.TimeLayout)
 	fmt.Println(bar)
 
 	a.Equal(bar, "2022-04-14 23:49:48")

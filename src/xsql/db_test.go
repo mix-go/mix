@@ -1,10 +1,11 @@
-package xsql
+package xsql_test
 
 import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/mix-go/xsql"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"strings"
@@ -40,12 +41,12 @@ type EmbeddingTest struct {
 	Test2
 }
 
-func newDB() *DB {
+func newDB() *xsql.DB {
 	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8&multiStatements=true")
 	if err != nil {
 		log.Fatal(err)
 	}
-	return New(db, WithDebugFunc(func(l *Log) {
+	return xsql.New(db, xsql.WithDebugFunc(func(l *xsql.Log) {
 		log.Println(l)
 	}))
 }
