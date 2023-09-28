@@ -21,7 +21,7 @@ func newOracleDB() *xsql.DB {
 		xsql.WithDebugFunc(func(l *xsql.Log) {
 			log.Println(l)
 		}),
-		xsql.SwitchToOracle(),
+		xsql.UseOracle(),
 	)
 }
 

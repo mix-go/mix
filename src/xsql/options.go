@@ -106,7 +106,7 @@ func WithDebugFunc(f DebugFunc) SqlOption {
 	}}
 }
 
-func SwitchToOracle() SqlOption {
+func UseOracle() SqlOption {
 	return &funcSqlOption{func(opt *sqlOptions) {
 		opt.Placeholder = `:%d`
 		opt.ColumnQuotes = `"`
