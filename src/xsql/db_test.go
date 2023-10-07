@@ -219,7 +219,7 @@ func TestUpdate(t *testing.T) {
 
 	test := Test{
 		Id:  999,
-		Foo: "test",
+		Foo: "test update",
 		Bar: time.Now(),
 	}
 	_, err := DB.Update(&test, "id = ?", 10)

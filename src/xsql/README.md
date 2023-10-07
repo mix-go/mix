@@ -76,7 +76,7 @@ func (t Test) TableName() string {
 }
 ```
 
-### First()
+### First
 
 Map the first row
 
@@ -90,7 +90,7 @@ if err != nil {
 }
 ```
 
-### Find()
+### Find
 
 Map all rows
 
@@ -144,7 +144,7 @@ if err != nil {
 ```go
 test := Test{
     Id:  10,
-    Foo: "update",
+    Foo: "test",
     Bar: time.Now(),
 }
 res, err := DB.Update(&test, "id = ?", 10)

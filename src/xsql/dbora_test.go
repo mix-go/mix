@@ -76,7 +76,7 @@ func TestOracleInsert(t *testing.T) {
 }
 
 // oracle 不支持批量插入
-func _TestOracleBatchInsert(t *testing.T) {
+func __TestOracleBatchInsert(t *testing.T) {
 	a := assert.New(t)
 
 	DB := newOracleDB()
@@ -84,12 +84,12 @@ func _TestOracleBatchInsert(t *testing.T) {
 	tests := []TestOracle{
 		{
 			Id:  4,
-			Foo: "test",
+			Foo: "test1",
 			Bar: ora.TimeStamp(time.Now()),
 		},
 		{
 			Id:  5,
-			Foo: "test",
+			Foo: "test2",
 			Bar: ora.TimeStamp(time.Now()),
 		},
 	}
@@ -187,7 +187,7 @@ func TestOracleTxCommit(t *testing.T) {
 	tx, _ := DB.Begin()
 
 	test := TestOracle{
-		Id:  999,
+		Id:  998, // oracle not support AUTO_INCREMENT
 		Foo: "test",
 		Bar: ora.TimeStamp(time.Now()),
 	}
@@ -206,7 +206,7 @@ func TestOracleTxRollback(t *testing.T) {
 	tx, _ := DB.Begin()
 
 	test := TestOracle{
-		Id:  998,
+		Id:  999, // oracle not support AUTO_INCREMENT
 		Foo: "test",
 		Bar: ora.TimeStamp(time.Now()),
 	}
