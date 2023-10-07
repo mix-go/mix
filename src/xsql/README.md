@@ -204,32 +204,32 @@ You can pass the following configuration object in the `xsql.New()` method
 
 ```go
 type sqlOptions struct {
-    // Default: xsql
-    Tag string
-    
-    // Default: INSERT INTO
-    InsertKey string
+	// Default: xsql
+	Tag string
 
-    // Default: ${TABLE}
-    TableKey string
-    
-    // Default: ?
-    // oracle can be configured as :%d
-    Placeholder string
-    
-    // Default: `
-    // oracle can be configured as "
-    ColumnQuotes string
-    
-    // Default: == DefaultTimeLayout
-    TimeLayout string
+	// Default: INSERT INTO
+	InsertKey string
 
-    // Default: == DefaultTimeFunc
-    // oracle can modify this closure to add TO_TIMESTAMP
-    TimeFunc TimeFunc
+	// Default: ${TABLE}
+	TableKey string
 
-    // Global debug SQL
-    DebugFunc DebugFunc
+	// Default: ?
+	// For oracle, can be configured as :%d
+	Placeholder string
+
+	// Default: `
+	// For oracle, can be configured as "
+	ColumnQuotes string
+
+	// Default: 2006-01-02 15:04:05
+	TimeLayout string
+
+	// Default: func(placeholder string) string { return placeholder }
+	// For oracle, this closure can be modified to add TO_TIMESTAMP
+	TimeFunc TimeFunc
+
+	// Global debug SQL
+	DebugFunc DebugFunc
 }
 ```
 
