@@ -9,3 +9,7 @@ type Executor interface {
 type Query interface {
 	Query(query string, args ...interface{}) (*sql.Rows, error)
 }
+
+type Table interface {
+	TableName() string
+}

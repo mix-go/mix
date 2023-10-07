@@ -252,7 +252,7 @@ func TestFirst(t *testing.T) {
 	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48+08:00"}`)
 }
 
-func TestEmbeddingFirst(t *testing.T) {
+func TestFirstEmbedding(t *testing.T) {
 	a := assert.New(t)
 
 	DB := newDB()
@@ -279,6 +279,21 @@ func TestFirstPart(t *testing.T) {
 	}
 
 	a.Equal(fmt.Sprintf("%+v", test), "{Id:0 Foo:v Bar:0001-01-01 00:00:00 +0000 UTC}")
+}
+
+func TestFirstTableKey(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	var test Test
+	err := DB.First(&test, "SELECT * FROM ${TABLE}")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	b, _ := json.Marshal(test)
+	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48+08:00"}`)
 }
 
 func TestFind(t *testing.T) {
@@ -322,6 +337,20 @@ func TestFindPart(t *testing.T) {
 	}
 
 	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:0 Foo:v Bar:0001-01-01 00:00:00 +0000 UTC} {Id:0 Foo:v1 Bar:0001-01-01 00:00:00 +0000 UTC}]`)
+}
+
+func TestFindTableKey(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	var tests []Test
+	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 2")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0800 CST} {Id:2 Foo:v1 Bar:2022-04-14 23:50:00 +0800 CST}]`)
 }
 
 func TestTxCommit(t *testing.T) {

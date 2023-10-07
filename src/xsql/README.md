@@ -84,7 +84,7 @@ Map the first row
 
 ```go
 var test Test
-err := DB.First(&test, "SELECT * FROM xsql WHERE id = ?", 1)
+err := DB.First(&test, "SELECT * FROM ${TABLE} WHERE id = ?", 1)
 if err != nil {
     log.Fatal(err)
 }
@@ -96,7 +96,7 @@ Map all rows
 
 ```go
 var tests []Test
-err := DB.Find(&tests, "SELECT * FROM xsql")
+err := DB.Find(&tests, "SELECT * FROM ${TABLE}")
 if err != nil {
     log.Fatal(err)
 }

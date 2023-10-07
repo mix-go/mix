@@ -8,6 +8,7 @@ func newDefaultOptions() sqlOptions {
 	return sqlOptions{
 		Tag:          "xsql",
 		InsertKey:    "INSERT INTO",
+		TableKey:     "${TABLE}",
 		Placeholder:  "?",
 		ColumnQuotes: "`",
 		TimeLayout:   "2006-01-02 15:04:05",
@@ -24,6 +25,9 @@ type sqlOptions struct {
 
 	// Default: INSERT INTO
 	InsertKey string
+
+	// Default: ${TABLE}
+	TableKey string
 
 	// Default: ?
 	// For oracle, can be configured as :%d

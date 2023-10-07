@@ -9,10 +9,6 @@ import (
 	"time"
 )
 
-type Table interface {
-	TableName() string
-}
-
 type executor struct {
 	Executor
 }

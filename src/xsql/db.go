@@ -2,6 +2,8 @@ package xsql
 
 import (
 	"database/sql"
+	"reflect"
+	"strings"
 )
 
 type TimeFunc func(placeholder string) string
@@ -82,6 +84,7 @@ func (t *DB) Query(query string, args ...interface{}) ([]Row, error) {
 }
 
 func (t *DB) Find(i interface{}, query string, args ...interface{}) error {
+	query = t.tableComplete(i, query)
 	f, err := t.query.Fetch(query, args, t.Options)
 	if err != nil {
 		return err
@@ -93,6 +96,7 @@ func (t *DB) Find(i interface{}, query string, args ...interface{}) error {
 }
 
 func (t *DB) First(i interface{}, query string, args ...interface{}) error {
+	query = t.tableComplete(i, query)
 	f, err := t.query.Fetch(query, args, t.Options)
 	if err != nil {
 		return err
@@ -101,4 +105,39 @@ func (t *DB) First(i interface{}, query string, args ...interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func (t *DB) tableComplete(i interface{}, query string) string {
+	var table string
+
+	value := reflect.ValueOf(i)
+	switch value.Kind() {
+	case reflect.Ptr:
+		return t.tableComplete(value.Elem().Interface(), query)
+	case reflect.Struct:
+		if tab, ok := i.(Table); ok {
+			table = tab.TableName()
+		} else {
+			table = value.Type().Name()
+		}
+		break
+	case reflect.Array, reflect.Slice:
+		typ := value.Type().Elem()
+		switch typ.Kind() {
+		case reflect.Struct:
+			if tab, ok := reflect.New(typ).Interface().(Table); ok {
+				table = tab.TableName()
+			} else {
+				table = typ.Name()
+			}
+			break
+		default:
+			return query // err
+		}
+		break
+	default:
+		return query // err
+	}
+
+	return strings.Replace(query, "${TABLE}", table, 1)
 }

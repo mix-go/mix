@@ -57,8 +57,7 @@ func (t *Fetcher) Find(i interface{}) error {
 		if itemValue.Kind() == reflect.Ptr {
 			itemValue = itemValue.Elem()
 		}
-		itemType := itemValue.Type()
-		if err := t.foreach(&rows[r], itemValue, itemType, t.Options); err != nil {
+		if err := t.foreach(&rows[r], itemValue, itemValue.Type(), t.Options); err != nil {
 			return err
 		}
 		root.Set(reflect.Append(root, itemValue))
