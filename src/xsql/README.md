@@ -160,7 +160,7 @@ test := Test{
     Foo: "test",
     Bar: time.Now(),
 }
-res, err := DB.Delete(&test, "DELETE FROM ${TABLE} WHERE id = ?", test.Id)
+res, err := DB.Delete(&test, "id = ?", test.Id)
 ```
 
 ## Exec

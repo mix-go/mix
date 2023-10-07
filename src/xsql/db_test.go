@@ -237,7 +237,7 @@ func TestDelete(t *testing.T) {
 		Foo: "test",
 		Bar: time.Now(),
 	}
-	_, err := DB.Delete(&test, "DELETE FROM ${TABLE} WHERE id = ?", test.Id)
+	_, err := DB.Delete(&test, "id = ?", test.Id)
 
 	a.Empty(err)
 }

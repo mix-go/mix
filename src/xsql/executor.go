@@ -202,6 +202,57 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	return res, nil
 }
 
+func (t *executor) Delete(data interface{}, expr string, args []interface{}, opts *sqlOptions) (sql.Result, error) {
+	bindArgs := make([]interface{}, 0)
+
+	table := ""
+
+	value := reflect.ValueOf(data)
+	switch value.Kind() {
+	case reflect.Ptr:
+		return t.Delete(value.Elem().Interface(), expr, args, opts)
+	case reflect.Struct:
+		if tab, ok := data.(Table); ok {
+			table = tab.TableName()
+		} else {
+			table = value.Type().Name()
+		}
+		break
+	default:
+		return nil, errors.New("xsql: only for struct type")
+	}
+
+	where := ""
+	if expr != "" {
+		where = fmt.Sprintf(` WHERE %s`, expr)
+		bindArgs = append(bindArgs, args...)
+	}
+
+	SQL := fmt.Sprintf(`DELETE FROM %s%s`, table, where)
+
+	startTime := time.Now()
+	res, err := t.Executor.Exec(SQL, bindArgs...)
+	var rowsAffected int64
+	if res != nil {
+		rowsAffected, _ = res.RowsAffected()
+	}
+	l := &Log{
+		Duration:     time.Now().Sub(startTime),
+		SQL:          SQL,
+		Bindings:     bindArgs,
+		RowsAffected: rowsAffected,
+		Error:        err,
+	}
+	if opts.DebugFunc != nil {
+		opts.DebugFunc(l)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 func (t *executor) Exec(query string, args []interface{}, opts *sqlOptions) (sql.Result, error) {
 	startTime := time.Now()
 	res, err := t.Executor.Exec(query, args...)

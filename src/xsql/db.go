@@ -48,9 +48,8 @@ func (t *DB) Update(data interface{}, expr string, args ...interface{}) (sql.Res
 	return t.executor.Update(data, expr, args, t.Options)
 }
 
-func (t *DB) Delete(i interface{}, query string, args ...interface{}) (sql.Result, error) {
-	query = t.tableComplete(i, query)
-	return t.executor.Exec(query, args, t.Options)
+func (t *DB) Delete(data interface{}, expr string, args ...interface{}) (sql.Result, error) {
+	return t.executor.Delete(data, expr, args, t.Options)
 }
 
 func (t *DB) Exec(query string, args ...interface{}) (sql.Result, error) {
