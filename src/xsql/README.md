@@ -104,8 +104,6 @@ if err != nil {
 
 ## Insert
 
-### Insert()
-
 ```go
 test := Test{
     Id:  0,
@@ -118,7 +116,7 @@ if err != nil {
 }
 ```
 
-### BatchInsert()
+## BatchInsert
 
 ```go
 tests := []Test{
