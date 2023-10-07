@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package testdata;
+option go_package = "./;testdata";
+
+import "google/api/annotations.proto";
+
+service AppMessages {
+  rpc Send(SendRequest) returns (SendResponse) {
+    option (google.api.http) = {
+      post: "/inner/send_message"
+      body: "*"
+    };
+  }
+}
+
+message SendRequest {
+  string text = 1;
+  string parse_mode = 2;
+}
+
+message SendResponse {
+  int64 message_id = 1;
+}

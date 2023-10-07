@@ -1,3 +1,5 @@
+> Produced by OpenMix: [https://openmix.org](https://openmix.org/mix-go)
+
 # XRPC
 
 Assistant for gRPC and Gateway
@@ -50,31 +52,44 @@ Add Import Paths: `$GOPATH`/src
 
 ## Best Practices
 
-- method name: `RequestForRelease` PascalCase
-- field Name: `string order_number = 1;` snake_case
-- grpc gateway url (api url): `/v1/request_for_release` snake_case
-- website url: `/request-for-release` kebab-case
+- .proto [style](https://protobuf.dev/programming-guides/style/#message-field-names)
+    - service name: `AppMessages` PascalCase
+    - method name: `SendMessage` PascalCase
+    - field Name: `string parse_mode = 1;` snake_case
+- urls:
+    - website url: `/send-message` kebab-case
+    - grpc gateway url: inner api: `/inner/send_message` snake_case
+    - grpc gateway url: open api: `/v1/send_message` snake_case
+- .yaml
+    - file name: `config_dev.yaml` snake_case
+    - field Name: `clientId` camelCase
+- mysql:
+    - table name: `app_messages` snake_case
+    - field name: `client_id` snake_case
+- mongodb:
+    - table name: `app_messages` snake_case
+    - field name: Unrestricted, as it depends on the 3rd party, storing raw data
+- aws secrets manager:
+    - name: `Service-Test` Pascal-Case
+    - key: `googleapis_credentials` snake_case
 
-```
-// .proto
-service Order {
-  rpc RequestForRelease(ReleaseRequest) returns (ReleaseResponse) {
+```proto
+service AppMessages {
+  rpc Send(SendRequest) returns (SendResponse) {
     option (google.api.http) = {
-      post: "/v1/request_for_release"
+      post: "/inner/send_message"
       body: "*"
     };
   }
 }
 
-message ReleaseRequest {
-  string order_number = 1;
-  string requester = 2;
-  string approver = 3;
+message SendRequest {
+  string text = 1;
+  string parse_mode = 2;
 }
 
-message ReleaseResponse {
-  int64 code = 1;
-  string message = 2;
+message SendResponse {
+  int64 message_id = 1;
 }
 ```
 
@@ -334,3 +349,7 @@ New by bytes
 ```go
 tlsConf, err := xrpc.NewClientTLSConfig([]byte{}, []byte{}, []byte{})
 ```
+
+## License
+
+Apache License Version 2.0, http://www.apache.org/licenses/

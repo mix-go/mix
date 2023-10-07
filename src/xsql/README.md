@@ -1,4 +1,4 @@
-> OpenMix Production: [https://openmix.org](https://openmix.org/mix-go)
+> Produced by OpenMix: [https://openmix.org](https://openmix.org/mix-go)
 
 ## Mix XSQL
 
