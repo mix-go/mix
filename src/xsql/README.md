@@ -154,6 +154,19 @@ res, err := DB.Update(&test, "id = ?", 10)
 
 ## Delete
 
+> Oracle placeholder needs to be modified to :id
+
+```go
+test := Test{
+    Id:  10,
+    Foo: "test",
+    Bar: time.Now(),
+}
+res, err := DB.Delete(&test, "DELETE FROM ${TABLE} WHERE id = ?", test.Id)
+```
+
+## Exec
+
 Use `Exec()` to manually execute the delete, you can also manually execute the update operation.
 
 > Oracle placeholder needs to be modified to :id
@@ -196,6 +209,9 @@ type sqlOptions struct {
     
     // Default: INSERT INTO
     InsertKey string
+
+	// Default: ${TABLE}
+	TableKey string
     
     // Default: ?
     // oracle can be configured as :%d

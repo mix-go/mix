@@ -85,7 +85,7 @@ func TestDebugFunc(t *testing.T) {
 
 	test := Test{
 		Id:  0,
-		Foo: "test update",
+		Foo: "test",
 		Bar: time.Now(),
 	}
 	_, err := DB.Update(&test, "id = ?", 0)
@@ -219,10 +219,25 @@ func TestUpdate(t *testing.T) {
 
 	test := Test{
 		Id:  999,
-		Foo: "test update",
+		Foo: "test",
 		Bar: time.Now(),
 	}
 	_, err := DB.Update(&test, "id = ?", 10)
+
+	a.Empty(err)
+}
+
+func TestDelete(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	test := Test{
+		Id:  10,
+		Foo: "test",
+		Bar: time.Now(),
+	}
+	_, err := DB.Delete(&test, "DELETE FROM ${TABLE} WHERE id = ?", test.Id)
 
 	a.Empty(err)
 }
