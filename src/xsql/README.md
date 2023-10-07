@@ -210,8 +210,8 @@ type sqlOptions struct {
     // Default: INSERT INTO
     InsertKey string
 
-	// Default: ${TABLE}
-	TableKey string
+    // Default: ${TABLE}
+    TableKey string
     
     // Default: ?
     // oracle can be configured as :%d
