@@ -17,7 +17,7 @@ secret := googleauthenticator.GenerateSecret()
 Generate Code
 
 ```go
-code := googleauthenticator.GenerateToken()
+code := googleauthenticator.GenerateToken(secret)
 ```
 
 Verify Code
