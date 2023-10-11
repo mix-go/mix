@@ -200,8 +200,11 @@ func (t *RowResult) String() string {
 	case reflect.String:
 		return t.v.(string)
 	default:
-		if b, ok := t.v.([]uint8); ok {
-			return string(b)
+		switch v := t.v.(type) {
+		case []uint8:
+			return string(v)
+		case time.Time:
+			return v.Format(t.options.TimeLayout)
 		}
 	}
 	return ""

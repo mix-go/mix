@@ -42,7 +42,7 @@ type EmbeddingTest struct {
 }
 
 func newDB() *xsql.DB {
-	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8&multiStatements=true")
+	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8&parseTime=true&loc=UTC&multiStatements=true")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -264,7 +264,7 @@ func TestFirst(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(test)
-	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48+08:00"}`)
+	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48Z"}`)
 }
 
 func TestFirstEmbedding(t *testing.T) {
@@ -279,7 +279,7 @@ func TestFirstEmbedding(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(test)
-	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48+08:00"}`)
+	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48Z"}`)
 }
 
 func TestFirstPart(t *testing.T) {
@@ -308,7 +308,7 @@ func TestFirstTableKey(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(test)
-	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48+08:00"}`)
+	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48Z"}`)
 }
 
 func TestFind(t *testing.T) {
@@ -322,7 +322,7 @@ func TestFind(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0800 CST} {Id:2 Foo:v1 Bar:2022-04-14 23:50:00 +0800 CST}]`)
+	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0000 UTC} {Id:2 Foo:v1 Bar:2022-04-14 23:50:00 +0000 UTC}]`)
 }
 
 func TestEmbeddingFind(t *testing.T) {
@@ -337,7 +337,7 @@ func TestEmbeddingFind(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(tests)
-	a.Equal(string(b), `[{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48+08:00"},{"Id":2,"Foo":"v1","Bar":"2022-04-14T23:50:00+08:00"}]`)
+	a.Equal(string(b), `[{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48Z"},{"Id":2,"Foo":"v1","Bar":"2022-04-14T23:50:00Z"}]`)
 }
 
 func TestFindPart(t *testing.T) {
@@ -365,7 +365,7 @@ func TestFindTableKey(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0800 CST} {Id:2 Foo:v1 Bar:2022-04-14 23:50:00 +0800 CST}]`)
+	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0000 UTC} {Id:2 Foo:v1 Bar:2022-04-14 23:50:00 +0000 UTC}]`)
 }
 
 func TestTxCommit(t *testing.T) {
