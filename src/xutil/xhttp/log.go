@@ -1,7 +1,6 @@
 package xhttp
 
 import (
-	"net/http"
 	"time"
 )
 
@@ -14,14 +13,14 @@ type Log struct {
 
 type DebugFunc func(l *Log)
 
-func doDebug(opts *requestOptions, duration time.Duration, req *http.Request, resp *XResponse, err error) {
+func doDebug(opts *requestOptions, duration time.Duration, req *XRequest, resp *XResponse, err error) {
 	if opts.DebugFunc == nil {
 		return
 	}
 
 	l := &Log{
 		Duration: duration,
-		Request:  newXRequest(req),
+		Request:  req,
 		Response: resp,
 		Error:    err,
 	}

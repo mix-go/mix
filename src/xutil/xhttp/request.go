@@ -1,11 +1,11 @@
 package xhttp
 
 import (
+	"bytes"
 	"github.com/mix-go/xutil/xconv"
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 )
 
@@ -29,16 +29,22 @@ func newXRequest(r *http.Request) *XRequest {
 	if r == nil {
 		return nil
 	}
-	resp := &XRequest{
+	req := &XRequest{
 		Request: r,
 	}
-	b, err := io.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		return resp
+
+	if r.Body == nil {
+		return req
 	}
-	resp.Body = b
-	return resp
+
+	defer r.Body.Close()
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		return req
+	}
+	req.Body = b
+	r.Body = io.NopCloser(bytes.NewReader(b))
+	return req
 }
 
 func newXResponse(r *http.Response) *XResponse {
@@ -48,8 +54,13 @@ func newXResponse(r *http.Response) *XResponse {
 	resp := &XResponse{
 		Response: r,
 	}
-	b, err := io.ReadAll(r.Body)
+
+	if r.Body == nil {
+		return resp
+	}
+
 	defer r.Body.Close()
+	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		return resp
 	}
@@ -69,15 +80,15 @@ func Request(method string, u string, opts ...RequestOption) (*XResponse, error)
 		Header: o.Header,
 	}
 	if o.Body != nil {
-		req.Body = io.NopCloser(strings.NewReader(o.Body.String()))
+		req.Body = io.NopCloser(bytes.NewReader(o.Body))
 	}
 
 	if o.RetryOptions != nil {
 		return doRetry(o, func() (*XResponse, error) {
-			return do(o, req)
+			return doRequest(o, req)
 		})
 	}
-	return do(o, req)
+	return doRequest(o, req)
 }
 
 func Do(req *http.Request, opts ...RequestOption) (*XResponse, error) {
@@ -85,23 +96,24 @@ func Do(req *http.Request, opts ...RequestOption) (*XResponse, error) {
 
 	if o.RetryOptions != nil {
 		return doRetry(o, func() (*XResponse, error) {
-			return do(o, req)
+			return doRequest(o, req)
 		})
 	}
-	return do(o, req)
+	return doRequest(o, req)
 }
 
-func do(opts *requestOptions, req *http.Request) (*XResponse, error) {
+func doRequest(opts *requestOptions, req *http.Request) (*XResponse, error) {
 	cli := http.Client{
 		Timeout: opts.Timeout,
 	}
 	startTime := time.Now()
+	xreq := newXRequest(req)
 	r, err := cli.Do(req)
 	if err != nil {
-		doDebug(opts, time.Now().Sub(startTime), req, nil, err)
+		doDebug(opts, time.Now().Sub(startTime), xreq, nil, err)
 		return nil, err
 	}
-	resp := newXResponse(r)
-	doDebug(opts, time.Now().Sub(startTime), req, resp, nil)
-	return resp, nil
+	xresp := newXResponse(r)
+	doDebug(opts, time.Now().Sub(startTime), xreq, xresp, nil)
+	return xresp, nil
 }
