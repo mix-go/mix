@@ -132,3 +132,10 @@ func UseOracle() SqlOption {
 		}
 	}}
 }
+
+func (t *sqlOptions) doDebug(l *Log) {
+	if t.DebugFunc == nil {
+		return
+	}
+	t.DebugFunc(l)
+}

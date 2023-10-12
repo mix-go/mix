@@ -19,9 +19,7 @@ func (t *query) Fetch(query string, args []interface{}, opts *sqlOptions) (*Fetc
 		Error:        err,
 	}
 	if err != nil {
-		if opts.DebugFunc != nil {
-			opts.DebugFunc(l)
-		}
+		opts.doDebug(l)
 		return nil, err
 	}
 

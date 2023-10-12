@@ -53,9 +53,7 @@ func (t *executor) Insert(data interface{}, opts *sqlOptions) (sql.Result, error
 		RowsAffected: rowsAffected,
 		Error:        err,
 	}
-	if opts.DebugFunc != nil {
-		opts.DebugFunc(l)
-	}
+	opts.doDebug(l)
 	if err != nil {
 		return nil, err
 	}
@@ -137,9 +135,7 @@ func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result,
 		RowsAffected: rowsAffected,
 		Error:        err,
 	}
-	if opts.DebugFunc != nil {
-		opts.DebugFunc(l)
-	}
+	opts.doDebug(l)
 	if err != nil {
 		return nil, err
 	}
@@ -192,9 +188,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 		RowsAffected: rowsAffected,
 		Error:        err,
 	}
-	if opts.DebugFunc != nil {
-		opts.DebugFunc(l)
-	}
+	opts.doDebug(l)
 	if err != nil {
 		return nil, err
 	}
@@ -243,9 +237,7 @@ func (t *executor) Delete(data interface{}, expr string, args []interface{}, opt
 		RowsAffected: rowsAffected,
 		Error:        err,
 	}
-	if opts.DebugFunc != nil {
-		opts.DebugFunc(l)
-	}
+	opts.doDebug(l)
 	if err != nil {
 		return nil, err
 	}
@@ -267,9 +259,7 @@ func (t *executor) Exec(query string, args []interface{}, opts *sqlOptions) (sql
 		RowsAffected: rowsAffected,
 		Error:        err,
 	}
-	if opts.DebugFunc != nil {
-		opts.DebugFunc(l)
-	}
+	opts.doDebug(l)
 	if err != nil {
 		return nil, err
 	}

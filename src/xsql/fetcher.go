@@ -67,12 +67,6 @@ func (t *Fetcher) Find(i interface{}) error {
 }
 
 func (t *Fetcher) Rows() ([]Row, error) {
-	var debugFunc DebugFunc
-	if t.options.DebugFunc != nil {
-		debugFunc = t.options.DebugFunc
-	}
-
-	// 获取列名
 	columns, err := t.r.Columns()
 	if err != nil {
 		return nil, err
@@ -112,10 +106,8 @@ func (t *Fetcher) Rows() ([]Row, error) {
 		})
 	}
 
-	if debugFunc != nil {
-		t.log.RowsAffected = int64(len(rows))
-		debugFunc(t.log)
-	}
+	t.log.RowsAffected = int64(len(rows))
+	t.options.doDebug(t.log)
 
 	return rows, nil
 }
