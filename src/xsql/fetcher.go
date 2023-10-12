@@ -11,9 +11,9 @@ import (
 )
 
 type Fetcher struct {
-	R       *sql.Rows
-	Log     *Log
-	Options *sqlOptions
+	r       *sql.Rows
+	log     *Log
+	options *sqlOptions
 }
 
 func (t *Fetcher) First(i interface{}) error {
@@ -68,12 +68,12 @@ func (t *Fetcher) Find(i interface{}) error {
 
 func (t *Fetcher) Rows() ([]Row, error) {
 	var debugFunc DebugFunc
-	if t.Options.DebugFunc != nil {
-		debugFunc = t.Options.DebugFunc
+	if t.options.DebugFunc != nil {
+		debugFunc = t.options.DebugFunc
 	}
 
 	// 获取列名
-	columns, err := t.R.Columns()
+	columns, err := t.r.Columns()
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +92,8 @@ func (t *Fetcher) Rows() ([]Row, error) {
 	// Fetch rows
 	var rows []Row
 
-	for t.R.Next() {
-		err = t.R.Scan(scanArgs...)
+	for t.r.Next() {
+		err = t.r.Scan(scanArgs...)
 		if err != nil {
 			return nil, err
 		}
@@ -108,13 +108,13 @@ func (t *Fetcher) Rows() ([]Row, error) {
 
 		rows = append(rows, Row{
 			v:       rowMap,
-			options: t.Options,
+			options: t.options,
 		})
 	}
 
 	if debugFunc != nil {
-		t.Log.RowsAffected = int64(len(rows))
-		debugFunc(t.Log)
+		t.log.RowsAffected = int64(len(rows))
+		debugFunc(t.log)
 	}
 
 	return rows, nil
@@ -298,7 +298,7 @@ func (t *Fetcher) foreach(row *Row, value reflect.Value, typ reflect.Type) error
 		if !fieldValue.CanSet() {
 			continue
 		}
-		tag := value.Type().Field(n).Tag.Get(t.Options.Tag)
+		tag := value.Type().Field(n).Tag.Get(t.options.Tag)
 		if tag == "-" || tag == "_" {
 			continue
 		}
@@ -354,7 +354,7 @@ func (t *Fetcher) mapped(field reflect.Value, row *Row, tag string) (err error) 
 		if !res.Empty() &&
 			field.Type().String() == "time.Time" &&
 			reflect.ValueOf(v).Type().String() != "time.Time" {
-			if t, e := time.ParseInLocation(t.Options.TimeLayout, res.String(), t.Options.TimeLocation); e == nil {
+			if t, e := time.ParseInLocation(t.options.TimeLayout, res.String(), t.options.TimeLocation); e == nil {
 				v = t
 			} else {
 				return fmt.Errorf("time parse fail for field %s: %v", tag, e)

@@ -26,9 +26,9 @@ func (t *query) Fetch(query string, args []interface{}, opts *sqlOptions) (*Fetc
 	}
 
 	f := &Fetcher{
-		R:       r,
-		Log:     l,
-		Options: opts,
+		r:       r,
+		log:     l,
+		options: opts,
 	}
 	return f, err
 }
