@@ -222,6 +222,9 @@ type sqlOptions struct {
 	// Default: 2006-01-02 15:04:05
 	TimeLayout string
 
+	// Default: time.Local
+	TimeLocation *time.Location
+
 	// Default: func(placeholder string) string { return placeholder }
 	// For oracle, this closure can be modified to add TO_TIMESTAMP
 	TimeFunc TimeFunc
