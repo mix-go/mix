@@ -357,7 +357,7 @@ func (t *Fetcher) mapped(field reflect.Value, row *Row, tag string, opts *sqlOpt
 		if !res.Empty() &&
 			field.Type().String() == "time.Time" &&
 			reflect.ValueOf(v).Type().String() != "time.Time" {
-			if t, e := time.ParseInLocation(timeLayout, res.String(), time.Local); e == nil {
+			if t, e := time.ParseInLocation(timeLayout, res.String(), t.Options.TimeLocation); e == nil {
 				v = t
 			} else {
 				return fmt.Errorf("time parse fail for field %s: %v", tag, e)

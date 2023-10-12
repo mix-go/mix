@@ -46,9 +46,13 @@ func newDB() *xsql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return xsql.New(db, xsql.WithDebugFunc(func(l *xsql.Log) {
-		log.Println(l)
-	}))
+	return xsql.New(
+		db,
+		xsql.WithDebugFunc(func(l *xsql.Log) {
+			log.Println(l)
+		}),
+		xsql.WithTimeLocation(time.UTC),
+	)
 }
 
 func TestCreateTable(t *testing.T) {

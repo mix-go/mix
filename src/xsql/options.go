@@ -1,6 +1,9 @@
 package xsql
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 var DefaultOptions = newDefaultOptions()
 
@@ -12,6 +15,7 @@ func newDefaultOptions() sqlOptions {
 		Placeholder:  "?",
 		ColumnQuotes: "`",
 		TimeLayout:   "2006-01-02 15:04:05",
+		TimeLocation: time.Local,
 		TimeFunc: func(placeholder string) string {
 			return placeholder
 		},
@@ -39,6 +43,9 @@ type sqlOptions struct {
 
 	// Default: 2006-01-02 15:04:05
 	TimeLayout string
+
+	// Default: time.Local
+	TimeLocation *time.Location
 
 	// Default: func(placeholder string) string { return placeholder }
 	// For oracle, this closure can be modified to add TO_TIMESTAMP
@@ -95,6 +102,12 @@ func WithColumnQuotes(columnQuotes string) SqlOption {
 func WithTimeLayout(timeLayout string) SqlOption {
 	return &funcSqlOption{func(opt *sqlOptions) {
 		opt.TimeLayout = timeLayout
+	}}
+}
+
+func WithTimeLocation(timeLocation *time.Location) SqlOption {
+	return &funcSqlOption{func(opt *sqlOptions) {
+		opt.TimeLocation = timeLocation
 	}}
 }
 

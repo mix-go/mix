@@ -21,6 +21,7 @@ func newOracleDB() *xsql.DB {
 		xsql.WithDebugFunc(func(l *xsql.Log) {
 			log.Println(l)
 		}),
+		xsql.WithTimeLocation(time.UTC),
 		xsql.UseOracle(),
 	)
 }
