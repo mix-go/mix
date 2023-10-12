@@ -29,11 +29,11 @@ func New(db *sql.DB, opts ...SqlOption) *DB {
 }
 
 func (t *DB) mergeOptions(opts []SqlOption) *sqlOptions {
-	opt := *t.Options // copy
+	cp := *t.Options // copy
 	for _, o := range opts {
-		o.apply(&opt)
+		o.apply(&cp)
 	}
-	return &opt
+	return &cp
 }
 
 func (t *DB) Insert(data interface{}, opts ...SqlOption) (sql.Result, error) {
