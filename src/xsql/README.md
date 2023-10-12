@@ -197,7 +197,7 @@ tx.Commit()
 
 You can pass the following configuration object in the `xsql.New()` method
 
-- Default to mysql mode, when switching to oracle, you need to [modify the configuration](https://github.com/mix-go/mix/blob/master/src/xsql/dbora_test.go#L24)
+- Default to mysql mode, when switching to oracle, you need to [modify the configuration](https://github.com/mix-go/mix/blob/master/src/xsql/dbora_test.go#L25)
 - `Insert()`, `BatchInsert()` can pass in configuration during execution to override insert related configuration, such as modifying InsertKey to REPLACE INTO
 
 ```go
