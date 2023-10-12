@@ -7,7 +7,7 @@ import (
 type Log struct {
 	Duration time.Duration `json:"duration"`
 	Request  *XRequest     `json:"request"`
-	Response *XResponse    `json:"response"`
+	Response *XResponse    `json:"response"` // if error this field is equal to nil
 	Error    error         `json:"error"`
 }
 

@@ -35,10 +35,10 @@ The log object contains the following fields
 
 ```go
 type Log struct {
-    Duration time.Duration `json:"duration"`
-    Request  *http.Request `json:"request"`
-    Response *Response     `json:"response"`
-    Error    error         `json:"error"`
+	Duration time.Duration `json:"duration"`
+	Request  *XRequest     `json:"request"`
+	Response *XResponse    `json:"response"` // if error this field is equal to nil
+	Error    error         `json:"error"`
 }
 ```
 

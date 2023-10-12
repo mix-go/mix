@@ -107,13 +107,13 @@ func doRequest(opts *requestOptions, req *http.Request) (*XResponse, error) {
 		Timeout: opts.Timeout,
 	}
 	startTime := time.Now()
-	xreq := newXRequest(req)
+	xReq := newXRequest(req)
 	r, err := cli.Do(req)
 	if err != nil {
-		doDebug(opts, time.Now().Sub(startTime), xreq, nil, err)
+		doDebug(opts, time.Now().Sub(startTime), xReq, nil, err)
 		return nil, err
 	}
-	xresp := newXResponse(r)
-	doDebug(opts, time.Now().Sub(startTime), xreq, xresp, nil)
-	return xresp, nil
+	xResp := newXResponse(r)
+	doDebug(opts, time.Now().Sub(startTime), xReq, xResp, nil)
+	return xResp, nil
 }
