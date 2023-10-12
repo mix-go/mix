@@ -32,11 +32,11 @@ type requestOptions struct {
 }
 
 func mergeOptions(opts []RequestOption) *requestOptions {
-	opt := DefaultOptions // copy
+	cp := DefaultOptions // copy
 	for _, o := range opts {
-		o.apply(&opt)
+		o.apply(&cp)
 	}
-	return &opt
+	return &cp
 }
 
 type RequestOption interface {
@@ -52,50 +52,50 @@ func (fdo *funcRequestOption) apply(do *requestOptions) {
 }
 
 func WithHeader(header http.Header) RequestOption {
-	return &funcRequestOption{func(opt *requestOptions) {
-		opt.Header = header
+	return &funcRequestOption{func(opts *requestOptions) {
+		opts.Header = header
 	}}
 }
 
 func WithContentType(contentType string) RequestOption {
-	return &funcRequestOption{func(opt *requestOptions) {
-		opt.Header.Set("Content-Type", contentType)
+	return &funcRequestOption{func(opts *requestOptions) {
+		opts.Header.Set("Content-Type", contentType)
 	}}
 }
 
 func WithTimeout(timeout time.Duration) RequestOption {
-	return &funcRequestOption{func(opt *requestOptions) {
-		opt.Timeout = timeout
+	return &funcRequestOption{func(opts *requestOptions) {
+		opts.Timeout = timeout
 	}}
 }
 
 func WithBody(body Body) RequestOption {
-	return &funcRequestOption{func(opt *requestOptions) {
-		opt.Body = body
+	return &funcRequestOption{func(opts *requestOptions) {
+		opts.Body = body
 	}}
 }
 
 func WithBodyBytes(body []byte) RequestOption {
-	return &funcRequestOption{func(opt *requestOptions) {
-		opt.Body = body
+	return &funcRequestOption{func(opts *requestOptions) {
+		opts.Body = body
 	}}
 }
 
 func WithBodyString(body string) RequestOption {
-	return &funcRequestOption{func(opt *requestOptions) {
-		opt.Body = xconv.StringToBytes(body)
+	return &funcRequestOption{func(opts *requestOptions) {
+		opts.Body = xconv.StringToBytes(body)
 	}}
 }
 
 func WithDebugFunc(f DebugFunc) RequestOption {
-	return &funcRequestOption{func(opt *requestOptions) {
-		opt.DebugFunc = f
+	return &funcRequestOption{func(opts *requestOptions) {
+		opts.DebugFunc = f
 	}}
 }
 
 func WithRetry(f RetryIfFunc, opts ...retry.Option) RequestOption {
-	return &funcRequestOption{func(opt *requestOptions) {
-		opt.RetryIfFunc = f
-		opt.RetryOptions = opts
+	return &funcRequestOption{func(o *requestOptions) {
+		o.RetryIfFunc = f
+		o.RetryOptions = opts
 	}}
 }

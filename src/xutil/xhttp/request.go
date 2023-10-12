@@ -9,7 +9,12 @@ import (
 	"time"
 )
 
-type Response struct {
+type XRequest struct {
+	*http.Request
+	Body Body
+}
+
+type XResponse struct {
 	*http.Response
 	Body Body
 }
@@ -20,11 +25,27 @@ func (t Body) String() string {
 	return xconv.BytesToString(t)
 }
 
-func newResponse(r *http.Response) *Response {
+func newXRequest(r *http.Request) *XRequest {
 	if r == nil {
 		return nil
 	}
-	resp := &Response{
+	resp := &XRequest{
+		Request: r,
+	}
+	b, err := io.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil {
+		return resp
+	}
+	resp.Body = b
+	return resp
+}
+
+func newXResponse(r *http.Response) *XResponse {
+	if r == nil {
+		return nil
+	}
+	resp := &XResponse{
 		Response: r,
 	}
 	b, err := io.ReadAll(r.Body)
@@ -36,8 +57,8 @@ func newResponse(r *http.Response) *Response {
 	return resp
 }
 
-func Request(method string, u string, opts ...RequestOption) (*Response, error) {
-	opt := mergeOptions(opts)
+func Request(method string, u string, opts ...RequestOption) (*XResponse, error) {
+	o := mergeOptions(opts)
 	URL, err := url.Parse(u)
 	if err != nil {
 		return nil, err
@@ -45,42 +66,42 @@ func Request(method string, u string, opts ...RequestOption) (*Response, error) 
 	req := &http.Request{
 		Method: method,
 		URL:    URL,
-		Header: opt.Header,
+		Header: o.Header,
 	}
-	if opt.Body != nil {
-		req.Body = io.NopCloser(strings.NewReader(opt.Body.String()))
+	if o.Body != nil {
+		req.Body = io.NopCloser(strings.NewReader(o.Body.String()))
 	}
 
-	if opt.RetryOptions != nil {
-		return doRetry(opt, func() (*Response, error) {
-			return do(opt, req)
+	if o.RetryOptions != nil {
+		return doRetry(o, func() (*XResponse, error) {
+			return do(o, req)
 		})
 	}
-	return do(opt, req)
+	return do(o, req)
 }
 
-func Do(req *http.Request, opts ...RequestOption) (*Response, error) {
-	opt := mergeOptions(opts)
+func Do(req *http.Request, opts ...RequestOption) (*XResponse, error) {
+	o := mergeOptions(opts)
 
-	if opt.RetryOptions != nil {
-		return doRetry(opt, func() (*Response, error) {
-			return do(opt, req)
+	if o.RetryOptions != nil {
+		return doRetry(o, func() (*XResponse, error) {
+			return do(o, req)
 		})
 	}
-	return do(opt, req)
+	return do(o, req)
 }
 
-func do(opt *requestOptions, req *http.Request) (*Response, error) {
+func do(opts *requestOptions, req *http.Request) (*XResponse, error) {
 	cli := http.Client{
-		Timeout: opt.Timeout,
+		Timeout: opts.Timeout,
 	}
 	startTime := time.Now()
 	r, err := cli.Do(req)
 	if err != nil {
-		doDebug(opt, time.Now().Sub(startTime), req, nil, err)
+		doDebug(opts, time.Now().Sub(startTime), req, nil, err)
 		return nil, err
 	}
-	resp := newResponse(r)
-	doDebug(opt, time.Now().Sub(startTime), req, resp, nil)
+	resp := newXResponse(r)
+	doDebug(opts, time.Now().Sub(startTime), req, resp, nil)
 	return resp, nil
 }

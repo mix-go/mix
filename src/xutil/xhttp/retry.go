@@ -4,23 +4,23 @@ import (
 	"github.com/avast/retry-go"
 )
 
-type RetryIfFunc func(*Response, error) error
+type RetryIfFunc func(*XResponse, error) error
 
-func doRetry(opt *requestOptions, f func() (*Response, error)) (*Response, error) {
-	var resp *Response
+func doRetry(opts *requestOptions, f func() (*XResponse, error)) (*XResponse, error) {
+	var resp *XResponse
 	var err error
 	err = retry.Do(
 		func() error {
 			resp, err = f()
-			if opt.RetryIfFunc != nil {
-				return opt.RetryIfFunc(resp, err)
+			if opts.RetryIfFunc != nil {
+				return opts.RetryIfFunc(resp, err)
 			}
 			if err != nil {
 				return err
 			}
 			return nil
 		},
-		opt.RetryOptions...,
+		opts.RetryOptions...,
 	)
 	if err != nil {
 		return nil, err

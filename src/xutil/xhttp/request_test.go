@@ -47,7 +47,7 @@ func TestDebugAndRetry(t *testing.T) {
 	}
 
 	url := "https://aaaaa.com/"
-	retryIf := func(resp *xhttp.Response, err error) error {
+	retryIf := func(resp *xhttp.XResponse, err error) error {
 		if err != nil {
 			return err
 		}

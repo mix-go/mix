@@ -7,23 +7,23 @@ import (
 
 type Log struct {
 	Duration time.Duration `json:"duration"`
-	Request  *http.Request `json:"request"`
-	Response *Response     `json:"response"`
+	Request  *XRequest     `json:"request"`
+	Response *XResponse    `json:"response"`
 	Error    error         `json:"error"`
 }
 
 type DebugFunc func(l *Log)
 
-func doDebug(opt *requestOptions, duration time.Duration, req *http.Request, resp *Response, err error) {
-	if opt.DebugFunc == nil {
+func doDebug(opts *requestOptions, duration time.Duration, req *http.Request, resp *XResponse, err error) {
+	if opts.DebugFunc == nil {
 		return
 	}
 
 	l := &Log{
 		Duration: duration,
-		Request:  req,
+		Request:  newXRequest(req),
 		Response: resp,
 		Error:    err,
 	}
-	opt.DebugFunc(l)
+	opts.DebugFunc(l)
 }
