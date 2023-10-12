@@ -109,7 +109,7 @@ func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result,
 			switch value.Index(r).Kind() {
 			case reflect.Struct:
 				subValue := value.Index(r)
-				vars, b := t.foreachBatchInsertVars(0, subValue, subValue.Type(), opts)
+				vars, b := t.foreachBatchInsertValues(0, subValue, subValue.Type(), opts)
 				bindArgs = append(bindArgs, b...)
 				valueSql = append(valueSql, fmt.Sprintf("(%s)", strings.Join(vars, `, `)))
 				break
@@ -346,12 +346,12 @@ func (t *executor) foreachBatchInsertFields(value reflect.Value, typ reflect.Typ
 	return
 }
 
-func (t *executor) foreachBatchInsertVars(ai int, value reflect.Value, typ reflect.Type, opts *sqlOptions) (vars []string, bindArgs []interface{}) {
+func (t *executor) foreachBatchInsertValues(ai int, value reflect.Value, typ reflect.Type, opts *sqlOptions) (vars []string, bindArgs []interface{}) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
 		if fieldStruct.Anonymous {
-			v, b := t.foreachBatchInsertVars(ai+1000, fieldValue, fieldValue.Type(), opts)
+			v, b := t.foreachBatchInsertValues(ai+1000, fieldValue, fieldValue.Type(), opts)
 			vars = append(vars, v...)
 			bindArgs = append(bindArgs, b...)
 			continue

@@ -32,7 +32,7 @@ func (t *Fetcher) First(i interface{}) error {
 		return sql.ErrNoRows
 	}
 	row := rows[0]
-	if err := t.foreach(&row, rootValue, rootType, t.Options); err != nil {
+	if err := t.foreach(&row, rootValue, rootType); err != nil {
 		return err
 	}
 
@@ -57,7 +57,7 @@ func (t *Fetcher) Find(i interface{}) error {
 		if itemValue.Kind() == reflect.Ptr {
 			itemValue = itemValue.Elem()
 		}
-		if err := t.foreach(&rows[r], itemValue, itemValue.Type(), t.Options); err != nil {
+		if err := t.foreach(&rows[r], itemValue, itemValue.Type()); err != nil {
 			return err
 		}
 		root.Set(reflect.Append(root, itemValue))
@@ -263,10 +263,9 @@ func (t *RowResult) Int() int64 {
 }
 
 func (t *RowResult) Time() time.Time {
-	timeLayout := t.options.TimeLayout
 	typ := t.Type()
 	if typ == "string" || typ == "[]uint8" {
-		tt, _ := time.ParseInLocation(timeLayout, t.String(), time.Local)
+		tt, _ := time.ParseInLocation(t.options.TimeLayout, t.String(), t.options.TimeLocation)
 		return tt
 	}
 	if typ == "time.Time" {
@@ -286,12 +285,12 @@ func (t *RowResult) Type() string {
 	return reflect.TypeOf(t.v).String()
 }
 
-func (t *Fetcher) foreach(row *Row, value reflect.Value, typ reflect.Type, opts *sqlOptions) error {
+func (t *Fetcher) foreach(row *Row, value reflect.Value, typ reflect.Type) error {
 	for n := 0; n < typ.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
 		if fieldStruct.Anonymous {
-			if err := t.foreach(row, fieldValue, fieldValue.Type(), opts); err != nil {
+			if err := t.foreach(row, fieldValue, fieldValue.Type()); err != nil {
 				return err
 			}
 			continue
@@ -299,23 +298,21 @@ func (t *Fetcher) foreach(row *Row, value reflect.Value, typ reflect.Type, opts 
 		if !fieldValue.CanSet() {
 			continue
 		}
-		tag := value.Type().Field(n).Tag.Get(opts.Tag)
+		tag := value.Type().Field(n).Tag.Get(t.Options.Tag)
 		if tag == "-" || tag == "_" {
 			continue
 		}
 		if !row.Exist(tag) {
 			continue
 		}
-		if err := t.mapped(fieldValue, row, tag, opts); err != nil {
+		if err := t.mapped(fieldValue, row, tag); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (t *Fetcher) mapped(field reflect.Value, row *Row, tag string, opts *sqlOptions) (err error) {
-	timeLayout := opts.TimeLayout
-
+func (t *Fetcher) mapped(field reflect.Value, row *Row, tag string) (err error) {
 	res := row.Get(tag)
 	v := res.Value()
 
@@ -357,7 +354,7 @@ func (t *Fetcher) mapped(field reflect.Value, row *Row, tag string, opts *sqlOpt
 		if !res.Empty() &&
 			field.Type().String() == "time.Time" &&
 			reflect.ValueOf(v).Type().String() != "time.Time" {
-			if t, e := time.ParseInLocation(timeLayout, res.String(), t.Options.TimeLocation); e == nil {
+			if t, e := time.ParseInLocation(t.Options.TimeLayout, res.String(), t.Options.TimeLocation); e == nil {
 				v = t
 			} else {
 				return fmt.Errorf("time parse fail for field %s: %v", tag, e)
