@@ -43,7 +43,7 @@ func TestDebugAndRetry(t *testing.T) {
 	a := assert.New(t)
 
 	xhttp.DefaultOptions.DebugFunc = func(l *xhttp.Log) {
-		log.Printf("%+v\n", l)
+		log.Printf("%+v %+v %+v %+v\n", l.Duration, l.Request, l.Response, l.Error)
 	}
 
 	url := "https://aaaaa.com/"

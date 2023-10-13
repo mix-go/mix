@@ -15,7 +15,7 @@ type XRequest struct {
 	Body Body
 
 	// Number of retries
-	RetryCount int
+	RetryAttempts int
 }
 
 type XResponse struct {
@@ -90,6 +90,7 @@ func Request(method string, u string, opts ...RequestOption) (*XResponse, error)
 	if o.RetryOptions != nil {
 		xReq := newXRequest(req)
 		return doRetry(o, func() (*XResponse, error) {
+			xReq.RetryAttempts++
 			return doRequest(o, xReq)
 		})
 	}
@@ -102,6 +103,7 @@ func Do(req *http.Request, opts ...RequestOption) (*XResponse, error) {
 	if o.RetryOptions != nil {
 		xReq := newXRequest(req)
 		return doRetry(o, func() (*XResponse, error) {
+			xReq.RetryAttempts++
 			return doRequest(o, xReq)
 		})
 	}
@@ -109,10 +111,6 @@ func Do(req *http.Request, opts ...RequestOption) (*XResponse, error) {
 }
 
 func doRequest(opts *requestOptions, req *XRequest) (*XResponse, error) {
-	defer func() {
-		req.RetryCount++
-	}()
-
 	cli := http.Client{
 		Timeout: opts.Timeout,
 	}
