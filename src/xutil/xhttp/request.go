@@ -11,7 +11,11 @@ import (
 
 type XRequest struct {
 	*http.Request
+
 	Body Body
+
+	// Number of retries
+	RetryCount int
 }
 
 type XResponse struct {
@@ -84,36 +88,41 @@ func Request(method string, u string, opts ...RequestOption) (*XResponse, error)
 	}
 
 	if o.RetryOptions != nil {
+		xReq := newXRequest(req)
 		return doRetry(o, func() (*XResponse, error) {
-			return doRequest(o, req)
+			return doRequest(o, xReq)
 		})
 	}
-	return doRequest(o, req)
+	return doRequest(o, newXRequest(req))
 }
 
 func Do(req *http.Request, opts ...RequestOption) (*XResponse, error) {
 	o := mergeOptions(opts)
 
 	if o.RetryOptions != nil {
+		xReq := newXRequest(req)
 		return doRetry(o, func() (*XResponse, error) {
-			return doRequest(o, req)
+			return doRequest(o, xReq)
 		})
 	}
-	return doRequest(o, req)
+	return doRequest(o, newXRequest(req))
 }
 
-func doRequest(opts *requestOptions, req *http.Request) (*XResponse, error) {
+func doRequest(opts *requestOptions, req *XRequest) (*XResponse, error) {
+	defer func() {
+		req.RetryCount++
+	}()
+
 	cli := http.Client{
 		Timeout: opts.Timeout,
 	}
 	startTime := time.Now()
-	xReq := newXRequest(req)
-	r, err := cli.Do(req)
+	r, err := cli.Do(req.Request)
 	if err != nil {
-		doDebug(opts, time.Now().Sub(startTime), xReq, nil, err)
+		doDebug(opts, time.Now().Sub(startTime), req, nil, err)
 		return nil, err
 	}
 	xResp := newXResponse(r)
-	doDebug(opts, time.Now().Sub(startTime), xReq, xResp, nil)
+	doDebug(opts, time.Now().Sub(startTime), req, xResp, nil)
 	return xResp, nil
 }

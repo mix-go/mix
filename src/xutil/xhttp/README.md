@@ -36,8 +36,8 @@ The log object contains the following fields
 ```go
 type Log struct {
 	Duration time.Duration `json:"duration"`
-	Request  *XRequest     `json:"request"`
-	Response *XResponse    `json:"response"` // if error this field is equal to nil
+	Request  *XRequest     `json:"request"`  // The XRequest.RetryCount field records the number of retries that have been completed.
+	Response *XResponse    `json:"response"` // If request error this field is equal to nil
 	Error    error         `json:"error"`
 }
 ```
