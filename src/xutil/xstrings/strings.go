@@ -1,6 +1,9 @@
 package xstrings
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
 func IsNumeric(s string) bool {
 	_, err := strconv.ParseFloat(s, 64)
@@ -20,4 +23,12 @@ func SubString(s string, start int, length int) string {
 	}
 
 	return string(runes[start:end])
+}
+
+func Capitalize(s string) string {
+	if len(s) > 0 {
+		first := strings.ToUpper(s[:1]) // 将首字母转化为大写
+		return first + s[1:]
+	}
+	return s
 }

@@ -33,10 +33,11 @@ go get github.com/mix-go/xutil
 
 ## xstrings
 
-| Function                                                   | Description                                                    |  
-|------------------------------------------------------------|----------------------------------------------------------------|
-| xstrings.IsNumeric(s string) bool                          | Used to check if the variable is a number or a numeric string. |
-| xstrings.SubString(s string, start int, length int) string | Return part of a string                                        |
+| Function                                                   | Description                                                              |  
+|------------------------------------------------------------|--------------------------------------------------------------------------|
+| xstrings.IsNumeric(s string) bool                          | Used to check if the variable is a number or a numeric string.           |
+| xstrings.SubString(s string, start int, length int) string | Return part of a string                                                  |
+| xstrings.Capitalize(s string) string                       | The function converts the first letter of the input string to uppercase. |
 
 ## xconv
 
