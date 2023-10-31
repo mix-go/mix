@@ -21,6 +21,7 @@ All core modules can be used independently.
 - [mix-go/mixcli](src/mixcli) Scaffold to quickly create Go projects, similar to Vue CLI in the frontend field.
 - [mix-go/xcli](src/xcli) Command-line interaction and command management tool, also includes command-line parameter acquisition, middleware, program daemon, etc.
 - [mix-go/xsql](src/xsql) Lightweight database based on database/sql, fully functional and supports any database driver.
+- - [mix-go/xrpc](src/xrpc) Assistant for gRPC and Gateway.
 - [mix-go/xdi](src/xdi) IoC, DI library for handling object dependencies, can implement unified dependency management, global object management, dynamic configuration refresh, etc.
 - [mix-go/xwp](src/xwp) A universal work pool, coroutine pool, can dynamically expand and shrink.
 - [mix-go/xutil](src/xutil) A set of tools to keep Golang sweet.
