@@ -63,14 +63,15 @@ func (t *Container) Populate(name string, ptr interface{}) error {
 			ptrCopy(ptr, p)
 			return nil
 		}
+
 		// 处理并发穿透
 		obj.mutex.Lock()
 		defer obj.mutex.Unlock()
-		p, ok := t.instances.Load(name)
-		if ok {
+		if p, ok := t.instances.Load(name); ok && !refresher.status() {
 			ptrCopy(ptr, p)
 			return nil
 		}
+
 		v, err := obj.New()
 		if err != nil {
 			return err
