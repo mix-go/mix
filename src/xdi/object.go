@@ -5,7 +5,6 @@ import (
 	"sync"
 )
 
-// Object
 type Object struct {
 	Name string
 	// 创建对象的闭包
@@ -14,15 +13,13 @@ type Object struct {
 	NewEverytime bool
 
 	refresher refresher
-	once      sync.Once
+	mutex     sync.Mutex
 }
 
-// Refresh
 func (t *Object) Refresh() error {
 	if t.NewEverytime {
 		return fmt.Errorf("error: '%s' is NewEverytime, unable to refresh", t.Name)
 	}
-	t.once = sync.Once{}
 	t.refresher.on()
 	return nil
 }

@@ -1,14 +1,12 @@
-> OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
+> Produced by OpenMix: [https://openmix.org](https://openmix.org/mix-go)
 
 ## Mix XDI
-
-DI、IoC 容器
 
 DI, IoC container
 
 ## Overview
 
-一个创建对象以及处理对象依赖关系的库，该库可以实现统一管理依赖，全局对象管理，动态配置刷新等。
+A library for creating objects and managing their dependencies. This library can be used for managing dependencies in a unified way, managing global objects, and refreshing dynamic configurations.
 
 ## Installation
 
@@ -18,7 +16,7 @@ go get github.com/mix-go/xdi
 
 ## Quick start
 
-通过依赖配置实例化一个单例
+Create a singleton through dependency configuration
 
 ```go
 package main
@@ -54,7 +52,7 @@ func main() {
 
 ## Reference
 
-依赖配置中引用另一个依赖配置的实例
+Refer to another dependency configuration instance in the dependency configuration
 
 ```go
 package main
@@ -112,10 +110,10 @@ func main() {
 
 ## Refresh singleton
 
-程序执行中配置信息发生变化时，`Refresh()` 可以刷新单例的实例来切换使用新的配置，通常在微服务配置中心中使用。
+When the configuration information changes during program execution, `Refresh()` can refresh the singleton instance to switch to using the new configuration. It is commonly used in microservice configuration centers.
 
 ```go
-obj, err := xdi.Container().Object("foo")
+obj, err := xdi.DefaultContainer.Object("foo")
 if err != nil {
     panic(err)
 }

@@ -6,41 +6,31 @@ import (
 	"sync"
 )
 
-var iContainer *container
+var DefaultContainer *Container
 
 func init() {
-	iContainer = New()
+	DefaultContainer = New()
 }
 
-// New
-func New() *container {
-	return &container{}
+func New() *Container {
+	return &Container{}
 }
 
-// Container
-func Container() *container {
-	return iContainer
-}
-
-// Provide
 func Provide(objects ...*Object) error {
-	return iContainer.Provide(objects...)
+	return DefaultContainer.Provide(objects...)
 }
 
-// Populate
 func Populate(name string, ptr interface{}) error {
-	return iContainer.Populate(name, ptr)
+	return DefaultContainer.Populate(name, ptr)
 }
 
-// container
-type container struct {
+type Container struct {
 	Objects     []*Object
 	tidyObjects sync.Map
 	instances   sync.Map
 }
 
-// Provide
-func (t *container) Provide(objects ...*Object) error {
+func (t *Container) Provide(objects ...*Object) error {
 	for _, o := range objects {
 		if _, ok := t.tidyObjects.Load(o.Name); ok {
 			return fmt.Errorf("error: object '%s' existing", o.Name)
@@ -50,8 +40,7 @@ func (t *container) Provide(objects ...*Object) error {
 	return nil
 }
 
-// Object
-func (t *container) Object(name string) (*Object, error) {
+func (t *Container) Object(name string) (*Object, error) {
 	v, ok := t.tidyObjects.Load(name)
 	if !ok {
 		return nil, fmt.Errorf("error: object '%s' not found", name)
@@ -60,8 +49,7 @@ func (t *container) Object(name string) (*Object, error) {
 	return obj, nil
 }
 
-// Populate
-func (t *container) Populate(name string, ptr interface{}) error {
+func (t *Container) Populate(name string, ptr interface{}) error {
 	obj, err := t.Object(name)
 	if err != nil {
 		return err
@@ -76,29 +64,27 @@ func (t *container) Populate(name string, ptr interface{}) error {
 			return nil
 		}
 		// 处理并发穿透
-		var e error
-		obj.once.Do(func() {
-			v, err := obj.New()
-			if err != nil {
-				e = err
-				return
-			}
-			t.instances.Store(name, v)
-			refresher.off()
-		})
-		if e != nil {
-			obj.once = sync.Once{}
-			return e
+		obj.mutex.Lock()
+		defer obj.mutex.Unlock()
+		p, ok := t.instances.Load(name)
+		if ok {
+			ptrCopy(ptr, p)
+			return nil
 		}
-		p, _ := t.instances.Load(name)
-		ptrCopy(ptr, p)
-		return e
+		v, err := obj.New()
+		if err != nil {
+			return err
+		}
+		t.instances.Store(name, v)
+		refresher.off()
+		ptrCopy(ptr, v)
+		return nil
 	} else {
 		v, err := obj.New()
 		if err != nil {
 			return err
 		}
 		ptrCopy(ptr, v)
+		return nil
 	}
-	return nil
 }

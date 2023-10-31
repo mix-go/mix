@@ -107,6 +107,48 @@ func TestSingletonConcurrency(t *testing.T) {
 	}
 }
 
+func TestSingletonConcurrencyError(t *testing.T) {
+	a := assert.New(t)
+
+	c := New()
+	objs := []*Object{
+		{
+			Name: "foo",
+			New: func() (i interface{}, e error) {
+				return nil, errors.New("new error")
+			},
+		},
+	}
+	_ = c.Provide(objs...)
+
+	for i := 0; i < 1000; i++ {
+		var mp sync.Map
+		wg := &sync.WaitGroup{}
+		for i := 0; i < 100; i++ {
+			wg.Add(1)
+			go func(wg *sync.WaitGroup, i int) {
+				defer wg.Done()
+
+				var f *foo
+				_ = c.Populate("foo", &f)
+
+				mp.Store(i, f)
+			}(wg, i)
+		}
+		wg.Wait()
+
+		ptrs := []interface{}{}
+		mp.Range(func(key, value interface{}) bool {
+			ptrs = append(ptrs, fmt.Sprintf("%p", value))
+			return true
+		})
+
+		//fmt.Println(ptrs...)
+
+		a.Equal(ptrs[0], ptrs[1], ptrs[2:]...)
+	}
+}
+
 func TestSingletonRefreshConcurrency(t *testing.T) {
 	a := assert.New(t)
 
