@@ -65,6 +65,8 @@ func (t *Container) Populate(name string, ptr interface{}) error {
 		}
 
 		// 处理并发穿透
+		// 之前是采用 LoadOrStore 重复创建但只保存一个
+		// 现在采用 Mutex 直接锁死只创建一次
 		obj.mutex.Lock()
 		defer obj.mutex.Unlock()
 		if p, ok := t.instances.Load(name); ok && !refresher.status() {
