@@ -149,7 +149,7 @@ func TestSingletonConcurrencyError(t *testing.T) {
 	}
 }
 
-func TestSingletonRefreshConcurrency(t *testing.T) {
+func TestSingletonConcurrencyRefresh(t *testing.T) {
 	a := assert.New(t)
 
 	c := New()
