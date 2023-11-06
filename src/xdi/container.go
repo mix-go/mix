@@ -53,7 +53,7 @@ func (t *Container) Object(name string) (*Object, error) {
 func (t *Container) Populate(name string, ptr interface{}) (err error) {
 	defer func() {
 		if e := recover(); e != nil {
-			err = errors.New(fmt.Sprint(e))
+			err = errors.New("xdi: " + fmt.Sprint(e))
 		}
 	}()
 
