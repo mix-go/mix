@@ -61,10 +61,10 @@ func TestPopulate(t *testing.T) {
 	// 错误使用测试
 	var f3 foo
 	err := c.Populate("foo", f3) // 非指针
-	a.Contains(err.Error(), "can only be pointer type")
+	a.Contains(err.Error(), "argument can only be pointer type")
 	var f4 foo
-	err = c.Populate("foo", &f4) // New函数返回的指针，但是f3为引用 [panic: reflect.Set: value of type *xdi.foo is not assignable to type xdi.foo]
-	a.Contains(err.Error(), "is not assignable to")
+	err = c.Populate("foo", &f4) // New函数返回的指针，但是f4为引用 [panic: reflect.Set: value of type *xdi.foo is not assignable to type xdi.foo]
+	a.Contains(err.Error(), "value of type *xdi.foo is not assignable to type xdi.foo")
 
 	// 测试嵌套依赖
 	var f *foo
