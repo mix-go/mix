@@ -1,6 +1,7 @@
 package xdi
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"sync"
@@ -33,7 +34,7 @@ type Container struct {
 func (t *Container) Provide(objects ...*Object) error {
 	for _, o := range objects {
 		if _, ok := t.tidyObjects.Load(o.Name); ok {
-			return fmt.Errorf("error: object '%s' existing", o.Name)
+			return fmt.Errorf("xdi: object '%s' existing", o.Name)
 		}
 		t.tidyObjects.Store(o.Name, o)
 	}
@@ -43,20 +44,36 @@ func (t *Container) Provide(objects ...*Object) error {
 func (t *Container) Object(name string) (*Object, error) {
 	v, ok := t.tidyObjects.Load(name)
 	if !ok {
-		return nil, fmt.Errorf("error: object '%s' not found", name)
+		return nil, fmt.Errorf("xdi: object '%s' not found", name)
 	}
 	obj := v.(*Object)
 	return obj, nil
 }
 
-func (t *Container) Populate(name string, ptr interface{}) error {
+func (t *Container) Populate(name string, ptr interface{}) (err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			err = errors.New(fmt.Sprint(e))
+		}
+	}()
+
 	obj, err := t.Object(name)
 	if err != nil {
 		return err
 	}
-	ptrCopy := func(to, from interface{}) {
-		reflect.ValueOf(to).Elem().Set(reflect.ValueOf(from))
+
+	if reflect.ValueOf(ptr).Kind() != reflect.Ptr {
+		return errors.New("xdi: argument can only be pointer type")
 	}
+
+	ptrCopy := func(ptr, newValue interface{}) {
+		v := reflect.ValueOf(ptr)
+		if v.Kind() == reflect.Ptr {
+			v = v.Elem()
+		}
+		v.Set(reflect.ValueOf(newValue))
+	}
+
 	if !obj.NewEverytime {
 		refresher := &obj.refresher
 		if p, ok := t.instances.Load(name); ok && !refresher.status() {

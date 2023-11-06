@@ -18,7 +18,7 @@ type Object struct {
 
 func (t *Object) Refresh() error {
 	if t.NewEverytime {
-		return fmt.Errorf("error: '%s' is NewEverytime, unable to refresh", t.Name)
+		return fmt.Errorf("xdi: '%s' is NewEverytime, unable to refresh", t.Name)
 	}
 	t.refresher.on()
 	return nil

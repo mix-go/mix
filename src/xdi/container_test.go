@@ -51,16 +51,33 @@ func TestPopulate(t *testing.T) {
 	}
 	_ = c.Provide(objs...)
 
+	// 测试单例
+	var f1 *foo
+	_ = c.Populate("foo", &f1)
+	var f2 *foo
+	_ = c.Populate("foo", &f2)
+	a.Equal(fmt.Sprintf("%p", f1), fmt.Sprintf("%p", f2))
+
+	// 错误使用测试
+	var f3 foo
+	err := c.Populate("foo", f3) // 非指针
+	a.Contains(err.Error(), "can only be pointer type")
+	var f4 foo
+	err = c.Populate("foo", &f4) // New函数返回的指针，但是f3为引用 [panic: reflect.Set: value of type *xdi.foo is not assignable to type xdi.foo]
+	a.Contains(err.Error(), "is not assignable to")
+
+	// 测试嵌套依赖
 	var f *foo
 	_ = c.Populate("foo", &f)
 	text := fmt.Sprintf("%#v \n", f.Client)
 	a.Contains(text, "Timeout:10000000000")
 
+	// 测试多次失败场景
 	var i interface{}
-	err := c.Populate("bar", &i)
+	err = c.Populate("bar", &i)
 	a.Equal(err, errors.New("error"))
 	err = c.Populate("bar", &i)
-	a.Equal(err, errors.New("error")) // 测试多次失败场景
+	a.Equal(err, errors.New("error"))
 }
 
 func TestSingletonConcurrency(t *testing.T) {
