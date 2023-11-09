@@ -58,8 +58,15 @@ type Grpc struct {
 
 	Server *grpc.Server
 
-	// Optional, Additional server config
+	// Additional server config
+	// Optional
 	ServerOptions []grpc.ServerOption
+
+	// Optional
+	MarshalOptions *protojson.MarshalOptions
+
+	// Optional
+	UnmarshalOptions *protojson.UnmarshalOptions
 }
 
 func (t *RpcServer) Serve() error {
@@ -128,16 +135,24 @@ func (t *RpcServer) Serve() error {
 	}
 
 	// http server
+	marshalOptions := t.MarshalOptions
+	if marshalOptions == nil {
+		marshalOptions = &protojson.MarshalOptions{
+			UseProtoNames:   true,
+			EmitUnpopulated: false, // Omit 0 values, such as 0, "" or null
+		}
+	}
+	unmarshalOptions := t.UnmarshalOptions
+	if unmarshalOptions == nil {
+		unmarshalOptions = &protojson.UnmarshalOptions{
+			DiscardUnknown: true,
+		}
+	}
 	mux := runtime.NewServeMux(
 		// Format for using proto names in json https://grpc-ecosystem.github.io/grpc-gateway/docs/mapping/customizing_your_gateway/#using-proto-names-in-json
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
-			MarshalOptions: protojson.MarshalOptions{
-				UseProtoNames:   true,
-				EmitUnpopulated: true, // Omit 0 values, such as 0, "" or null
-			},
-			UnmarshalOptions: protojson.UnmarshalOptions{
-				DiscardUnknown: true,
-			},
+			MarshalOptions:   *marshalOptions,
+			UnmarshalOptions: *unmarshalOptions,
 		}),
 	)
 	t.Gateway.Registrar(mux, conn)
