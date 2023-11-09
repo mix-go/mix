@@ -53,9 +53,8 @@ Add Import Paths: `$GOPATH`/src
 ## Best Practices
 
 - .proto [style](https://protobuf.dev/programming-guides/style/#message-field-names)
-    - service name: `AppMessages` PascalCase
-    - method name: `SendMessage` PascalCase
-    - field Name: `string parse_mode = 1;` snake_case
+    - service name, rpc name, message name: `AppMessages` PascalCase
+    - message field name: `string parse_mode = 1;` snake_case
 - urls:
     - website url: `/send-message` kebab-case
     - grpc gateway url: inner api: `/inner/send_message` snake_case
@@ -96,7 +95,7 @@ message SendResponse {
 ## Generate code
 
 ```
-generate-go.sh
+generate-pb.sh
 ```
 
 ## RPC Server
