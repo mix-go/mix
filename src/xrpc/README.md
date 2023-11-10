@@ -53,26 +53,28 @@ Add Import Paths: `$GOPATH`/src
 ## Best Practices
 
 - .proto [style](https://protobuf.dev/programming-guides/style/#message-field-names)
-    - service name, rpc name, message name: `AppMessages` PascalCase
-    - message field name: `string parse_mode = 1;` snake_case
+  - service name, rpc name, message name: `AppMessages` PascalCase
+  - message field name: `string parse_mode = 1;` snake_case
 - urls:
-    - website url: `/send-message` kebab-case
-    - grpc gateway url: inner api: `/inner/send_message` snake_case
-    - grpc gateway url: open api: `/v1/send_message` snake_case
-- .yaml
-    - file name: `config_dev.yaml` snake_case
-    - field Name: `clientId` camelCase
-- mysql:
-    - table name: `app_messages` snake_case
-    - field name: `client_id` snake_case
-- mongodb:
-    - table name: `app_messages` snake_case
-    - field name: Unrestricted, as it depends on the 3rd party, storing raw data
+  - website url: `/send-message` kebab-case
+  - grpc gateway url: inner api: `/internal/send_message` snake_case
+  - grpc gateway url: open api: `/v1/send_message` snake_case
 - aws secrets manager:
-    - name: `Service-Test` Pascal-Case
-    - key: `googleapis_credentials` snake_case
+  - name: `Service-Test` Pascal-Case
+  - key: `googleapis_credentials` snake_case
+- .yaml
+  - file name: `config_test.yaml` snake_case
+  - field name: `clientId` camelCase
+- mysql:
+  - table name: `app_messages` snake_case
+  - field name: `client_id` snake_case
+- mongodb:
+  - table name: `app_messages` snake_case
+  - field name: Unrestricted, as it depends on the 3rd party, storing raw data
+- docker:
+  - container name:  `express-gateway` kebab-case
 
-```proto
+```protobuf
 service AppMessages {
   rpc Send(SendRequest) returns (SendResponse) {
     option (google.api.http) = {
