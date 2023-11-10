@@ -78,7 +78,7 @@ Add Import Paths: `$GOPATH`/src
 service AppMessages {
   rpc Send(SendRequest) returns (SendResponse) {
     option (google.api.http) = {
-      post: "/inner/send_message"
+      post: "/internal/send_message"
       body: "*"
     };
   }
