@@ -3,7 +3,7 @@ package xrpc
 import (
 	"context"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	pb "github.com/mix-go/xrpc/testdata"
+	pb "github.com/mix-go/xrpc/api"
 	"google.golang.org/grpc"
 	"log"
 	"os"
@@ -11,14 +11,13 @@ import (
 )
 
 type service struct {
-	pb.UnimplementedOrderServer
+	pb.UnimplementedAppMessagesServer
 }
 
-func (t *service) RequestForRelease(ctx context.Context, in *pb.ReleaseRequest) (*pb.ReleaseResponse, error) {
+func (t *service) Send(ctx context.Context, in *pb.SendRequest) (*pb.SendResponse, error) {
 	log.Printf("%+v", in)
-	return &pb.ReleaseResponse{
-		Code:    0,
-		Message: "ok",
+	return &pb.SendResponse{
+		MessageId: 1,
 	}, nil
 }
 
@@ -27,13 +26,13 @@ func TestRPCServer_Serve(t *testing.T) {
 		Grpc: &Grpc{
 			Addr: "0.0.0.0:50000",
 			Registrar: func(s *grpc.Server) {
-				pb.RegisterOrderServer(s, &service{})
+				pb.RegisterAppMessagesServer(s, &service{})
 			},
 		},
 		Gateway: &Gateway{ // Optional
 			Addr: "0.0.0.0:50001",
 			Registrar: func(mux *runtime.ServeMux, conn *grpc.ClientConn) {
-				pb.RegisterOrderHandler(context.Background(), mux, conn)
+				pb.RegisterAppMessagesHandler(context.Background(), mux, conn)
 			},
 		},
 		Logger: nil,
@@ -56,13 +55,13 @@ func TestRpcServerTLS_Serve(t *testing.T) {
 		Grpc: &Grpc{
 			Addr: "0.0.0.0:50000",
 			Registrar: func(s *grpc.Server) {
-				pb.RegisterOrderServer(s, &service{})
+				pb.RegisterAppMessagesServer(s, &service{})
 			},
 		},
 		Gateway: &Gateway{ // Optional
 			Addr: "0.0.0.0:50001",
 			Registrar: func(mux *runtime.ServeMux, conn *grpc.ClientConn) {
-				pb.RegisterOrderHandler(context.Background(), mux, conn)
+				pb.RegisterAppMessagesHandler(context.Background(), mux, conn)
 			},
 		},
 		Logger:          nil,

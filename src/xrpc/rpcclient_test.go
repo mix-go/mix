@@ -3,7 +3,7 @@ package xrpc
 import (
 	"context"
 	"fmt"
-	pb "github.com/mix-go/xrpc/testdata"
+	pb "github.com/mix-go/xrpc/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"io"
@@ -20,10 +20,10 @@ func TestNewGrpcClient(t *testing.T) {
 		log.Fatal(err)
 	}
 	defer conn.Close()
-	client := pb.NewOrderClient(conn)
+	client := pb.NewAppMessagesClient(conn)
 	ctx, _ := context.WithTimeout(context.Background(), CallTimeout)
-	resp, err := client.RequestForRelease(ctx, &pb.ReleaseRequest{
-		OrderNumber: "123456789",
+	resp, err := client.Send(ctx, &pb.SendRequest{
+		Text: "123456789",
 	})
 	fmt.Println(resp, err)
 }
@@ -39,10 +39,10 @@ func TestNewGrpcTLSClient(t *testing.T) {
 		log.Fatal(err)
 	}
 	defer conn.Close()
-	client := pb.NewOrderClient(conn)
+	client := pb.NewAppMessagesClient(conn)
 	ctx, _ := context.WithTimeout(context.Background(), CallTimeout)
-	resp, err := client.RequestForRelease(ctx, &pb.ReleaseRequest{
-		OrderNumber: "123456789",
+	resp, err := client.Send(ctx, &pb.SendRequest{
+		Text: "123456789",
 	})
 	fmt.Println(resp, err)
 }
