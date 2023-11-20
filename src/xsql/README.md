@@ -141,7 +141,7 @@ if err != nil {
 
 > Oracle placeholder needs to be modified to :id
 
-Update full
+Update all columns
 
 ```go
 test := Test{
@@ -152,7 +152,7 @@ test := Test{
 res, err := DB.Update(&test, "id = ?", 8)
 ```
 
-Update columns
+Update certain columns
 
 ```go
 test := map[string]interface{}{
