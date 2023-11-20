@@ -211,7 +211,7 @@ func TestEmbeddingUpdate(t *testing.T) {
 			Bar: time.Now(),
 		},
 	}
-	_, err := DB.Update(&test, "id = ?", 10)
+	_, err := DB.Update(&test, "id = ?", 8)
 
 	a.Empty(err)
 }
@@ -222,11 +222,24 @@ func TestUpdate(t *testing.T) {
 	DB := newDB()
 
 	test := Test{
-		Id:  999,
-		Foo: "test update",
+		Id:  8,
+		Foo: "test update 1",
 		Bar: time.Now(),
 	}
-	_, err := DB.Update(&test, "id = ?", 10)
+	_, err := DB.Update(&test, "id = ?", 999)
+
+	a.Empty(err)
+}
+
+func TestUpdateColumns(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	test := map[string]interface{}{
+		"foo": "test update 2",
+	}
+	_, err := DB.Model(&Test{}).Update(test, "id = ?", 8)
 
 	a.Empty(err)
 }
@@ -237,12 +250,14 @@ func TestDelete(t *testing.T) {
 	DB := newDB()
 
 	test := Test{
-		Id:  10,
+		Id:  8,
 		Foo: "test",
 		Bar: time.Now(),
 	}
-	_, err := DB.Delete(&test, "id = ?", test.Id)
+	_, err := DB.Model(&test).Delete("id = ?", test.Id)
+	a.Empty(err)
 
+	_, err = DB.Model(&Test{}).Delete("id = ?", 8)
 	a.Empty(err)
 }
 
@@ -251,7 +266,7 @@ func TestExec(t *testing.T) {
 
 	DB := newDB()
 
-	_, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 10)
+	_, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 7)
 
 	a.Empty(err)
 }

@@ -13,6 +13,12 @@ type executor struct {
 	Executor
 }
 
+type ModelExecutor struct {
+	Executor
+	Options   *sqlOptions
+	TableName string
+}
+
 func (t *executor) Insert(data interface{}, opts *sqlOptions) (sql.Result, error) {
 	fields := make([]string, 0)
 	vars := make([]string, 0)
@@ -143,6 +149,27 @@ func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result,
 	return res, nil
 }
 
+func (t *executor) model(s interface{}, opts *sqlOptions) *ModelExecutor {
+	var table string
+	value := reflect.ValueOf(s)
+	switch value.Kind() {
+	case reflect.Ptr:
+		return t.model(value.Elem().Interface(), opts)
+	case reflect.Struct:
+		if tab, ok := s.(Table); ok {
+			table = tab.TableName()
+		} else {
+			table = value.Type().Name()
+		}
+		break
+	}
+	return &ModelExecutor{
+		Executor:  t.Executor,
+		Options:   opts,
+		TableName: table,
+	}
+}
+
 func (t *executor) Update(data interface{}, expr string, args []interface{}, opts *sqlOptions) (sql.Result, error) {
 	set := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
@@ -196,25 +223,52 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	return res, nil
 }
 
-func (t *executor) Delete(data interface{}, expr string, args []interface{}, opts *sqlOptions) (sql.Result, error) {
+func (t *ModelExecutor) Update(data map[string]interface{}, expr string, args ...interface{}) (sql.Result, error) {
+	set := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
 
-	table := ""
+	table := t.TableName
+	opts := t.Options
 
-	value := reflect.ValueOf(data)
-	switch value.Kind() {
-	case reflect.Ptr:
-		return t.Delete(value.Elem().Interface(), expr, args, opts)
-	case reflect.Struct:
-		if tab, ok := data.(Table); ok {
-			table = tab.TableName()
-		} else {
-			table = value.Type().Name()
-		}
-		break
-	default:
-		return nil, errors.New("xsql: only for struct type")
+	for k, v := range data {
+		set = append(set, fmt.Sprintf("`%s` = ?", k))
+		bindArgs = append(bindArgs, v)
 	}
+
+	where := ""
+	if expr != "" {
+		where = fmt.Sprintf(` WHERE %s`, expr)
+		bindArgs = append(bindArgs, args...)
+	}
+
+	SQL := fmt.Sprintf(`UPDATE %s SET %s%s`, table, strings.Join(set, ", "), where)
+
+	startTime := time.Now()
+	res, err := t.Executor.Exec(SQL, bindArgs...)
+	var rowsAffected int64
+	if res != nil {
+		rowsAffected, _ = res.RowsAffected()
+	}
+	l := &Log{
+		Duration:     time.Now().Sub(startTime),
+		SQL:          SQL,
+		Bindings:     bindArgs,
+		RowsAffected: rowsAffected,
+		Error:        err,
+	}
+	opts.doDebug(l)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (t *ModelExecutor) Delete(expr string, args ...interface{}) (sql.Result, error) {
+	bindArgs := make([]interface{}, 0)
+
+	table := t.TableName
+	opts := t.Options
 
 	where := ""
 	if expr != "" {

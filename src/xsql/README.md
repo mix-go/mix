@@ -141,13 +141,24 @@ if err != nil {
 
 > Oracle placeholder needs to be modified to :id
 
+Update full
+
 ```go
 test := Test{
-    Id:  10,
+    Id:  8,
     Foo: "test",
     Bar: time.Now(),
 }
-res, err := DB.Update(&test, "id = ?", 10)
+res, err := DB.Update(&test, "id = ?", 8)
+```
+
+Update columns
+
+```go
+test := map[string]interface{}{
+    "foo": "test",
+}
+res, err := DB.Model(&Test{}).Update(test, "id = ?", 8)
 ```
 
 ## Delete
@@ -156,11 +167,15 @@ res, err := DB.Update(&test, "id = ?", 10)
 
 ```go
 test := Test{
-    Id:  10,
+    Id:  8,
     Foo: "test",
     Bar: time.Now(),
 }
-res, err := DB.Delete(&test, "id = ?", test.Id)
+res, err := DB.Model(&test).Delete("id = ?", test.Id)
+```
+
+```go
+res, err := DB.Model(&Test{}).Delete("id = ?", 8)
 ```
 
 ## Exec
