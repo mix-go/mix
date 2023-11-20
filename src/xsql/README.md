@@ -149,7 +149,7 @@ test := Test{
     Foo: "test",
     Bar: time.Now(),
 }
-res, err := DB.Update(&test, "id = ?", 8)
+res, err := DB.Update(&test, "id = ?", test.Id)
 ```
 
 Update certain columns
@@ -185,7 +185,7 @@ Use `Exec()` to manually execute the delete, you can also manually execute the u
 > Oracle placeholder needs to be modified to :id
 
 ```go
-res, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 10)
+res, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 8)
 ```
 
 ## Transaction
