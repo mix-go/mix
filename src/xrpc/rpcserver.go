@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/keepalive"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"net"
 	"net/http"
@@ -148,13 +149,25 @@ func (t *RpcServer) Serve() error {
 			DiscardUnknown: true,
 		}
 	}
-	mux := runtime.NewServeMux(
+	muxOpts := []runtime.ServeMuxOption{
 		// Format for using proto names in json https://grpc-ecosystem.github.io/grpc-gateway/docs/mapping/customizing_your_gateway/#using-proto-names-in-json
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 			MarshalOptions:   *marshalOptions,
 			UnmarshalOptions: *unmarshalOptions,
 		}),
-	)
+	}
+	if t.Logger != nil {
+		customHTTPError := func(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
+			defer runtime.DefaultHTTPErrorHandler(ctx, mux, marshaler, w, r, err)
+			if err == nil {
+				return
+			}
+			st := status.Convert(err)
+			t.Logger.Log(ctx, logging.LevelInfo, "gateway bad request", st.Code(), st.Message(), st.Details())
+		}
+		muxOpts = append(muxOpts, runtime.WithErrorHandler(customHTTPError))
+	}
+	mux := runtime.NewServeMux(muxOpts...)
 	t.Gateway.Registrar(mux, conn)
 	gateway := &http.Server{
 		Addr:    t.Gateway.Addr,
