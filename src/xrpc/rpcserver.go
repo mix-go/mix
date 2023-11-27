@@ -163,7 +163,7 @@ func (t *RpcServer) Serve() error {
 				return
 			}
 			st := status.Convert(err)
-			t.Logger.Log(ctx, logging.LevelInfo, "gateway bad request", st.Code(), st.Message(), st.Details())
+			t.Logger.Log(ctx, logging.LevelInfo, "gateway bad request", "code", st.Code(), "message", st.Message(), "details", st.Details())
 		}
 		muxOpts = append(muxOpts, runtime.WithErrorHandler(customHTTPError))
 	}
