@@ -42,6 +42,10 @@ type Gateway struct {
 	Registrar func(mux *runtime.ServeMux, conn *grpc.ClientConn)
 
 	Server *http.Server
+
+	// Additional server config
+	// Optional
+	ServeMuxOptions []runtime.ServeMuxOption
 }
 
 type Grpc struct {
@@ -62,12 +66,6 @@ type Grpc struct {
 	// Additional server config
 	// Optional
 	ServerOptions []grpc.ServerOption
-
-	// Optional
-	MarshalOptions *protojson.MarshalOptions
-
-	// Optional
-	UnmarshalOptions *protojson.UnmarshalOptions
 }
 
 func (t *RpcServer) Serve() error {
@@ -135,25 +133,17 @@ func (t *RpcServer) Serve() error {
 		return err
 	}
 
-	// http server
-	marshalOptions := t.MarshalOptions
-	if marshalOptions == nil {
-		marshalOptions = &protojson.MarshalOptions{
-			UseProtoNames:   true,
-			EmitUnpopulated: false, // Omit 0 values, such as 0, "" or null
-		}
-	}
-	unmarshalOptions := t.UnmarshalOptions
-	if unmarshalOptions == nil {
-		unmarshalOptions = &protojson.UnmarshalOptions{
-			DiscardUnknown: true,
-		}
-	}
+	// gateway server
 	muxOpts := []runtime.ServeMuxOption{
 		// Format for using proto names in json https://grpc-ecosystem.github.io/grpc-gateway/docs/mapping/customizing_your_gateway/#using-proto-names-in-json
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
-			MarshalOptions:   *marshalOptions,
-			UnmarshalOptions: *unmarshalOptions,
+			MarshalOptions: protojson.MarshalOptions{
+				UseProtoNames:   true,
+				EmitUnpopulated: false, // Omit 0 values, such as 0, "" or null
+			},
+			UnmarshalOptions: protojson.UnmarshalOptions{
+				DiscardUnknown: true,
+			},
 		}),
 	}
 	if t.Logger != nil {
@@ -163,15 +153,25 @@ func (t *RpcServer) Serve() error {
 				return
 			}
 			st := status.Convert(err)
-			t.Logger.Log(ctx, logging.LevelInfo, "gateway error", "code", st.Code(), "message", st.Message(), "details", st.Details())
+			t.Logger.Log(r.Context(), logging.LevelInfo, "gateway error", "method", r.Method, "path", r.URL.Path, "remote_addr", r.RemoteAddr, "code", st.Code(), "message", st.Message(), "details", st.Details())
 		}
 		muxOpts = append(muxOpts, runtime.WithErrorHandler(customHTTPError))
 	}
+	if len(t.Grpc.ServerOptions) > 0 {
+		muxOpts = append(muxOpts, t.Gateway.ServeMuxOptions...)
+	}
 	mux := runtime.NewServeMux(muxOpts...)
 	t.Gateway.Registrar(mux, conn)
+	requestLogger := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			next.ServeHTTP(w, r)
+			statusCode := w.(interface{ StatusCode() int }).StatusCode()
+			t.Logger.Log(r.Context(), logging.LevelInfo, "gateway request", "method", r.Method, "path", r.URL.Path, "remote_addr", r.RemoteAddr, "status_code", statusCode)
+		})
+	}
 	gateway := &http.Server{
 		Addr:    t.Gateway.Addr,
-		Handler: mux,
+		Handler: requestLogger(mux),
 	}
 	if t.TLSConfig != nil {
 		gateway.TLSConfig = t.TLSConfig
