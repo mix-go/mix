@@ -164,9 +164,8 @@ func (t *RpcServer) Serve() error {
 	t.GatewayServer.Registrar(mux, conn)
 	requestLogger := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			t.Logger.Log(r.Context(), logging.LevelInfo, "gateway request", "method", r.Method, "path", r.URL.Path, "remote_addr", r.RemoteAddr)
 			next.ServeHTTP(w, r)
-			statusCode := w.(interface{ StatusCode() int }).StatusCode()
-			t.Logger.Log(r.Context(), logging.LevelInfo, "gateway request", "method", r.Method, "path", r.URL.Path, "remote_addr", r.RemoteAddr, "status_code", statusCode)
 		})
 	}
 	gateway := &http.Server{

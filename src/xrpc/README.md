@@ -108,13 +108,13 @@ The necessary functions are encapsulated internally for unified management
 
 ```go
 s := &xrpc.RpcServer{
-    Grpc: &xrpc.Grpc{
+    GrpcServer: &xrpc.GrpcServer{
         Addr: "0.0.0.0:50000",
         Registrar: func(s *grpc.Server) {
             pb.RegisterOrderServer(s, &service{})
         },
     },
-    Gateway: &xrpc.Gateway{ // Optional
+    GatewayServer: &xrpc.GatewayServer{ // Optional
         Addr: "0.0.0.0:50001",
         Registrar: func(mux *runtime.ServeMux, conn *grpc.ClientConn) {
             pb.RegisterOrderHandler(context.Background(), mux, conn)
@@ -145,13 +145,13 @@ if err != nil {
     log.Fatal(err)
 }
 s := &xrpc.RpcServer{
-    Grpc: &xrpc.Grpc{
+    GrpcServer: &xrpc.GrpcServer{
         Addr: "0.0.0.0:50000",
         Registrar: func(s *grpc.Server) {
             pb.RegisterOrderServer(s, &service{})
         },
     },
-    Gateway: &xrpc.Gateway{ // Optional
+    GatewayServer: &xrpc.GatewayServer{ // Optional
         Addr: "0.0.0.0:50001",
         Registrar: func(mux *runtime.ServeMux, conn *grpc.ClientConn) {
             pb.RegisterOrderHandler(context.Background(), mux, conn)
@@ -181,7 +181,7 @@ Loggable Events
 
 ```go
 s := &xrpc.RpcServer{
-    Grpc: &xrpc.Grpc{
+    GrpcServer: &xrpc.GrpcServer{
         LoggableEvents: []logging.LoggableEvent{logging.StartCall, logging.FinishCall},
     }
 }
