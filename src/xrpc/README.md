@@ -78,7 +78,7 @@ Add Import Paths: `$GOPATH`/src
 service AppMessages {
   rpc Send(SendRequest) returns (SendResponse) {
     option (google.api.http) = {
-      post: "/internal/send_message"
+      post: "/v1/send_message"
       body: "*"
     };
   }
@@ -108,13 +108,13 @@ The necessary functions are encapsulated internally for unified management
 
 ```go
 s := &xrpc.RpcServer{
-    Grpc: &xrpc.Grpc{
+    GrpcServer: &xrpc.Grpc{
         Addr: "0.0.0.0:50000",
         Registrar: func(s *grpc.Server) {
             pb.RegisterOrderServer(s, &service{})
         },
     },
-    Gateway: &xrpc.Gateway{ // Optional
+    GatewayServer: &xrpc.Gateway{ // Optional
         Addr: "0.0.0.0:50001",
         Registrar: func(mux *runtime.ServeMux, conn *grpc.ClientConn) {
             pb.RegisterOrderHandler(context.Background(), mux, conn)
@@ -242,10 +242,10 @@ if err != nil {
     log.Fatal(err)
 }
 defer conn.Close()
-client := pb.NewOrderClient(conn)
+client := pb.NewAppMessagesClient(conn)
 ctx, _ := context.WithTimeout(context.Background(), xrpc.CallTimeout)
-resp, err := client.RequestForRelease(ctx, &pb.ReleaseRequest{
-    OrderNumber: "123456789",
+resp, err := client.Send(ctx, &pb.SendRequest{
+    Text: "foo",
 })
 ```
 
@@ -272,10 +272,10 @@ $opts = [
     // 'grpc.ssl_target_name_override' => '127.0.0.1:50000',
     // 'grpc.default_authority' => '127.0.0.1:50000'
 ];
-$client = new \Bitfloww\RexClient('127.0.0.1:50000', $opts);
-$request = new \Bitfloww\ReleaseRequest();
-$request->setOrderNumber('123456789');
-list($reply, $status) = $client->RequestForRelease($request)->wait();
+$client = new \Example\AppMessagesClient('127.0.0.1:50000', $opts);
+$request = new \Example\SendRequest();
+$request->setText('foo');
+list($reply, $status) = $client->Send($request)->wait();
 var_dump($reply, $status);
 ```
 
@@ -292,7 +292,7 @@ client := &http.Client{
     },
 }
 defer client.CloseIdleConnections()
-resp, err := client.Post("https://127.0.0.1:50001/v1/request_for_release", "application/json", strings.NewReader(`{"order_number":"123456789"}`))
+resp, err := client.Post("https://127.0.0.1:50001/v1/send_message", "application/json", strings.NewReader(`{"text":"foo"}`))
 fmt.Println(resp.Body)
 ```
 
@@ -309,7 +309,7 @@ $client = new Client([
     'ssl_key' => '/certificates/client.key',
     'verify' => '/certificates/ca.pem'
 ]);
-$response = $client->request('POST', 'https://127.0.0.1:50001/v1/request_for_release', ['body' => '{"order_number":"123456789"}']);
+$response = $client->request('POST', 'https://127.0.0.1:50001/v1/send_message', ['body' => '{"text":"foo"}']);
 var_dump($response->getBody()->getContents());
 ```
 

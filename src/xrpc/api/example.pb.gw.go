@@ -79,7 +79,7 @@ func RegisterAppMessagesHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AppMessages/Send", runtime.WithHTTPPathPattern("/inner/send_message"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AppMessages/Send", runtime.WithHTTPPathPattern("/v1/send_message"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -143,7 +143,7 @@ func RegisterAppMessagesHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.AppMessages/Send", runtime.WithHTTPPathPattern("/inner/send_message"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.AppMessages/Send", runtime.WithHTTPPathPattern("/v1/send_message"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -163,7 +163,7 @@ func RegisterAppMessagesHandlerClient(ctx context.Context, mux *runtime.ServeMux
 }
 
 var (
-	pattern_AppMessages_Send_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"inner", "send_message"}, ""))
+	pattern_AppMessages_Send_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "send_message"}, ""))
 )
 
 var (

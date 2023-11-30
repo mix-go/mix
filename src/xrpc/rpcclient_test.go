@@ -49,7 +49,7 @@ func TestNewGrpcTLSClient(t *testing.T) {
 
 func TestNewGatewayClient(t *testing.T) {
 	client := &http.Client{}
-	resp, err := client.Post("http://127.0.0.1:50001/v1/request_for_release", "application/json", strings.NewReader(`{"order_number":"123456789"}`))
+	resp, err := client.Post("http://127.0.0.1:50001/v1/send_message", "application/json", strings.NewReader(`{"order_number":"123456789"}`))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,7 +69,7 @@ func TestNewGatewayTLSClient(t *testing.T) {
 		},
 	}
 	defer client.CloseIdleConnections()
-	resp, err := client.Post("https://127.0.0.1:50001/v1/request_for_release", "application/json", strings.NewReader(`{"order_number":"123456789"}`))
+	resp, err := client.Post("https://127.0.0.1:50001/v1/send_message", "application/json", strings.NewReader(`{"order_number":"123456789"}`))
 	b, _ := io.ReadAll(resp.Body)
 	fmt.Println(string(b), err)
 }

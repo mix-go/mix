@@ -8,7 +8,7 @@ import "google/api/annotations.proto";
 service AppMessages {
   rpc Send(SendRequest) returns (SendResponse) {
     option (google.api.http) = {
-      post: "/inner/send_message"
+      post: "/v1/send_message"
       body: "*"
     };
   }
