@@ -19,10 +19,10 @@ import (
 
 type RpcServer struct {
 	// Required
-	*Grpc
+	*GrpcServer
 
 	// Optional
-	*Gateway
+	*GatewayServer
 
 	// Optional
 	Logger logging.Logger
@@ -34,7 +34,7 @@ type RpcServer struct {
 	TLSClientConfig *tls.Config
 }
 
-type Gateway struct {
+type GatewayServer struct {
 	// Required
 	Addr string
 
@@ -42,15 +42,15 @@ type Gateway struct {
 	Registrar func(mux *runtime.ServeMux, conn *grpc.ClientConn)
 
 	Server *http.Server
+
+	// Additional server config
+	// Optional
+	ServeMuxOptions []runtime.ServeMuxOption
 }
 
-type Grpc struct {
+type GrpcServer struct {
 	// Required
 	Addr string
-
-	// No content: logging.StartCall, logging.FinishCall
-	// With content: logging.PayloadReceived, logging.PayloadSent
-	LoggableEvents []logging.LoggableEvent
 
 	// Required
 	Registrar func(server *grpc.Server)
@@ -63,20 +63,18 @@ type Grpc struct {
 	// Optional
 	ServerOptions []grpc.ServerOption
 
-	// Optional
-	MarshalOptions *protojson.MarshalOptions
-
-	// Optional
-	UnmarshalOptions *protojson.UnmarshalOptions
+	// No content: logging.StartCall, logging.FinishCall
+	// With content: logging.PayloadReceived, logging.PayloadSent
+	LoggableEvents []logging.LoggableEvent
 }
 
 func (t *RpcServer) Serve() error {
 	// listen
-	listen, err := net.Listen("tcp", t.Grpc.Addr)
+	listen, err := net.Listen("tcp", t.GrpcServer.Addr)
 	if err != nil {
 		return err
 	}
-	t.Grpc.Listener = listen
+	t.GrpcServer.Listener = listen
 
 	// grpc server
 	srvOpts := []grpc.ServerOption{
@@ -87,7 +85,7 @@ func (t *RpcServer) Serve() error {
 	}
 	if t.Logger != nil {
 		logOpts := []logging.Option{
-			logging.WithLogOnEvents(t.Grpc.LoggableEvents...),
+			logging.WithLogOnEvents(t.GrpcServer.LoggableEvents...),
 		}
 		srvOpts = append(srvOpts,
 			grpc.ChainUnaryInterceptor(
@@ -100,17 +98,17 @@ func (t *RpcServer) Serve() error {
 	if t.TLSConfig != nil {
 		srvOpts = append(srvOpts, grpc.Creds(credentials.NewTLS(t.TLSConfig)))
 	}
-	if len(t.Grpc.ServerOptions) > 0 {
-		srvOpts = append(srvOpts, t.Grpc.ServerOptions...)
+	if len(t.GrpcServer.ServerOptions) > 0 {
+		srvOpts = append(srvOpts, t.GrpcServer.ServerOptions...)
 	}
 	s := grpc.NewServer(srvOpts...)
-	t.Grpc.Registrar(s)
+	t.GrpcServer.Registrar(s)
 	serve := func() {
 		if err := s.Serve(listen); err != nil && !strings.Contains(err.Error(), "use of closed network connection") {
 			panic(err)
 		}
 	}
-	if t.Gateway == nil {
+	if t.GatewayServer == nil {
 		serve()
 		return nil
 	}
@@ -129,31 +127,23 @@ func (t *RpcServer) Serve() error {
 	if t.TLSClientConfig != nil {
 		dialOpts = append(dialOpts, grpc.WithTransportCredentials(credentials.NewTLS(t.TLSClientConfig)))
 	}
-	addr := strings.ReplaceAll(t.Grpc.Addr, "0.0.0.0", "127.0.0.1")
+	addr := strings.ReplaceAll(t.GrpcServer.Addr, "0.0.0.0", "127.0.0.1")
 	conn, err := grpc.Dial(addr, dialOpts...)
 	if err != nil {
 		return err
 	}
 
-	// http server
-	marshalOptions := t.MarshalOptions
-	if marshalOptions == nil {
-		marshalOptions = &protojson.MarshalOptions{
-			UseProtoNames:   true,
-			EmitUnpopulated: false, // Omit 0 values, such as 0, "" or null
-		}
-	}
-	unmarshalOptions := t.UnmarshalOptions
-	if unmarshalOptions == nil {
-		unmarshalOptions = &protojson.UnmarshalOptions{
-			DiscardUnknown: true,
-		}
-	}
+	// gateway server
 	muxOpts := []runtime.ServeMuxOption{
 		// Format for using proto names in json https://grpc-ecosystem.github.io/grpc-gateway/docs/mapping/customizing_your_gateway/#using-proto-names-in-json
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
-			MarshalOptions:   *marshalOptions,
-			UnmarshalOptions: *unmarshalOptions,
+			MarshalOptions: protojson.MarshalOptions{
+				UseProtoNames:   true,
+				EmitUnpopulated: false, // Omit 0 values, such as 0, "" or null
+			},
+			UnmarshalOptions: protojson.UnmarshalOptions{
+				DiscardUnknown: true,
+			},
 		}),
 	}
 	if t.Logger != nil {
@@ -163,15 +153,24 @@ func (t *RpcServer) Serve() error {
 				return
 			}
 			st := status.Convert(err)
-			t.Logger.Log(ctx, logging.LevelInfo, "gateway error", "code", st.Code(), "message", st.Message(), "details", st.Details())
+			t.Logger.Log(r.Context(), logging.LevelInfo, "gateway error", "method", r.Method, "path", r.URL.Path, "remote_addr", r.RemoteAddr, "code", st.Code(), "message", st.Message(), "details", st.Details())
 		}
 		muxOpts = append(muxOpts, runtime.WithErrorHandler(customHTTPError))
 	}
+	if len(t.GrpcServer.ServerOptions) > 0 {
+		muxOpts = append(muxOpts, t.GatewayServer.ServeMuxOptions...)
+	}
 	mux := runtime.NewServeMux(muxOpts...)
-	t.Gateway.Registrar(mux, conn)
+	t.GatewayServer.Registrar(mux, conn)
+	requestLogger := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			t.Logger.Log(r.Context(), logging.LevelInfo, "gateway request", "method", r.Method, "path", r.URL.Path, "remote_addr", r.RemoteAddr)
+			next.ServeHTTP(w, r)
+		})
+	}
 	gateway := &http.Server{
-		Addr:    t.Gateway.Addr,
-		Handler: mux,
+		Addr:    t.GatewayServer.Addr,
+		Handler: requestLogger(mux),
 	}
 	if t.TLSConfig != nil {
 		gateway.TLSConfig = t.TLSConfig
@@ -181,7 +180,7 @@ func (t *RpcServer) Serve() error {
 }
 
 func (t *RpcServer) Shutdown() error {
-	t.Grpc.Server.Stop()
-	_ = t.Grpc.Listener.Close()
-	return t.Gateway.Server.Shutdown(context.Background())
+	t.GrpcServer.Server.Stop()
+	_ = t.GrpcServer.Listener.Close()
+	return t.GatewayServer.Server.Shutdown(context.Background())
 }

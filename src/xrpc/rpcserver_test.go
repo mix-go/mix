@@ -23,13 +23,13 @@ func (t *service) Send(ctx context.Context, in *pb.SendRequest) (*pb.SendRespons
 
 func TestRPCServer_Serve(t *testing.T) {
 	s := &RpcServer{
-		Grpc: &Grpc{
+		GrpcServer: &GrpcServer{
 			Addr: "0.0.0.0:50000",
 			Registrar: func(s *grpc.Server) {
 				pb.RegisterAppMessagesServer(s, &service{})
 			},
 		},
-		Gateway: &Gateway{ // Optional
+		GatewayServer: &GatewayServer{ // Optional
 			Addr: "0.0.0.0:50001",
 			Registrar: func(mux *runtime.ServeMux, conn *grpc.ClientConn) {
 				pb.RegisterAppMessagesHandler(context.Background(), mux, conn)
@@ -52,13 +52,13 @@ func TestRpcServerTLS_Serve(t *testing.T) {
 		log.Fatal(err)
 	}
 	s := &RpcServer{
-		Grpc: &Grpc{
+		GrpcServer: &GrpcServer{
 			Addr: "0.0.0.0:50000",
 			Registrar: func(s *grpc.Server) {
 				pb.RegisterAppMessagesServer(s, &service{})
 			},
 		},
-		Gateway: &Gateway{ // Optional
+		GatewayServer: &GatewayServer{ // Optional
 			Addr: "0.0.0.0:50001",
 			Registrar: func(mux *runtime.ServeMux, conn *grpc.ClientConn) {
 				pb.RegisterAppMessagesHandler(context.Background(), mux, conn)
