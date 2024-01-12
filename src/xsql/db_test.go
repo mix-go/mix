@@ -17,6 +17,7 @@ type Test struct {
 	Id  int       `xsql:"id"`
 	Foo string    `xsql:"foo"`
 	Bar time.Time `xsql:"bar"`
+	Baz bool      `xsql:"baz" json:"-"`
 }
 
 func (t Test) TableName() string {
@@ -62,10 +63,11 @@ CREATE TABLE #xsql# (
   #id# int unsigned NOT NULL AUTO_INCREMENT,
   #foo# varchar(255) DEFAULT NULL,
   #bar# datetime DEFAULT NULL,
+  #baz# int NOT NULL DEFAULT '0',
   PRIMARY KEY (#id#)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-INSERT INTO #xsql# (#id#, #foo#, #bar#) VALUES (1, 'v', '2022-04-14 23:49:48');
-INSERT INTO #xsql# (#id#, #foo#, #bar#) VALUES (2, 'v1', '2022-04-14 23:50:00');
+INSERT INTO #xsql# (#id#, #foo#, #bar#, #baz#) VALUES (1, 'v', '2022-04-14 23:49:48', 1);
+INSERT INTO #xsql# (#id#, #foo#, #bar#, #baz#) VALUES (2, 'v1', '2022-04-14 23:50:00', 1);
 `
 	DB := newDB()
 	_, err := DB.Exec(strings.ReplaceAll(q, "#", "`"))
@@ -284,6 +286,7 @@ func TestFirst(t *testing.T) {
 
 	b, _ := json.Marshal(test)
 	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48Z"}`)
+	a.Equal(test.Baz, true)
 }
 
 func TestFirstEmbedding(t *testing.T) {
@@ -312,7 +315,7 @@ func TestFirstPart(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	a.Equal(fmt.Sprintf("%+v", test), "{Id:0 Foo:v Bar:0001-01-01 00:00:00 +0000 UTC}")
+	a.Equal(fmt.Sprintf("%+v", test), "{Id:0 Foo:v Bar:0001-01-01 00:00:00 +0000 UTC Baz:false}")
 }
 
 func TestFirstTableKey(t *testing.T) {
@@ -341,7 +344,7 @@ func TestFind(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0000 UTC} {Id:2 Foo:v1 Bar:2022-04-14 23:50:00 +0000 UTC}]`)
+	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0000 UTC Baz:true} {Id:2 Foo:v1 Bar:2022-04-14 23:50:00 +0000 UTC Baz:true}]`)
 }
 
 func TestEmbeddingFind(t *testing.T) {
@@ -370,7 +373,7 @@ func TestFindPart(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:0 Foo:v Bar:0001-01-01 00:00:00 +0000 UTC} {Id:0 Foo:v1 Bar:0001-01-01 00:00:00 +0000 UTC}]`)
+	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:0 Foo:v Bar:0001-01-01 00:00:00 +0000 UTC Baz:false} {Id:0 Foo:v1 Bar:0001-01-01 00:00:00 +0000 UTC Baz:false}]`)
 }
 
 func TestFindTableKey(t *testing.T) {
@@ -384,7 +387,7 @@ func TestFindTableKey(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0000 UTC} {Id:2 Foo:v1 Bar:2022-04-14 23:50:00 +0000 UTC}]`)
+	a.Equal(fmt.Sprintf("%+v", tests), `[{Id:1 Foo:v Bar:2022-04-14 23:49:48 +0000 UTC Baz:true} {Id:2 Foo:v1 Bar:2022-04-14 23:50:00 +0000 UTC Baz:true}]`)
 }
 
 func TestTxCommit(t *testing.T) {
