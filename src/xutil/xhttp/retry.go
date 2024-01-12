@@ -12,15 +12,17 @@ type RetryIfFunc func(*XResponse, error) error
 func doRetry(opts *requestOptions, f func() (*XResponse, error)) (*XResponse, error) {
 	var resp *XResponse
 	var err error
-	var lastErr error
+	var errorLog []error
 	err = retry.Do(
 		func() error {
 			resp, err = f()
 			if opts.RetryIfFunc != nil {
 				err := opts.RetryIfFunc(resp, err)
-				if err != nil && errors.Is(err, ErrAbortRetry) {
-					lastErr = err
-					return nil
+				if err != nil {
+					errorLog = append(errorLog, err)
+					if errors.Is(err, ErrAbortRetry) {
+						return nil
+					}
 				}
 				return err
 			}
@@ -34,8 +36,8 @@ func doRetry(opts *requestOptions, f func() (*XResponse, error)) (*XResponse, er
 	if err != nil {
 		return nil, err
 	}
-	if lastErr != nil {
-		return nil, lastErr
+	if len(errorLog) > 0 {
+		return nil, errors.Join(errorLog...)
 	}
 	return resp, nil
 }

@@ -79,6 +79,9 @@ func TestDebugAndAbortRetry(t *testing.T) {
 	url := "https://aaaaa.com/"
 	retryIf := func(resp *xhttp.XResponse, err error) error {
 		if err != nil {
+			if count == 1 {
+				return err
+			}
 			return errors.Join(err, xhttp.ErrAbortRetry)
 		}
 		if resp.StatusCode != 200 {
@@ -86,10 +89,10 @@ func TestDebugAndAbortRetry(t *testing.T) {
 		}
 		return nil
 	}
-	resp, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+	resp, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(3)))
 
 	a.Nil(resp)
 	a.NotNil(err)
 	a.Contains(err.Error(), "xhttp: abort further retries")
-	a.Equal(count, 1)
+	a.Equal(count, 2)
 }
