@@ -1,6 +1,7 @@
 package xhttp_test
 
 import (
+	"errors"
 	"fmt"
 	"github.com/avast/retry-go"
 	"github.com/mix-go/xutil/xhttp"
@@ -61,4 +62,31 @@ func TestDebugAndRetry(t *testing.T) {
 	a.Nil(resp)
 	a.NotNil(err)
 	a.Contains(err.Error(), "attempts fail")
+}
+
+func TestDebugAndAbortRetry(t *testing.T) {
+	a := assert.New(t)
+
+	count := 0
+	xhttp.DefaultOptions.DebugFunc = func(l *xhttp.Log) {
+		log.Printf("%+v %+v %+v %+v\n", l.Duration, l.Request, l.Response, l.Error)
+		count++
+	}
+
+	url := "https://aaaaa.com/"
+	retryIf := func(resp *xhttp.XResponse, err error) error {
+		if err != nil {
+			return errors.Join(err, xhttp.ErrAbortRetry)
+		}
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("invalid status_code: %d", resp.StatusCode)
+		}
+		return nil
+	}
+	resp, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+
+	a.Nil(resp)
+	a.NotNil(err)
+	a.Contains(err.Error(), "xhttp: abort further retries")
+	a.Equal(count, 1)
 }
