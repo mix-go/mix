@@ -342,6 +342,9 @@ func (t *Fetcher) mapped(field reflect.Value, row *Row, tag string) (err error) 
 	case reflect.String:
 		v = res.String()
 		break
+	case reflect.Bool:
+		v = res.Int() == 1
+		break
 	default:
 		if !res.Empty() &&
 			field.Type().String() == "time.Time" &&
