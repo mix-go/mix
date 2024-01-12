@@ -43,8 +43,10 @@ func TestRequestError(t *testing.T) {
 func TestDebugAndRetry(t *testing.T) {
 	a := assert.New(t)
 
+	count := 0
 	xhttp.DefaultOptions.DebugFunc = func(l *xhttp.Log) {
 		log.Printf("%+v %+v %+v %+v\n", l.Duration, l.Request, l.Response, l.Error)
+		count++
 	}
 
 	url := "https://aaaaa.com/"
@@ -62,6 +64,7 @@ func TestDebugAndRetry(t *testing.T) {
 	a.Nil(resp)
 	a.NotNil(err)
 	a.Contains(err.Error(), "attempts fail")
+	a.Equal(count, 2)
 }
 
 func TestDebugAndAbortRetry(t *testing.T) {
