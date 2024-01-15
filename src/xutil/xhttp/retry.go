@@ -20,6 +20,15 @@ func (t Error) Error() string {
 	return errors.Join(logWithNumber...).Error()
 }
 
+func (t Error) HasAbortRetry() bool {
+	for _, err := range t {
+		if errors.Is(err, ErrAbortRetry) {
+			return true
+		}
+	}
+	return false
+}
+
 func doRetry(opts *requestOptions, f func() (*XResponse, error)) (*XResponse, error) {
 	var resp *XResponse
 	var err error
@@ -47,7 +56,7 @@ func doRetry(opts *requestOptions, f func() (*XResponse, error)) (*XResponse, er
 	if err != nil {
 		return nil, err
 	}
-	if len(errorLog) > 0 {
+	if errorLog.HasAbortRetry() {
 		return nil, &errorLog
 	}
 	return resp, nil
