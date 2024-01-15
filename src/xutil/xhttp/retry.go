@@ -2,6 +2,7 @@ package xhttp
 
 import (
 	"errors"
+	"fmt"
 	"github.com/avast/retry-go"
 )
 
@@ -9,10 +10,20 @@ var ErrAbortRetry = errors.New("xhttp: abort further retries")
 
 type RetryIfFunc func(*XResponse, error) error
 
+type Error []error
+
+func (t Error) Error() string {
+	var logWithNumber []error
+	for i, err := range t {
+		logWithNumber = append(logWithNumber, fmt.Errorf("#%d: %s", i+1, err))
+	}
+	return errors.Join(logWithNumber...).Error()
+}
+
 func doRetry(opts *requestOptions, f func() (*XResponse, error)) (*XResponse, error) {
 	var resp *XResponse
 	var err error
-	var errorLog []error
+	var errorLog Error
 	err = retry.Do(
 		func() error {
 			resp, err = f()
@@ -37,7 +48,7 @@ func doRetry(opts *requestOptions, f func() (*XResponse, error)) (*XResponse, er
 		return nil, err
 	}
 	if len(errorLog) > 0 {
-		return nil, errors.Join(errorLog...)
+		return nil, &errorLog
 	}
 	return resp, nil
 }
