@@ -22,7 +22,7 @@ func (t *Fetcher) First(i interface{}) error {
 		return errors.New("xsql: argument can only be pointer type")
 	}
 	rootValue := value.Elem()
-	rootType := reflect.TypeOf(i).Elem()
+	rootType := rootValue.Type()
 
 	rows, err := t.Rows()
 	if err != nil {
@@ -297,18 +297,18 @@ func (t *Fetcher) foreach(row *Row, value reflect.Value, typ reflect.Type) error
 		if !row.Exist(tag) {
 			continue
 		}
-		if err := t.mapped(fieldValue, row, tag); err != nil {
+		if err := t.mapped(row, tag, fieldValue, fieldValue.Type()); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (t *Fetcher) mapped(field reflect.Value, row *Row, tag string) (err error) {
+func (t *Fetcher) mapped(row *Row, tag string, value reflect.Value, typ reflect.Type) (err error) {
 	res := row.Get(tag)
 	v := res.Value()
 
-	switch field.Kind() {
+	switch value.Kind() {
 	case reflect.Int:
 		v = int(res.Int())
 		break
@@ -347,7 +347,7 @@ func (t *Fetcher) mapped(field reflect.Value, row *Row, tag string) (err error) 
 		break
 	default:
 		if !res.Empty() &&
-			field.Type().String() == "time.Time" &&
+			typ.String() == "time.Time" &&
 			reflect.ValueOf(v).Type().String() != "time.Time" {
 			if t, e := time.ParseInLocation(t.options.TimeLayout, res.String(), t.options.TimeLocation); e == nil {
 				v = t
@@ -363,7 +363,7 @@ func (t *Fetcher) mapped(field reflect.Value, row *Row, tag string) (err error) 
 			err = fmt.Errorf("type mismatch for field %s: %v", tag, e)
 		}
 	}()
-	field.Set(reflect.ValueOf(v))
+	value.Set(reflect.ValueOf(v).Convert(value.Type()))
 
 	return
 }
