@@ -150,15 +150,37 @@ test := Test{
     Bar: time.Now(),
 }
 res, err := DB.Update(&test, "id = ?", test.Id)
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
-Update certain columns
+Update specific columns by map
 
 ```go
-test := map[string]interface{}{
+data := map[string]interface{}{
     "foo": "test",
 }
-res, err := DB.Model(&Test{}).Update(test, "id = ?", 8)
+res, err := DB.Model(&Test{}).Update(data, "id = ?", 8)
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+Update specific columns by struct pointer
+
+```go
+test := Test{}
+data, err := xsql.BuildTagValues(DB.Options.Tag, &test,
+    &test.Foo, "test",
+)
+if err != nil {
+    log.Fatal(err)
+}
+res, err := DB.Model(&test).Update(data, "id = ?", 8)
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
 ## Delete
@@ -172,10 +194,16 @@ test := Test{
     Bar: time.Now(),
 }
 res, err := DB.Model(&test).Delete("id = ?", test.Id)
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
 ```go
 res, err := DB.Model(&Test{}).Delete("id = ?", 8)
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
 ## Exec
@@ -186,6 +214,9 @@ Use `Exec()` to manually execute the delete, you can also manually execute the u
 
 ```go
 res, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 8)
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
 ## Transaction

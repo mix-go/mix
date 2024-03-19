@@ -213,7 +213,7 @@ func TestEmbeddingUpdate(t *testing.T) {
 			Id: 999,
 		},
 		Test2: Test2{
-			Foo: "test update",
+			Foo: "test_update",
 			Bar: time.Now(),
 		},
 	}
@@ -229,7 +229,7 @@ func TestUpdate(t *testing.T) {
 
 	test := Test{
 		Id:  8,
-		Foo: "test update 1",
+		Foo: "test_update_1",
 		Bar: time.Now(),
 	}
 	_, err := DB.Update(&test, "id = ?", 999)
@@ -242,11 +242,26 @@ func TestUpdateColumns(t *testing.T) {
 
 	DB := newDB()
 
-	test := map[string]interface{}{
-		"foo": "test update 2",
+	data := map[string]interface{}{
+		"foo": "test_update_2",
 	}
-	_, err := DB.Model(&Test{}).Update(test, "id = ?", 8)
+	_, err := DB.Model(&Test{}).Update(data, "id = ?", 8)
 
+	a.Empty(err)
+}
+
+func TestUpdateBuildTagValues(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	test := Test{}
+	data, err := xsql.BuildTagValues(DB.Options.Tag, &test,
+		&test.Foo, "test_update_3",
+	)
+	a.Empty(err)
+
+	_, err = DB.Model(&test).Update(data, "id = ?", 8)
 	a.Empty(err)
 }
 
