@@ -30,7 +30,7 @@ func BuildTagValues(tagKey string, ptr interface{}, pairs ...interface{}) (map[s
 			if structValue.Field(j).Addr().Interface() == pairs[i] {
 				fieldName = structType.Field(j).Tag.Get(tagKey)
 				if fieldName == "" {
-					return nil, fmt.Errorf("xsql: no matching struct field tag found for pointer at index %d", i)
+					return nil, fmt.Errorf("xsql: no struct field tag found for pointer at index %d", i)
 				}
 				found = true
 				break
