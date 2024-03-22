@@ -265,6 +265,21 @@ func TestUpdateBuildTagValues(t *testing.T) {
 	a.Empty(err)
 }
 
+func TestEmbeddingUpdateBuildTagValues(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	test := EmbeddingTest{}
+	data, err := xsql.BuildTagValues(DB.Options.Tag, &test,
+		&test.Foo, "test_update_4",
+	)
+	a.Empty(err)
+
+	_, err = DB.Model(&test).Update(data, "id = ?", 8)
+	a.Empty(err)
+}
+
 func TestDelete(t *testing.T) {
 	a := assert.New(t)
 
