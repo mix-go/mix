@@ -18,7 +18,7 @@ func BuildTagValues(tagKey string, ptr interface{}, pairs ...interface{}) (map[s
 	}
 
 	fieldsMap := map[string]reflect.Value{}
-	populateFieldsMap(value, fieldsMap)
+	populateFieldsMap(tagKey, value, fieldsMap)
 
 	for i := 0; i < len(pairs); i += 2 {
 		fieldPtr, ok := pairs[i].(interface{})
@@ -53,14 +53,14 @@ func BuildTagValues(tagKey string, ptr interface{}, pairs ...interface{}) (map[s
 
 // populateFieldsMap is a recursive function that maps field names to their values,
 // including fields from embedded structs.
-func populateFieldsMap(v reflect.Value, fieldsMap map[string]reflect.Value) {
+func populateFieldsMap(tagKey string, v reflect.Value, fieldsMap map[string]reflect.Value) {
 	for i := 0; i < v.NumField(); i++ {
 		fieldValue := v.Field(i)
 		fieldType := v.Type().Field(i)
-		tag := fieldType.Tag.Get("xsql")
+		tag := fieldType.Tag.Get(tagKey)
 		// If it's an embedded struct, we need to recurse into it
 		if fieldType.Anonymous && fieldValue.Type().Kind() == reflect.Struct {
-			populateFieldsMap(fieldValue, fieldsMap)
+			populateFieldsMap(tagKey, fieldValue, fieldsMap)
 		} else if tag != "" {
 			// Only add the field if it has the xsql tag
 			fieldName := tag
