@@ -5,6 +5,9 @@ import (
 	"reflect"
 )
 
+// BuildTagValues takes a tag key, a pointer to a struct, and a series of pointers to struct fields with their corresponding values.
+// It returns a map where each key is the tag value of the struct field, and each value is the corresponding value from the pairs.
+// If the number of arguments in pairs is not even, an error is returned since they should be provided as pointer-value pairs.
 func BuildTagValues(tagKey string, ptr interface{}, pairs ...interface{}) (map[string]interface{}, error) {
 	if len(pairs)%2 != 0 {
 		return nil, fmt.Errorf("xsql: arguments should be in pairs")
