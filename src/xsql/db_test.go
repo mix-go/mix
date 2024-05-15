@@ -7,6 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/mix-go/xsql"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"strings"
 	"testing"
@@ -43,6 +44,16 @@ type Test2 struct {
 type EmbeddingTest struct {
 	Test1
 	Test2
+}
+
+type Test3 struct {
+	Id  int                    `xsql:"id"`
+	Foo string                 `xsql:"foo"`
+	Bar *timestamppb.Timestamp `xsql:"bar"`
+}
+
+func (t Test3) TableName() string {
+	return "xsql"
 }
 
 func newDB() *xsql.DB {
@@ -468,4 +479,32 @@ func TestTxRollback(t *testing.T) {
 
 	err = tx.Rollback()
 	a.Empty(err)
+}
+
+func TestPbTimestamp(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	// Insert
+	now := timestamppb.Now()
+	log.Println(now.AsTime().Format(time.RFC3339))
+	test := Test3{
+		Id:  0,
+		Foo: "test_pb_timestamp",
+		Bar: now,
+	}
+	res, err := DB.Insert(&test)
+	a.Empty(err)
+	insertId, _ := res.LastInsertId()
+
+	// First
+	var test2 Test3
+	err = DB.First(&test2, "SELECT * FROM xsql WHERE id = ?", insertId)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Timestamp
+	a.IsType(&timestamppb.Timestamp{}, test2.Bar)
+	a.Equal(test2.Bar.Seconds, now.Seconds)
 }
