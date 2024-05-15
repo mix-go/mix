@@ -6,6 +6,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/sijms/go-ora/v2 v2.5.2
 	github.com/stretchr/testify v1.7.1
+	google.golang.org/protobuf v1.34.1
 )
 
 require (

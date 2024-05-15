@@ -4,7 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	ora "github.com/sijms/go-ora/v2"
+	"github.com/sijms/go-ora/v2"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"reflect"
 	"strconv"
 	"time"
@@ -263,8 +264,11 @@ func (t *RowResult) Time() time.Time {
 	if typ == "time.Time" {
 		return t.v.(time.Time)
 	}
-	if typ == "ora.TimeStamp" {
-		return time.Time(t.v.(ora.TimeStamp))
+	if typ == "go_ora.TimeStamp" {
+		return time.Time(t.v.(go_ora.TimeStamp))
+	}
+	if typ == "*timestamppb.Timestamp" {
+		return t.v.(*timestamppb.Timestamp).AsTime()
 	}
 	return time.Time{}
 }
@@ -346,17 +350,34 @@ func (t *Fetcher) mapped(row *Row, tag string, value reflect.Value, typ reflect.
 		v = res.Int() == 1
 		break
 	default:
-		if !res.Empty() &&
-			typ.String() == "time.Time" &&
-			reflect.ValueOf(v).Type().String() != "time.Time" {
-			if t, e := time.ParseInLocation(t.options.TimeLayout, res.String(), t.options.TimeLocation); e == nil {
-				v = t
-			} else {
-				return fmt.Errorf("time parse fail for field %s: %v", tag, e)
+		if !res.Empty() {
+			vTyp := reflect.ValueOf(v).Type().String()
+			// 如果结构体是time.Time类型，执行转换
+			if typ.String() == "time.Time" {
+				if vTyp == "time.Time" {
+					// parseTime=true
+					v = res.Value()
+				} else {
+					// parseTime=false
+					if t, e := time.ParseInLocation(t.options.TimeLayout, res.String(), t.options.TimeLocation); e == nil {
+						v = t
+					} else {
+						return fmt.Errorf("time parse fail for field %s: %v", tag, e)
+					}
+				}
+			}
+			// 如果结构体是*timestamppb.Timestamp类型，执行转换
+			if typ.String() == "*timestamppb.Timestamp" {
+				if vTyp != "*timestamppb.Timestamp" {
+					if t, e := time.ParseInLocation(t.options.TimeLayout, res.String(), t.options.TimeLocation); e == nil {
+						v = timestamppb.New(t)
+					} else {
+						return fmt.Errorf("time parse fail for field %s: %v", tag, e)
+					}
+				}
 			}
 		}
 	}
-
 	// 追加异常信息
 	defer func() {
 		if e := recover(); e != nil {

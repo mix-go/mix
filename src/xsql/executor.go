@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	ora "github.com/sijms/go-ora/v2"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"reflect"
 	"strings"
 	"time"
@@ -321,6 +323,28 @@ func (t *executor) Exec(query string, args []interface{}, opts *sqlOptions) (sql
 	return res, err
 }
 
+func (t *executor) isTime(typ string) bool {
+	switch typ {
+	case "time.Time", "go_ora.TimeStamp", "*timestamppb.Timestamp":
+		return true
+	default:
+		return false
+	}
+}
+
+func (t *executor) formatTime(typ string, v interface{}, opts *sqlOptions) string {
+	switch typ {
+	case "time.Time":
+		return v.(time.Time).Format(opts.TimeLayout)
+	case "go_ora.TimeStamp":
+		return time.Time(v.(ora.TimeStamp)).Format(opts.TimeLayout)
+	case "*timestamppb.Timestamp":
+		return v.(*timestamppb.Timestamp).AsTime().Format(opts.TimeLayout)
+	default:
+		return ""
+	}
+}
+
 func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *sqlOptions) (fields, vars []string, bindArgs []interface{}) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
@@ -336,32 +360,34 @@ func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *sq
 		if !value.Field(n).CanInterface() {
 			continue
 		}
-		isTime := value.Field(n).Type().String() == "time.Time"
 
 		tag := value.Type().Field(n).Tag.Get(opts.Tag)
-		if tag == "" || tag == "-" || tag == "_" {
+		if tag == "" || tag == "-" {
 			continue
 		}
+
 		fields = append(fields, tag)
 
-		v := ""
+		vTyp := value.Field(n).Type().String()
+		var v string
 		if opts.Placeholder == "?" {
 			v = opts.Placeholder
 		} else {
 			v = fmt.Sprintf(opts.Placeholder, n)
 		}
+		isTime := t.isTime(vTyp)
 		if isTime {
-			vars = append(vars, opts.TimeFunc(v))
-		} else {
-			vars = append(vars, v)
+			v = opts.TimeFunc(v)
 		}
+		vars = append(vars, v)
 
+		var a interface{}
 		if isTime {
-			ti := value.Field(n).Interface().(time.Time)
-			bindArgs = append(bindArgs, ti.Format(opts.TimeLayout))
+			a = t.formatTime(vTyp, value.Field(n).Interface(), opts)
 		} else {
-			bindArgs = append(bindArgs, value.Field(n).Interface())
+			a = value.Field(n).Interface()
 		}
+		bindArgs = append(bindArgs, a)
 	}
 	return
 }
@@ -381,7 +407,7 @@ func (t *executor) foreachBatchInsertFields(value reflect.Value, typ reflect.Typ
 		}
 
 		tag := value.Type().Field(n).Tag.Get(opts.Tag)
-		if tag == "" || tag == "-" || tag == "_" {
+		if tag == "" || tag == "-" {
 			continue
 		}
 
@@ -406,24 +432,31 @@ func (t *executor) foreachBatchInsertValues(ai int, value reflect.Value, typ ref
 		}
 
 		tag := value.Type().Field(n).Tag.Get(opts.Tag)
-		if tag == "" || tag == "-" || tag == "_" {
+		if tag == "" || tag == "-" {
 			continue
 		}
 
+		vTyp := value.Field(n).Type().String()
+		var v string
 		if opts.Placeholder == "?" {
-			vars = append(vars, opts.Placeholder)
+			v = opts.Placeholder
 		} else {
-			vars = append(vars, fmt.Sprintf(opts.Placeholder, ai))
+			v = fmt.Sprintf(opts.Placeholder, ai)
 			ai += 1
 		}
-
-		// time特殊处理
-		if value.Field(n).Type().String() == "time.Time" {
-			ti := value.Field(n).Interface().(time.Time)
-			bindArgs = append(bindArgs, ti.Format(opts.TimeLayout))
-		} else {
-			bindArgs = append(bindArgs, value.Field(n).Interface())
+		isTime := t.isTime(vTyp)
+		if isTime {
+			v = opts.TimeFunc(v)
 		}
+		vars = append(vars, v)
+
+		var a interface{}
+		if isTime {
+			a = t.formatTime(vTyp, value.Field(n).Interface(), opts)
+		} else {
+			a = value.Field(n).Interface()
+		}
+		bindArgs = append(bindArgs, a)
 	}
 	return
 }
@@ -444,23 +477,30 @@ func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *sq
 		}
 
 		tag := value.Type().Field(n).Tag.Get(opts.Tag)
-		if tag == "" || tag == "-" || tag == "_" {
+		if tag == "" || tag == "-" {
 			continue
 		}
 
+		vTyp := value.Field(n).Type().String()
+		var v string
 		if opts.Placeholder == "?" {
-			set = append(set, fmt.Sprintf("%s = %s", opts.ColumnQuotes+tag+opts.ColumnQuotes, opts.Placeholder))
+			v = opts.Placeholder
 		} else {
-			set = append(set, fmt.Sprintf("%s = %s", opts.ColumnQuotes+tag+opts.ColumnQuotes, fmt.Sprintf(opts.Placeholder, n)))
+			v = fmt.Sprintf(opts.Placeholder, n)
 		}
+		isTime := t.isTime(vTyp)
+		if isTime {
+			v = opts.TimeFunc(v)
+		}
+		set = append(set, fmt.Sprintf("%s = %s", opts.ColumnQuotes+tag+opts.ColumnQuotes, v))
 
-		// time特殊处理
-		if value.Field(n).Type().String() == "time.Time" {
-			ti := value.Field(n).Interface().(time.Time)
-			bindArgs = append(bindArgs, ti.Format(opts.TimeLayout))
+		var a interface{}
+		if isTime {
+			a = t.formatTime(vTyp, value.Field(n).Interface(), opts)
 		} else {
-			bindArgs = append(bindArgs, value.Field(n).Interface())
+			a = value.Field(n).Interface()
 		}
+		bindArgs = append(bindArgs, a)
 	}
 	return
 }

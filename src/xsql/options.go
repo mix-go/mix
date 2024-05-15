@@ -14,7 +14,7 @@ func newDefaultOptions() sqlOptions {
 		TableKey:     "${TABLE}",
 		Placeholder:  "?",
 		ColumnQuotes: "`",
-		TimeLayout:   "2006-01-02 15:04:05",
+		TimeLayout:   "2006-01-02 15:04:05.000000",
 		TimeLocation: time.Local,
 		TimeFunc: func(placeholder string) string {
 			return placeholder
@@ -41,7 +41,7 @@ type sqlOptions struct {
 	// For oracle, can be configured as "
 	ColumnQuotes string
 
-	// Default: 2006-01-02 15:04:05
+	// Default: 2006-01-02 15:04:05.000000
 	TimeLayout string
 
 	// Default: time.Local
