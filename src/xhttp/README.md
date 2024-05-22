@@ -93,7 +93,7 @@ retryIf := func(resp *xhttp.Response, err error) error {
 resp, err := xhttp.NewRequest("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
 ```
 
-## Middlewares
+## Middleware
 
 Middleware configuration before or after.
 
