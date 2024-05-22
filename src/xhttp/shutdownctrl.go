@@ -1,6 +1,7 @@
 package xhttp
 
 import (
+	"context"
 	"sync"
 	"sync/atomic"
 )
@@ -28,11 +29,22 @@ func (sc *ShutdownController) EndRequest() {
 	sc.waitGroup.Done()
 }
 
-func (sc *ShutdownController) InitiateShutdown() {
+func (sc *ShutdownController) InitiateShutdown(ctx context.Context) {
 	atomic.StoreInt32(&sc.shutdownFlag, 1)
-	sc.waitGroup.Wait()
+
+	done := make(chan struct{})
+	go func() {
+		sc.waitGroup.Wait()
+		close(done)
+	}()
+	select {
+	case <-ctx.Done(): // Timeout or ctx canceled, stop waiting.
+		return
+	case <-done: // waitGroup has completed
+		return
+	}
 }
 
-func Shutdown() {
-	shutdownController.InitiateShutdown()
+func Shutdown(ctx context.Context) {
+	shutdownController.InitiateShutdown(ctx)
 }

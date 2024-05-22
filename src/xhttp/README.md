@@ -25,6 +25,7 @@ go get github.com/mix-go/xhttp
 | xhttp.WithMiddlewares(middlewares ...Middleware) RequestOption                      | Set configuration item           |
 | xhttp.BuildJSON(v interface{}) Body                                                 | Generate json string             |
 | xhttp.BuildQuery(m map[string]string) Body                                          | Generate urlencoded query string |
+| xhttp.Shutdown(ctx context.Context)                                                 | Do shutdown                      |
 
 ## Debug Log
 
@@ -51,10 +52,10 @@ The log object contains the following fields
 
 ```go
 type Log struct {
-	Duration time.Duration `json:"duration"`
-	Request  *Request     `json:"request"`  // The Request.RetryAttempts field records the number of retry attempts
-	Response *Response    `json:"response"` // If request error this field is equal to nil
-	Error    error         `json:"error"`
+    Duration time.Duration `json:"duration"`
+    Request  *Request     `json:"request"`  // The Request.RetryAttempts field records the number of retry attempts
+    Response *Response    `json:"response"` // If request error this field is equal to nil
+    Error    error         `json:"error"`
 }
 ```
 
@@ -123,7 +124,7 @@ ch := make(chan os.Signal)
 signal.Notify(ch, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
 go func() {
     <-ch
-	xhttp.Shutdown()
+    xhttp.Shutdown(context.Background())
 }()
 ```
 
