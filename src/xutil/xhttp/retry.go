@@ -6,8 +6,6 @@ import (
 	"github.com/avast/retry-go"
 )
 
-var ErrAbortRetry = errors.New("xhttp: abort further retries")
-
 type RetryIfFunc func(*XResponse, error) error
 
 type Error []error

@@ -2,11 +2,18 @@ package xhttp
 
 import (
 	"bytes"
+	"errors"
 	"github.com/mix-go/xutil/xconv"
 	"io"
 	"net/http"
 	"net/url"
 	"time"
+)
+
+var (
+	ErrAbortRetry = errors.New("xhttp: abort further retries")
+
+	ErrShutdown = errors.New("xhttp: service is currently being shutdown and will no longer accept new requests")
 )
 
 type XRequest struct {
@@ -110,17 +117,26 @@ func Do(req *http.Request, opts ...RequestOption) (*XResponse, error) {
 	return doRequest(o, newXRequest(req))
 }
 
-func doRequest(opts *requestOptions, req *XRequest) (*XResponse, error) {
+func doRequest(opts *requestOptions, xReq *XRequest) (*XResponse, error) {
+	if !shutdownController.BeginRequest() {
+		return nil, ErrShutdown
+	}
+	defer shutdownController.EndRequest()
+
 	cli := http.Client{
 		Timeout: opts.Timeout,
 	}
 	startTime := time.Now()
-	r, err := cli.Do(req.Request)
+	r, err := cli.Do(xReq.Request)
 	if err != nil {
-		doDebug(opts, time.Now().Sub(startTime), req, nil, err)
+		doDebug(opts, time.Now().Sub(startTime), xReq, nil, err)
 		return nil, err
 	}
 	xResp := newXResponse(r)
-	doDebug(opts, time.Now().Sub(startTime), req, xResp, nil)
+	doDebug(opts, time.Now().Sub(startTime), xReq, xResp, nil)
 	return xResp, nil
+}
+
+func Shutdown() {
+	shutdownController.InitiateShutdown()
 }
