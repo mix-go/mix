@@ -75,6 +75,22 @@ retryIf := func(resp *xhttp.Response, err error) error {
 resp, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
 ```
 
+Network error, no retry.
+
+```go
+url := "https://aaaaa.com/"
+retryIf := func(resp *xhttp.XResponse, err error) error {
+    if err != nil {
+        return errors.Join(err, xhttp.ErrAbortRetry)
+    }
+    if resp.StatusCode != 200 {
+        return fmt.Errorf("invalid status_code: %d", resp.StatusCode)
+    }
+    return nil
+}
+resp, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+```
+
 ## License
 
 Apache License Version 2.0, http://www.apache.org/licenses/
