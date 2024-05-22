@@ -12,20 +12,20 @@ go get github.com/mix-go/xhttp
 
 ## Functions
 
-| Function                                                                            | Description                      |  
-|-------------------------------------------------------------------------------------|----------------------------------|
-| xhttp.NewRequest(method string, u string, opts ...RequestOption) (*Response, error) | Execute an http request.         |
-| xhttp.SendRequest(req *http.Request, opts ...RequestOption) (*Response, error)      | Execute an http request.         |
-| xhttp.WithBody(body Body) RequestOption                                             | Set configuration item           |
-| xhttp.WithHeader(header http.Header) RequestOption                                  | Set configuration item           |
-| xhttp.WithContentType(contentType string) RequestOption                             | Set configuration item           |
-| xhttp.WithTimeout(timeout time.Duration) RequestOption                              | Set configuration item           |
-| xhttp.WithDebugFunc(f DebugFunc) RequestOption                                      | Set configuration item           |
-| xhttp.WithRetry(f RetryIfFunc, opts ...retry.Option) RequestOption                  | Set configuration item           |
-| xhttp.WithMiddlewares(middlewares ...Middleware) RequestOption                      | Set configuration item           |
-| xhttp.BuildJSON(v interface{}) Body                                                 | Generate json string             |
-| xhttp.BuildQuery(m map[string]string) Body                                          | Generate urlencoded query string |
-| xhttp.Shutdown(ctx context.Context)                                                 | Do shutdown                      |
+| Function                                                                            | Description                       |  
+|-------------------------------------------------------------------------------------|-----------------------------------|
+| xhttp.NewRequest(method string, u string, opts ...RequestOption) (*Response, error) | Execute an http request.          |
+| xhttp.SendRequest(req *http.Request, opts ...RequestOption) (*Response, error)      | Execute an http request.          |
+| xhttp.WithBody(body Body) RequestOption                                             | Set configuration item.           |
+| xhttp.WithHeader(header http.Header) RequestOption                                  | Set configuration item.           |
+| xhttp.WithContentType(contentType string) RequestOption                             | Set configuration item.           |
+| xhttp.WithTimeout(timeout time.Duration) RequestOption                              | Set configuration item.           |
+| xhttp.WithDebugFunc(f DebugFunc) RequestOption                                      | Set configuration item.           |
+| xhttp.WithRetry(f RetryIfFunc, opts ...retry.Option) RequestOption                  | Set configuration item.           |
+| xhttp.WithMiddlewares(middlewares ...Middleware) RequestOption                      | Set configuration item.           |
+| xhttp.BuildJSON(v interface{}) Body                                                 | Generate json string.             |
+| xhttp.BuildQuery(m map[string]string) Body                                          | Generate urlencoded query string. |
+| xhttp.Shutdown(ctx context.Context)                                                 | Do shutdown.                      |
 
 ## Debug Log
 
