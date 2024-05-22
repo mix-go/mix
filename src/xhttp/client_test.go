@@ -1,12 +1,14 @@
 package xhttp_test
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/avast/retry-go"
 	"github.com/mix-go/xhttp"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"sync"
 	"testing"
 )
 
@@ -140,4 +142,35 @@ func TestMiddlewares(t *testing.T) {
 
 	a.Equal(resp.StatusCode, 200)
 	a.Nil(err)
+}
+
+func TestShutdown(t *testing.T) {
+	a := assert.New(t)
+	logicMiddleware := func(next xhttp.HandlerFunc) xhttp.HandlerFunc {
+		return func(req *xhttp.Request, opts *xhttp.RequestOptions) (*xhttp.Response, error) {
+			// Before-logic
+			fmt.Printf("Before: %s %s\n", req.Method, req.URL)
+
+			// Call the next handler
+			resp, err := next(req, opts)
+
+			// After-logic
+			fmt.Printf("After: %s %s %v\n", req.Method, req.URL, err)
+
+			return resp, err
+		}
+	}
+	_, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddlewares(logicMiddleware))
+	a.Nil(err)
+	wg := sync.WaitGroup{}
+	wg.Add(3)
+	for i := 0; i < 3; i++ {
+		go func(i int, wg *sync.WaitGroup) {
+			defer wg.Done()
+			_, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddlewares(logicMiddleware))
+			a.Equal(err, xhttp.ErrShutdown)
+		}(i, &wg)
+	}
+	xhttp.Shutdown(context.Background())
+	wg.Wait()
 }
