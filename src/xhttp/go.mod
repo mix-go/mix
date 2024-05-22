@@ -1,10 +1,11 @@
-module github.com/mix-go/xutil
+module github.com/mix-go/xhttp
 
-go 1.20
+go 1.22.1
 
 require (
-	github.com/joho/godotenv v1.5.1
-	github.com/stretchr/testify v1.8.2
+	github.com/avast/retry-go v3.0.0+incompatible
+	github.com/mix-go/xutil v1.1.18
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
