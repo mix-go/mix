@@ -44,7 +44,7 @@ xhttp.DefaultOptions.DebugFunc = func(l *Log) {
 f := func(l *Log) {
     log.Println(l)
 }
-xhttp.Request("POST", url, xhttp.WithDebugFunc(f))
+xhttp.NewRequest("POST", url, xhttp.WithDebugFunc(f))
 ```
 
 The log object contains the following fields
@@ -73,7 +73,7 @@ retryIf := func(resp *xhttp.Response, err error) error {
     }
     return nil
 }
-resp, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+resp, err := xhttp.NewRequest("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
 ```
 
 Network error, no retry.
@@ -89,7 +89,7 @@ retryIf := func(resp *xhttp.Response, err error) error {
     }
     return nil
 }
-resp, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+resp, err := xhttp.NewRequest("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
 ```
 
 ## Middlewares
@@ -112,6 +112,19 @@ logicMiddleware := func(next xhttp.HandlerFunc) xhttp.HandlerFunc {
     }
 }
 resp, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddlewares(logicMiddleware))
+```
+
+## Shutdown
+
+Before shutdown, all requests will be completed and work with middleware to save the response results to the database.
+
+```go
+ch := make(chan os.Signal)
+signal.Notify(ch, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
+go func() {
+    <-ch
+	xhttp.Shutdown()
+}()
 ```
 
 ## License
