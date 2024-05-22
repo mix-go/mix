@@ -138,7 +138,7 @@ func TestMiddlewares(t *testing.T) {
 			return resp, err
 		}
 	}
-	resp, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddlewares(logicMiddleware))
+	resp, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
 
 	a.Equal(resp.StatusCode, 200)
 	a.Nil(err)
@@ -160,14 +160,14 @@ func TestShutdown(t *testing.T) {
 			return resp, err
 		}
 	}
-	_, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddlewares(logicMiddleware))
+	_, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
 	a.Nil(err)
 	wg := sync.WaitGroup{}
 	wg.Add(3)
 	for i := 0; i < 3; i++ {
 		go func(i int, wg *sync.WaitGroup) {
 			defer wg.Done()
-			_, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddlewares(logicMiddleware))
+			_, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
 			a.Equal(err, xhttp.ErrShutdown)
 		}(i, &wg)
 	}

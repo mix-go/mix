@@ -102,7 +102,7 @@ func WithRetry(f RetryIfFunc, opts ...retry.Option) RequestOption {
 	}}
 }
 
-func WithMiddlewares(middlewares ...Middleware) RequestOption {
+func WithMiddleware(middlewares ...Middleware) RequestOption {
 	return &funcRequestOption{func(o *RequestOptions) {
 		o.Middlewares = append(o.Middlewares, middlewares...)
 	}}

@@ -22,7 +22,7 @@ go get github.com/mix-go/xhttp
 | xhttp.WithTimeout(timeout time.Duration) RequestOption                              | Set configuration item.           |
 | xhttp.WithDebugFunc(f DebugFunc) RequestOption                                      | Set configuration item.           |
 | xhttp.WithRetry(f RetryIfFunc, opts ...retry.Option) RequestOption                  | Set configuration item.           |
-| xhttp.WithMiddlewares(middlewares ...Middleware) RequestOption                      | Set configuration item.           |
+| xhttp.WithMiddleware(middlewares ...Middleware) RequestOption                       | Set configuration item.           |
 | xhttp.BuildJSON(v interface{}) Body                                                 | Generate json string.             |
 | xhttp.BuildQuery(m map[string]string) Body                                          | Generate urlencoded query string. |
 | xhttp.Shutdown(ctx context.Context)                                                 | Do shutdown.                      |
@@ -112,7 +112,7 @@ logicMiddleware := func(next xhttp.HandlerFunc) xhttp.HandlerFunc {
         return resp, err
     }
 }
-resp, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddlewares(logicMiddleware))
+resp, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
 ```
 
 ## Shutdown
