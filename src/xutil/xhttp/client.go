@@ -16,7 +16,13 @@ var (
 	ErrShutdown = errors.New("xhttp: service is currently being shutdown and will no longer accept new requests")
 )
 
-type XRequest struct {
+var DefaultClient = &Client{}
+
+func NewRequest(method string, u string, opts ...RequestOption) (*Response, error) {
+	return DefaultClient.NewRequest(method, u, opts...)
+}
+
+type Request struct {
 	*http.Request
 
 	Body Body
@@ -25,8 +31,9 @@ type XRequest struct {
 	RetryAttempts int
 }
 
-type XResponse struct {
+type Response struct {
 	*http.Response
+
 	Body Body
 }
 
@@ -36,11 +43,15 @@ func (t Body) String() string {
 	return xconv.BytesToString(t)
 }
 
-func newXRequest(r *http.Request) *XRequest {
+type Client struct {
+	http.Client
+}
+
+func newRequest(r *http.Request) *Request {
 	if r == nil {
 		return nil
 	}
-	req := &XRequest{
+	req := &Request{
 		Request: r,
 	}
 
@@ -58,11 +69,11 @@ func newXRequest(r *http.Request) *XRequest {
 	return req
 }
 
-func newXResponse(r *http.Response) *XResponse {
+func newResponse(r *http.Response) *Response {
 	if r == nil {
 		return nil
 	}
-	resp := &XResponse{
+	resp := &Response{
 		Response: r,
 	}
 
@@ -79,7 +90,7 @@ func newXResponse(r *http.Response) *XResponse {
 	return resp
 }
 
-func Request(method string, u string, opts ...RequestOption) (*XResponse, error) {
+func (t *Client) NewRequest(method string, u string, opts ...RequestOption) (*Response, error) {
 	o := mergeOptions(opts)
 	URL, err := url.Parse(u)
 	if err != nil {
@@ -95,46 +106,45 @@ func Request(method string, u string, opts ...RequestOption) (*XResponse, error)
 	}
 
 	if o.RetryOptions != nil {
-		xReq := newXRequest(req)
-		return doRetry(o, func() (*XResponse, error) {
+		xReq := newRequest(req)
+		return doRetry(o, func() (*Response, error) {
 			xReq.RetryAttempts++
-			return doRequest(xReq, o)
+			return t.doRequest(xReq, o)
 		})
 	}
-	return doRequest(newXRequest(req), o)
+	return t.doRequest(newRequest(req), o)
 }
 
-func Do(req *http.Request, opts ...RequestOption) (*XResponse, error) {
+func (t *Client) SendRequest(req *http.Request, opts ...RequestOption) (*Response, error) {
 	o := mergeOptions(opts)
 
 	if o.RetryOptions != nil {
-		xReq := newXRequest(req)
-		return doRetry(o, func() (*XResponse, error) {
+		xReq := newRequest(req)
+		return doRetry(o, func() (*Response, error) {
 			xReq.RetryAttempts++
-			return doRequest(xReq, o)
+			return t.doRequest(xReq, o)
 		})
 	}
-	return doRequest(newXRequest(req), o)
+	return t.doRequest(newRequest(req), o)
 }
 
-func doRequest(xReq *XRequest, opts *RequestOptions) (*XResponse, error) {
-	var finalHandler HandlerFunc = func(xReq *XRequest, opts *RequestOptions) (*XResponse, error) {
+func (t *Client) doRequest(xReq *Request, opts *RequestOptions) (*Response, error) {
+	var finalHandler HandlerFunc = func(xReq *Request, opts *RequestOptions) (*Response, error) {
 		if !shutdownController.BeginRequest() {
 			return nil, ErrShutdown
 		}
 		defer shutdownController.EndRequest()
 
-		cli := http.Client{
-			Timeout: opts.Timeout,
-		}
+		cli := t
+		cli.Timeout = opts.Timeout
 		startTime := time.Now()
 		r, err := cli.Do(xReq.Request)
 		if err != nil {
-			doDebug(opts, time.Now().Sub(startTime), xReq, nil, err)
+			t.doDebug(opts, time.Now().Sub(startTime), xReq, nil, err)
 			return nil, err
 		}
-		xResp := newXResponse(r)
-		doDebug(opts, time.Now().Sub(startTime), xReq, xResp, nil)
+		xResp := newResponse(r)
+		t.doDebug(opts, time.Now().Sub(startTime), xReq, xResp, nil)
 		return xResp, nil
 	}
 
@@ -143,8 +153,4 @@ func doRequest(xReq *XRequest, opts *RequestOptions) (*XResponse, error) {
 	}
 
 	return finalHandler(xReq, opts)
-}
-
-func Shutdown() {
-	shutdownController.InitiateShutdown()
 }

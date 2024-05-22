@@ -32,3 +32,7 @@ func (sc *ShutdownController) InitiateShutdown() {
 	atomic.StoreInt32(&sc.shutdownFlag, 1)
 	sc.waitGroup.Wait()
 }
+
+func Shutdown() {
+	shutdownController.InitiateShutdown()
+}

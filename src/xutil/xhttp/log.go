@@ -6,14 +6,14 @@ import (
 
 type Log struct {
 	Duration time.Duration `json:"duration"`
-	Request  *XRequest     `json:"request"`  // The XRequest.RetryAttempts field records the number of retry attempts
-	Response *XResponse    `json:"response"` // If request error this field is equal to nil
+	Request  *Request      `json:"request"`  // The Request.RetryAttempts field records the number of retry attempts
+	Response *Response     `json:"response"` // If request error this field is equal to nil
 	Error    error         `json:"error"`
 }
 
 type DebugFunc func(l *Log)
 
-func doDebug(opts *RequestOptions, duration time.Duration, req *XRequest, resp *XResponse, err error) {
+func (t *Client) doDebug(opts *RequestOptions, duration time.Duration, req *Request, resp *Response, err error) {
 	if opts.DebugFunc == nil {
 		return
 	}

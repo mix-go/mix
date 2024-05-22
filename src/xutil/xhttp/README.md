@@ -1,29 +1,30 @@
 > Produced by OpenMix: [https://openmix.org](https://openmix.org/mix-go)
 
-## Mix XHttp
+## Mix XHTTP
 
 A highly efficient HTTP library.
 
 ## Installation
 
 ```
-go get github.com/mix-go/xutil
+go get github.com/mix-go/xhttp
 ```
 
 ## Functions
 
-| Function                                                                         | Description                      |  
-|----------------------------------------------------------------------------------|----------------------------------|
-| xhttp.Request(method string, u string, opts ...RequestOption) (*Response, error) | Execute an http request.         |
-| xhttp.Do(req *http.Request, opts ...RequestOption) (*Response, error)            | Execute an http request.         |
-| xhttp.WithBody(body Body) RequestOption                                          | Set configuration item           |
-| xhttp.WithHeader(header http.Header) RequestOption                               | Set configuration item           |
-| xhttp.WithContentType(contentType string) RequestOption                          | Set configuration item           |
-| xhttp.WithTimeout(timeout time.Duration) RequestOption                           | Set configuration item           |
-| xhttp.WithDebugFunc(f DebugFunc) RequestOption                                   | Set configuration item           |
-| xhttp.WithRetry(f RetryIfFunc, opts ...retry.Option) RequestOption               | Set configuration item           |
-| xhttp.BuildJSON(v interface{}) Body                                              | Generate json string             |
-| xhttp.BuildQuery(m map[string]string) Body                                       | Generate urlencoded query string |
+| Function                                                                            | Description                      |  
+|-------------------------------------------------------------------------------------|----------------------------------|
+| xhttp.NewRequest(method string, u string, opts ...RequestOption) (*Response, error) | Execute an http request.         |
+| xhttp.SendRequest(req *http.Request, opts ...RequestOption) (*Response, error)      | Execute an http request.         |
+| xhttp.WithBody(body Body) RequestOption                                             | Set configuration item           |
+| xhttp.WithHeader(header http.Header) RequestOption                                  | Set configuration item           |
+| xhttp.WithContentType(contentType string) RequestOption                             | Set configuration item           |
+| xhttp.WithTimeout(timeout time.Duration) RequestOption                              | Set configuration item           |
+| xhttp.WithDebugFunc(f DebugFunc) RequestOption                                      | Set configuration item           |
+| xhttp.WithRetry(f RetryIfFunc, opts ...retry.Option) RequestOption                  | Set configuration item           |
+| xhttp.WithMiddlewares(middlewares ...Middleware) RequestOption                      | Set configuration item           |
+| xhttp.BuildJSON(v interface{}) Body                                                 | Generate json string             |
+| xhttp.BuildQuery(m map[string]string) Body                                          | Generate urlencoded query string |
 
 ## Debug Log
 
@@ -51,8 +52,8 @@ The log object contains the following fields
 ```go
 type Log struct {
 	Duration time.Duration `json:"duration"`
-	Request  *XRequest     `json:"request"`  // The XRequest.RetryAttempts field records the number of retry attempts
-	Response *XResponse    `json:"response"` // If request error this field is equal to nil
+	Request  *Request     `json:"request"`  // The Request.RetryAttempts field records the number of retry attempts
+	Response *Response    `json:"response"` // If request error this field is equal to nil
 	Error    error         `json:"error"`
 }
 ```
@@ -79,7 +80,7 @@ Network error, no retry.
 
 ```go
 url := "https://aaaaa.com/"
-retryIf := func(resp *xhttp.XResponse, err error) error {
+retryIf := func(resp *xhttp.Response, err error) error {
     if err != nil {
         return errors.Join(err, xhttp.ErrAbortRetry)
     }
@@ -89,6 +90,28 @@ retryIf := func(resp *xhttp.XResponse, err error) error {
     return nil
 }
 resp, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+```
+
+## Middlewares
+
+Middleware configuration before or after.
+
+```go
+logicMiddleware := func(next xhttp.HandlerFunc) xhttp.HandlerFunc {
+    return func(req *xhttp.Request, opts *xhttp.RequestOptions) (*xhttp.Response, error) {
+        // Before-logic
+        fmt.Printf("Before: %s %s\n", req.Method, req.URL)
+
+        // Call the next handler
+        resp, err := next(req, opts)
+
+        // After-logic
+        fmt.Printf("After: %s %s\n", req.Method, req.URL)
+
+        return resp, err
+    }
+}
+resp, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddlewares(logicMiddleware))
 ```
 
 ## License

@@ -6,7 +6,7 @@ import (
 	"github.com/avast/retry-go"
 )
 
-type RetryIfFunc func(*XResponse, error) error
+type RetryIfFunc func(*Response, error) error
 
 type Error []error
 
@@ -27,8 +27,8 @@ func (t Error) HasAbortRetry() bool {
 	return false
 }
 
-func doRetry(opts *RequestOptions, f func() (*XResponse, error)) (*XResponse, error) {
-	var resp *XResponse
+func doRetry(opts *RequestOptions, f func() (*Response, error)) (*Response, error) {
+	var resp *Response
 	var err error
 	var errorLog Error
 	err = retry.Do(

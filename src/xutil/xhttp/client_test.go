@@ -10,11 +10,11 @@ import (
 	"testing"
 )
 
-func TestRequest(t *testing.T) {
+func TestNewRequest(t *testing.T) {
 	a := assert.New(t)
 
 	url := "https://github.com/"
-	resp, err := xhttp.Request("GET", url)
+	resp, err := xhttp.NewRequest("GET", url)
 
 	a.Equal(resp.StatusCode, 200)
 	a.Nil(err)
@@ -24,7 +24,7 @@ func TestRequestPOST(t *testing.T) {
 	a := assert.New(t)
 
 	url := "https://github.com/"
-	resp, err := xhttp.Request("POST", url, xhttp.WithBodyString("abc"), xhttp.WithContentType("application/json"))
+	resp, err := xhttp.NewRequest("POST", url, xhttp.WithBodyString("abc"), xhttp.WithContentType("application/json"))
 
 	a.Equal(resp.StatusCode, 404)
 	a.Nil(err)
@@ -34,7 +34,7 @@ func TestRequestError(t *testing.T) {
 	a := assert.New(t)
 
 	url := "https://aaaaa.com/"
-	resp, err := xhttp.Request("GET", url)
+	resp, err := xhttp.NewRequest("GET", url)
 
 	a.Nil(resp)
 	a.NotNil(err)
@@ -50,7 +50,7 @@ func TestDebugAndRetryFail(t *testing.T) {
 	}
 
 	url := "https://aaaaa.com/"
-	retryIf := func(resp *xhttp.XResponse, err error) error {
+	retryIf := func(resp *xhttp.Response, err error) error {
 		if err != nil {
 			return err
 		}
@@ -59,7 +59,7 @@ func TestDebugAndRetryFail(t *testing.T) {
 		}
 		return nil
 	}
-	resp, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+	resp, err := xhttp.NewRequest("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
 
 	a.Nil(resp)
 	a.NotNil(err)
@@ -77,13 +77,13 @@ func TestDebugAndRetrySuccess(t *testing.T) {
 	}
 
 	url := "https://aaaaa.com/"
-	retryIf := func(resp *xhttp.XResponse, err error) error {
+	retryIf := func(resp *xhttp.Response, err error) error {
 		if count == 1 {
 			return errors.New("the first request failed")
 		}
 		return nil
 	}
-	_, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(3)))
+	_, err := xhttp.NewRequest("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(3)))
 
 	a.Nil(err)
 	a.Equal(count, 2)
@@ -99,7 +99,7 @@ func TestDebugAndRetryAbort(t *testing.T) {
 	}
 
 	url := "https://aaaaa.com/"
-	retryIf := func(resp *xhttp.XResponse, err error) error {
+	retryIf := func(resp *xhttp.Response, err error) error {
 		if err != nil {
 			if count == 1 {
 				return err
@@ -111,7 +111,7 @@ func TestDebugAndRetryAbort(t *testing.T) {
 		}
 		return nil
 	}
-	resp, err := xhttp.Request("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(3)))
+	resp, err := xhttp.NewRequest("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(3)))
 
 	a.Nil(resp)
 	a.NotNil(err)
@@ -122,21 +122,21 @@ func TestDebugAndRetryAbort(t *testing.T) {
 func TestMiddlewares(t *testing.T) {
 	a := assert.New(t)
 
-	logMiddleware := func(next xhttp.HandlerFunc) xhttp.HandlerFunc {
-		return func(xReq *xhttp.XRequest, opts *xhttp.RequestOptions) (*xhttp.XResponse, error) {
+	logicMiddleware := func(next xhttp.HandlerFunc) xhttp.HandlerFunc {
+		return func(req *xhttp.Request, opts *xhttp.RequestOptions) (*xhttp.Response, error) {
 			// Before-logic
-			fmt.Printf("Before: %s %s\n", xReq.Method, xReq.URL)
+			fmt.Printf("Before: %s %s\n", req.Method, req.URL)
 
 			// Call the next handler
-			resp, err := next(xReq, opts)
+			resp, err := next(req, opts)
 
 			// After-logic
-			fmt.Printf("After: %s %s\n", xReq.Method, xReq.URL)
+			fmt.Printf("After: %s %s\n", req.Method, req.URL)
 
 			return resp, err
 		}
 	}
-	resp, err := xhttp.Request("GET", "https://github.com/", xhttp.WithMiddlewares(logMiddleware))
+	resp, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddlewares(logicMiddleware))
 
 	a.Equal(resp.StatusCode, 200)
 	a.Nil(err)
