@@ -24,6 +24,7 @@ All core modules can be used independently.
 - [mix-go/xrpc](src/xrpc) Assistant for gRPC and Gateway.
 - [mix-go/xdi](src/xdi) IoC, DI library for handling object dependencies, can implement unified dependency management, global object management, dynamic configuration refresh, etc.
 - [mix-go/xwp](src/xwp) A universal work pool, coroutine pool, can dynamically expand and shrink.
+- [mix-go/xhttp](src/xhttp) A highly efficient HTTP library.
 - [mix-go/xutil](src/xutil) A set of tools to keep Golang sweet.
 
 ## Development Documentation
