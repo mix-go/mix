@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/avast/retry-go"
-	"github.com/mix-go/xutil/xhttp"
+	"github.com/mix-go/xhttp"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"testing"
