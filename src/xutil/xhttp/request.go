@@ -98,10 +98,10 @@ func Request(method string, u string, opts ...RequestOption) (*XResponse, error)
 		xReq := newXRequest(req)
 		return doRetry(o, func() (*XResponse, error) {
 			xReq.RetryAttempts++
-			return doRequest(o, xReq)
+			return doRequest(xReq, o)
 		})
 	}
-	return doRequest(o, newXRequest(req))
+	return doRequest(newXRequest(req), o)
 }
 
 func Do(req *http.Request, opts ...RequestOption) (*XResponse, error) {
@@ -111,30 +111,38 @@ func Do(req *http.Request, opts ...RequestOption) (*XResponse, error) {
 		xReq := newXRequest(req)
 		return doRetry(o, func() (*XResponse, error) {
 			xReq.RetryAttempts++
-			return doRequest(o, xReq)
+			return doRequest(xReq, o)
 		})
 	}
-	return doRequest(o, newXRequest(req))
+	return doRequest(newXRequest(req), o)
 }
 
-func doRequest(opts *requestOptions, xReq *XRequest) (*XResponse, error) {
-	if !shutdownController.BeginRequest() {
-		return nil, ErrShutdown
-	}
-	defer shutdownController.EndRequest()
+func doRequest(xReq *XRequest, opts *RequestOptions) (*XResponse, error) {
+	var finalHandler HandlerFunc = func(xReq *XRequest, opts *RequestOptions) (*XResponse, error) {
+		if !shutdownController.BeginRequest() {
+			return nil, ErrShutdown
+		}
+		defer shutdownController.EndRequest()
 
-	cli := http.Client{
-		Timeout: opts.Timeout,
+		cli := http.Client{
+			Timeout: opts.Timeout,
+		}
+		startTime := time.Now()
+		r, err := cli.Do(xReq.Request)
+		if err != nil {
+			doDebug(opts, time.Now().Sub(startTime), xReq, nil, err)
+			return nil, err
+		}
+		xResp := newXResponse(r)
+		doDebug(opts, time.Now().Sub(startTime), xReq, xResp, nil)
+		return xResp, nil
 	}
-	startTime := time.Now()
-	r, err := cli.Do(xReq.Request)
-	if err != nil {
-		doDebug(opts, time.Now().Sub(startTime), xReq, nil, err)
-		return nil, err
+
+	for i := len(opts.Middlewares) - 1; i >= 0; i-- {
+		finalHandler = opts.Middlewares[i](finalHandler)
 	}
-	xResp := newXResponse(r)
-	doDebug(opts, time.Now().Sub(startTime), xReq, xResp, nil)
-	return xResp, nil
+
+	return finalHandler(xReq, opts)
 }
 
 func Shutdown() {

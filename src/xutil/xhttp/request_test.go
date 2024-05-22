@@ -118,3 +118,25 @@ func TestDebugAndRetryAbort(t *testing.T) {
 	a.Contains(err.Error(), "xhttp: abort further retries")
 	a.Equal(count, 2)
 }
+
+func TestMiddlewares(t *testing.T) {
+	a := assert.New(t)
+
+	logMiddleware := func(next xhttp.HandlerFunc) xhttp.HandlerFunc {
+		return func(xReq *xhttp.XRequest, opts *xhttp.RequestOptions) (*xhttp.XResponse, error) {
+			// 前置逻辑
+			fmt.Printf("Before: %s %s\n", xReq.Method, xReq.URL)
+
+			// 调用下一个处理程序
+			resp, err := next(xReq, opts)
+
+			// 后置逻辑
+			fmt.Printf("After: %s %s\n", xReq.Method, xReq.URL)
+
+			return resp, err
+		}
+	}
+	resp, err := xhttp.Request("GET", "https://github.com/", xhttp.WithMiddlewares(logMiddleware))
+	a.Equal(resp.StatusCode, 200)
+	a.Nil(err)
+}

@@ -9,14 +9,14 @@ import (
 
 var DefaultOptions = newDefaultOptions()
 
-func newDefaultOptions() requestOptions {
-	return requestOptions{
+func newDefaultOptions() RequestOptions {
+	return RequestOptions{
 		Header:  http.Header{},
 		Timeout: time.Second * 5,
 	}
 }
 
-type requestOptions struct {
+type RequestOptions struct {
 	Header http.Header
 
 	Body Body
@@ -29,9 +29,11 @@ type requestOptions struct {
 	// Retry
 	RetryIfFunc  RetryIfFunc
 	RetryOptions []retry.Option
+
+	Middlewares []Middleware
 }
 
-func mergeOptions(opts []RequestOption) *requestOptions {
+func mergeOptions(opts []RequestOption) *RequestOptions {
 	cp := DefaultOptions // copy
 	for _, o := range opts {
 		o.apply(&cp)
@@ -40,62 +42,68 @@ func mergeOptions(opts []RequestOption) *requestOptions {
 }
 
 type RequestOption interface {
-	apply(*requestOptions)
+	apply(*RequestOptions)
 }
 
 type funcRequestOption struct {
-	f func(*requestOptions)
+	f func(*RequestOptions)
 }
 
-func (fdo *funcRequestOption) apply(do *requestOptions) {
+func (fdo *funcRequestOption) apply(do *RequestOptions) {
 	fdo.f(do)
 }
 
 func WithHeader(header http.Header) RequestOption {
-	return &funcRequestOption{func(opts *requestOptions) {
+	return &funcRequestOption{func(opts *RequestOptions) {
 		opts.Header = header
 	}}
 }
 
 func WithContentType(contentType string) RequestOption {
-	return &funcRequestOption{func(opts *requestOptions) {
+	return &funcRequestOption{func(opts *RequestOptions) {
 		opts.Header.Set("Content-Type", contentType)
 	}}
 }
 
 func WithTimeout(timeout time.Duration) RequestOption {
-	return &funcRequestOption{func(opts *requestOptions) {
+	return &funcRequestOption{func(opts *RequestOptions) {
 		opts.Timeout = timeout
 	}}
 }
 
 func WithBody(body Body) RequestOption {
-	return &funcRequestOption{func(opts *requestOptions) {
+	return &funcRequestOption{func(opts *RequestOptions) {
 		opts.Body = body
 	}}
 }
 
 func WithBodyBytes(body []byte) RequestOption {
-	return &funcRequestOption{func(opts *requestOptions) {
+	return &funcRequestOption{func(opts *RequestOptions) {
 		opts.Body = body
 	}}
 }
 
 func WithBodyString(body string) RequestOption {
-	return &funcRequestOption{func(opts *requestOptions) {
+	return &funcRequestOption{func(opts *RequestOptions) {
 		opts.Body = xconv.StringToBytes(body)
 	}}
 }
 
 func WithDebugFunc(f DebugFunc) RequestOption {
-	return &funcRequestOption{func(opts *requestOptions) {
+	return &funcRequestOption{func(opts *RequestOptions) {
 		opts.DebugFunc = f
 	}}
 }
 
 func WithRetry(f RetryIfFunc, opts ...retry.Option) RequestOption {
-	return &funcRequestOption{func(o *requestOptions) {
+	return &funcRequestOption{func(o *RequestOptions) {
 		o.RetryIfFunc = f
 		o.RetryOptions = opts
+	}}
+}
+
+func WithMiddlewares(middlewares ...Middleware) RequestOption {
+	return &funcRequestOption{func(o *RequestOptions) {
+		o.Middlewares = append(o.Middlewares, middlewares...)
 	}}
 }

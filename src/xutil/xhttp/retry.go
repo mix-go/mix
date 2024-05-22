@@ -27,7 +27,7 @@ func (t Error) HasAbortRetry() bool {
 	return false
 }
 
-func doRetry(opts *requestOptions, f func() (*XResponse, error)) (*XResponse, error) {
+func doRetry(opts *RequestOptions, f func() (*XResponse, error)) (*XResponse, error) {
 	var resp *XResponse
 	var err error
 	var errorLog Error

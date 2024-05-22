@@ -13,7 +13,7 @@ type Log struct {
 
 type DebugFunc func(l *Log)
 
-func doDebug(opts *requestOptions, duration time.Duration, req *XRequest, resp *XResponse, err error) {
+func doDebug(opts *RequestOptions, duration time.Duration, req *XRequest, resp *XResponse, err error) {
 	if opts.DebugFunc == nil {
 		return
 	}
