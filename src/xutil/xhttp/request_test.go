@@ -124,19 +124,20 @@ func TestMiddlewares(t *testing.T) {
 
 	logMiddleware := func(next xhttp.HandlerFunc) xhttp.HandlerFunc {
 		return func(xReq *xhttp.XRequest, opts *xhttp.RequestOptions) (*xhttp.XResponse, error) {
-			// 前置逻辑
+			// Before-logic
 			fmt.Printf("Before: %s %s\n", xReq.Method, xReq.URL)
 
-			// 调用下一个处理程序
+			// Call the next handler
 			resp, err := next(xReq, opts)
 
-			// 后置逻辑
+			// After-logic
 			fmt.Printf("After: %s %s\n", xReq.Method, xReq.URL)
 
 			return resp, err
 		}
 	}
 	resp, err := xhttp.Request("GET", "https://github.com/", xhttp.WithMiddlewares(logMiddleware))
+
 	a.Equal(resp.StatusCode, 200)
 	a.Nil(err)
 }
