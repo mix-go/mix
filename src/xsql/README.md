@@ -58,6 +58,18 @@ bar := rows[0].Get("bar").Time() // time.Time
 val := rows[0].Get("bar").Value() // interface{}
 ```
 
+```go
+row, err := DB.QueryFirst("SELECT * FROM xsql WHERE id = ?", 1)
+if err != nil {
+    log.Fatal(err)
+}
+
+id  := row.Get("id").Int()
+foo := row.Get("foo").String()
+bar := row.Get("bar").Time() // time.Time
+val := row.Get("bar").Value() // interface{}
+```
+
 ### Mapping
 
 Of course, you can also map usage like `gorm`, `xorm`.
