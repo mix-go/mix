@@ -68,7 +68,7 @@ Of course, you can also map usage like `gorm`, `xorm`.
 type Test struct {
     Id  int       `xsql:"id"`
     Foo string    `xsql:"foo"`
-    Bar time.Time `xsql:"bar"` // oracle uses goora.TimeStamp
+    Bar time.Time `xsql:"bar"` // oracle uses go_ora.TimeStamp
 }
 
 func (t Test) TableName() string {
