@@ -32,8 +32,7 @@ func (t *Fetcher) First(i interface{}) error {
 	if len(rows) == 0 {
 		return sql.ErrNoRows
 	}
-	row := rows[0]
-	if err := t.foreach(&row, rootValue, rootType); err != nil {
+	if err := t.foreach(rows[0], rootValue, rootType); err != nil {
 		return err
 	}
 
@@ -58,7 +57,7 @@ func (t *Fetcher) Find(i interface{}) error {
 		if itemValue.Kind() == reflect.Ptr {
 			itemValue = itemValue.Elem()
 		}
-		if err := t.foreach(&rows[r], itemValue, itemValue.Type()); err != nil {
+		if err := t.foreach(rows[r], itemValue, itemValue.Type()); err != nil {
 			return err
 		}
 		root.Set(reflect.Append(root, itemValue))
@@ -67,7 +66,7 @@ func (t *Fetcher) Find(i interface{}) error {
 	return nil
 }
 
-func (t *Fetcher) Rows() ([]Row, error) {
+func (t *Fetcher) Rows() ([]*Row, error) {
 	columns, err := t.r.Columns()
 	if err != nil {
 		return nil, err
@@ -85,7 +84,7 @@ func (t *Fetcher) Rows() ([]Row, error) {
 	}
 
 	// Fetch rows
-	var rows []Row
+	var rows []*Row
 
 	for t.r.Next() {
 		err = t.r.Scan(scanArgs...)
@@ -101,7 +100,7 @@ func (t *Fetcher) Rows() ([]Row, error) {
 			}
 		}
 
-		rows = append(rows, Row{
+		rows = append(rows, &Row{
 			v:       rowMap,
 			options: t.options,
 		})

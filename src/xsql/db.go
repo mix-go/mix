@@ -75,7 +75,7 @@ func (t *DB) Begin() (*Tx, error) {
 	}, nil
 }
 
-func (t *DB) Query(query string, args ...interface{}) ([]Row, error) {
+func (t *DB) Query(query string, args ...interface{}) ([]*Row, error) {
 	f, err := t.query.Fetch(query, args, t.Options)
 	if err != nil {
 		return nil, err
@@ -85,6 +85,17 @@ func (t *DB) Query(query string, args ...interface{}) ([]Row, error) {
 		return nil, err
 	}
 	return r, nil
+}
+
+func (t *DB) QueryFirst(query string, args ...interface{}) (*Row, error) {
+	rows, err := t.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	if len(rows) == 0 {
+		return nil, sql.ErrNoRows
+	}
+	return rows[0], nil
 }
 
 func (t *DB) Find(i interface{}, query string, args ...interface{}) error {
