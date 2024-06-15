@@ -24,6 +24,25 @@ type Test struct {
 	Enum Enum      `xsql:"enum" json:"-"`
 }
 
+type TestJsonStruct struct {
+	Test
+	Json JsonItem `xsql:"json"`
+}
+
+type TestJsonStructPtr struct {
+	Test
+	Json *JsonItem `xsql:"json"`
+}
+
+type TestJsonSlice struct {
+	Test
+	Json []int `xsql:"json"`
+}
+
+type JsonItem struct {
+	Foo string `xsql:"foo"`
+}
+
 func (t Test) TableName() string {
 	return "xsql"
 }
@@ -79,10 +98,12 @@ CREATE TABLE #xsql# (
   #bar# datetime DEFAULT NULL,
   #bool# int NOT NULL DEFAULT '0',
   #enum# int NOT NULL DEFAULT '0',
+  #json# json DEFAULT NULL,
   PRIMARY KEY (#id#)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-INSERT INTO #xsql# (#id#, #foo#, #bar#, #bool#, #enum#) VALUES (1, 'v', '2022-04-14 23:49:48', 1, 1);
-INSERT INTO #xsql# (#id#, #foo#, #bar#, #bool#, #enum#) VALUES (2, 'v1', '2022-04-14 23:50:00', 1, 1);
+INSERT INTO #xsql# (#id#, #foo#, #bar#, #bool#, #enum#, #json#) VALUES (1, 'v', '2022-04-12 23:50:00', 1, 1, '{"foo":"bar"}');
+INSERT INTO #xsql# (#id#, #foo#, #bar#, #bool#, #enum#, #json#) VALUES (2, 'v1', '2022-04-13 23:50:00', 1, 1, '[1,2]');
+INSERT INTO #xsql# (#id#, #foo#, #bar#, #bool#, #enum#, #json#) VALUES (3, 'v2', '2022-04-14 23:50:00', 1, 1, null);
 `
 	DB := newDB()
 	_, err := DB.Exec(strings.ReplaceAll(q, "#", "`"))
@@ -483,7 +504,6 @@ func TestTxRollback(t *testing.T) {
 
 func TestPbTimestamp(t *testing.T) {
 	a := assert.New(t)
-
 	DB := newDB()
 
 	// Insert
@@ -507,4 +527,30 @@ func TestPbTimestamp(t *testing.T) {
 	// Timestamp
 	a.IsType(&timestamppb.Timestamp{}, test2.Bar)
 	a.Equal(test2.Bar.Seconds, now.Seconds)
+}
+
+func TestFetchPbJson(t *testing.T) {
+	a := assert.New(t)
+	DB := newDB()
+
+	var test1 TestJsonStruct
+	err := DB.First(&test1, "SELECT * FROM xsql WHERE id = 1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test1.Json)
+
+	var test2 TestJsonStructPtr
+	err = DB.First(&test2, "SELECT * FROM xsql WHERE id = 1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test2.Json)
+
+	var test3 TestJsonSlice
+	err = DB.First(&test3, "SELECT * FROM xsql WHERE id = 2")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test3.Json)
 }

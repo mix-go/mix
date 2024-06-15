@@ -2,6 +2,7 @@ package xsql
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/sijms/go-ora/v2"
@@ -351,8 +352,7 @@ func (t *Fetcher) mapped(row *Row, tag string, value reflect.Value, typ reflect.
 	default:
 		if !res.Empty() {
 			vTyp := reflect.ValueOf(v).Type().String()
-			// 如果结构体是time.Time类型，执行转换
-			if typ.String() == "time.Time" {
+			if typ.String() == "time.Time" { // 如果结构体是time.Time类型，执行转换
 				if vTyp == "time.Time" {
 					// parseTime=true
 					v = res.Value()
@@ -364,9 +364,7 @@ func (t *Fetcher) mapped(row *Row, tag string, value reflect.Value, typ reflect.
 						return fmt.Errorf("time parse fail for field %s: %v", tag, e)
 					}
 				}
-			}
-			// 如果结构体是*timestamppb.Timestamp类型，执行转换
-			if typ.String() == "*timestamppb.Timestamp" {
+			} else if typ.String() == "*timestamppb.Timestamp" { // 如果结构体是*timestamppb.Timestamp类型，执行转换
 				if vTyp != "*timestamppb.Timestamp" {
 					if t, e := time.ParseInLocation(t.options.TimeLayout, res.String(), t.options.TimeLocation); e == nil {
 						v = timestamppb.New(t)
@@ -374,10 +372,27 @@ func (t *Fetcher) mapped(row *Row, tag string, value reflect.Value, typ reflect.
 						return fmt.Errorf("time parse fail for field %s: %v", tag, e)
 					}
 				}
+			} else if typ.Kind() == reflect.Ptr || typ.Kind() == reflect.Struct || typ.Kind() == reflect.Slice || typ.Kind() == reflect.Array { // 非标量用JSON反序列化处理
+				jsonString := res.String()
+				var newInstance reflect.Value
+				if typ.Kind() == reflect.Ptr {
+					newInstance = reflect.New(typ.Elem()) // 创建的都是指针
+				} else {
+					newInstance = reflect.New(typ) // 创建的都是指针
+				}
+				if e := json.Unmarshal([]byte(jsonString), newInstance.Interface()); e != nil {
+					return fmt.Errorf("json unmarshal error for field %s: %v", tag, e)
+				}
+				if typ.Kind() == reflect.Ptr {
+					v = newInstance.Interface()
+				} else {
+					v = newInstance.Elem().Interface() // 获取的是非指针
+				}
 			}
 		}
 	}
-	// 追加异常信息
+
+	// 设置值
 	defer func() {
 		if e := recover(); e != nil {
 			err = fmt.Errorf("type mismatch for field %s: %v", tag, e)
