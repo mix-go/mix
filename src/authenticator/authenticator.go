@@ -1,4 +1,4 @@
-package googleauthenticator
+package authenticator
 
 import (
 	"crypto/rand"

@@ -1,4 +1,4 @@
-module github.com/mix-go/googleauthenticator
+module github.com/mix-go/authenticator
 
 go 1.20
 
