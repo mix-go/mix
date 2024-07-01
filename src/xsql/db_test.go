@@ -271,14 +271,16 @@ func TestUpdateColumns(t *testing.T) {
 	a.Empty(err)
 }
 
-func TestUpdateBuildTagValues(t *testing.T) {
+func TestUpdateTagValuesMap(t *testing.T) {
 	a := assert.New(t)
 
 	DB := newDB()
 
 	test := Test{}
-	data, err := xsql.BuildTagValues(DB.Options.Tag, &test,
-		&test.Foo, "test_update_3",
+	data, err := xsql.TagValuesMap(DB.Options.Tag, &test,
+		xsql.TagValues{
+			{&test.Foo, "test_update_3"},
+		},
 	)
 	a.Empty(err)
 
@@ -286,14 +288,16 @@ func TestUpdateBuildTagValues(t *testing.T) {
 	a.Empty(err)
 }
 
-func TestEmbeddingUpdateBuildTagValues(t *testing.T) {
+func TestEmbeddingUpdateTagValuesMap(t *testing.T) {
 	a := assert.New(t)
 
 	DB := newDB()
 
 	test := EmbeddingTest{}
-	data, err := xsql.BuildTagValues(DB.Options.Tag, &test,
-		&test.Foo, "test_update_4",
+	data, err := xsql.TagValuesMap(DB.Options.Tag, &test,
+		xsql.TagValues{
+			{&test.Foo, "test_update_4"},
+		},
 	)
 	a.Empty(err)
 

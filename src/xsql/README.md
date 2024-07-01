@@ -183,8 +183,10 @@ Update specific columns by struct pointer
 
 ```go
 test := Test{}
-data, err := xsql.BuildTagValues(DB.Options.Tag, &test,
-    &test.Foo, "test",
+data, err := xsql.TagValuesMap(DB.Options.Tag, &test,
+    xsql.TagValues{
+        {&test.Foo, "test"},
+    },
 )
 if err != nil {
     log.Fatal(err)

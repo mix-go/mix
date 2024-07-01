@@ -5,69 +5,59 @@ import (
 	"reflect"
 )
 
-// BuildTagValues takes a tag key, a pointer to a struct, and a series of pointers to struct fields with their corresponding values.
-// It returns a map where each key is the tag value of the struct field, and each value is the corresponding value from the pairs.
-// If the number of arguments in pairs is not even, an error is returned since they should be provided as pointer-value pairs.
-func BuildTagValues(tagKey string, ptr interface{}, pairs ...interface{}) (map[string]interface{}, error) {
-	if len(pairs)%2 != 0 {
-		return nil, fmt.Errorf("xsql: arguments should be in pairs")
-	}
+type TagValues []TagValue
 
+type TagValue struct {
+	Key   interface{}
+	Value interface{}
+}
+
+// TagValuesMap takes a tag key, a pointer to a struct, and TagValues.
+// It constructs a map where each key is the struct field's tag value, paired with the corresponding value from TagValues.
+func TagValuesMap(tagKey string, ptr interface{}, values TagValues) (map[string]interface{}, error) {
 	result := make(map[string]interface{})
-	value := reflect.ValueOf(ptr).Elem()
+	structValue := reflect.ValueOf(ptr).Elem()
 
-	if value.Kind() != reflect.Struct {
+	if structValue.Kind() != reflect.Struct {
 		return nil, fmt.Errorf("xsql: ptr must be a pointer to a struct")
 	}
 
-	fieldsMap := map[string]reflect.Value{}
-	populateFieldsMap(tagKey, value, fieldsMap)
+	fieldsMap := make(map[string]reflect.Value)
+	populateFieldsMap(tagKey, structValue, fieldsMap)
 
-	for i := 0; i < len(pairs); i += 2 {
-		fieldPtr, ok := pairs[i].(interface{})
-		if !ok {
-			return nil, fmt.Errorf("xsql: argument at index %d is not a pointer", i)
-		}
-
-		fieldValue := reflect.ValueOf(fieldPtr)
+	for i, tagValue := range values {
+		fieldPtr, fieldValue := tagValue.Key, reflect.ValueOf(tagValue.Key)
 		if fieldValue.Kind() != reflect.Ptr || fieldValue.IsNil() {
-			return nil, fmt.Errorf("xsql: argument at index %d must be a non-nil pointer to a struct field", i)
+			return nil, fmt.Errorf("xsql: error at item %d in values slice: key is not a non-nil pointer to a struct field", i)
 		}
 
-		var fieldName string
-		var found bool
-		for name, field := range fieldsMap {
+		foundFieldName := ""
+		for tagName, field := range fieldsMap {
 			if field.Addr().Interface() == fieldPtr {
-				fieldName = name
-				found = true
+				foundFieldName = tagName
 				break
 			}
 		}
 
-		if !found {
-			return nil, fmt.Errorf("xsql: no matching struct field found for pointer at index %d", i)
+		if foundFieldName == "" {
+			return nil, fmt.Errorf("xsql: no matching struct field found for item %d in values slice", i)
 		}
 
-		result[fieldName] = pairs[i+1]
+		result[foundFieldName] = tagValue.Value
 	}
 
 	return result, nil
 }
 
-// populateFieldsMap is a recursive function that maps field names to their values,
-// including fields from embedded structs.
 func populateFieldsMap(tagKey string, v reflect.Value, fieldsMap map[string]reflect.Value) {
 	for i := 0; i < v.NumField(); i++ {
-		fieldValue := v.Field(i)
+		field := v.Field(i)
 		fieldType := v.Type().Field(i)
 		tag := fieldType.Tag.Get(tagKey)
-		// If it's an embedded struct, we need to recurse into it
-		if fieldType.Anonymous && fieldValue.Type().Kind() == reflect.Struct {
-			populateFieldsMap(tagKey, fieldValue, fieldsMap)
+		if fieldType.Anonymous && field.Type().Kind() == reflect.Struct {
+			populateFieldsMap(tagKey, field, fieldsMap)
 		} else if tag != "" {
-			// Only add the field if it has the xsql tag
-			fieldName := tag
-			fieldsMap[fieldName] = fieldValue
+			fieldsMap[tag] = field
 		}
 	}
 }
