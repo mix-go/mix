@@ -2,6 +2,7 @@ package xsql
 
 import (
 	"database/sql"
+	"fmt"
 	"reflect"
 	"strings"
 )
@@ -122,37 +123,72 @@ func (t *DB) First(i interface{}, query string, args ...interface{}) error {
 	return nil
 }
 
+// tableComplete determines the table name based on the passed struct, slice, or array.
 func (t *DB) tableComplete(i interface{}, query string) string {
 	var table string
 
 	value := reflect.ValueOf(i)
 	switch value.Kind() {
 	case reflect.Ptr:
-		return t.tableComplete(value.Elem().Interface(), query)
-	case reflect.Struct:
-		if tab, ok := i.(Table); ok {
-			table = tab.TableName()
-		} else {
-			table = value.Type().Name()
-		}
-		break
-	case reflect.Array, reflect.Slice:
-		typ := value.Type().Elem()
-		switch typ.Kind() {
-		case reflect.Struct:
-			if tab, ok := reflect.New(typ).Interface().(Table); ok {
-				table = tab.TableName()
-			} else {
-				table = typ.Name()
+		if value.Elem().IsValid() {
+			// *Test > Test
+			if value.Elem().Kind() == reflect.Struct {
+				fmt.Println(222, value.Type().String())
+				// 先尝试*Test能不能找到
+				if tab, ok := value.Interface().(Table); ok {
+					table = tab.TableName()
+					break
+				}
 			}
-			break
-		default:
-			return query // err
+			// **Test > *Test
+			return t.tableComplete(value.Elem().Interface(), query)
 		}
-		break
+		if tab, ok := value.Interface().(Table); ok {
+			table = tab.TableName()
+			break
+		}
+		table = getTypeName(i)
+	case reflect.Struct:
+		if tab, ok := value.Interface().(Table); ok {
+			table = tab.TableName()
+			break
+		}
+		table = getTypeName(i)
+	case reflect.Array, reflect.Slice:
+		elemType := value.Type().Elem()
+		if elemType.Kind() == reflect.Ptr {
+			elemType = elemType.Elem()
+		}
+		if elemType.Kind() == reflect.Struct {
+			// 创建该类型的新实例
+			// Test
+			elemValue := reflect.New(elemType)
+			elemInstance := elemValue.Interface()
+			if tab, ok := elemInstance.(Table); ok {
+				table = tab.TableName()
+				break
+			}
+			// Test > *Test
+			elemPtrInstance := elemValue.Addr().Interface()
+			if tab, ok := elemPtrInstance.(Table); ok {
+				table = tab.TableName()
+				break
+			}
+			table = getTypeName(elemInstance)
+		} else {
+			return query // 如果元素不是结构体或其指针，返回原始查询
+		}
 	default:
-		return query // err
+		return query // 如果不是结构体、数组或切片，返回原始查询
 	}
 
 	return strings.Replace(query, "${TABLE}", table, 1)
+}
+
+func getTypeName(i interface{}) string {
+	t := reflect.TypeOf(i)
+	for t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	return t.Name()
 }

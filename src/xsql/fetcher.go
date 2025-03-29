@@ -21,9 +21,23 @@ type Fetcher struct {
 func (t *Fetcher) First(i interface{}) error {
 	value := reflect.ValueOf(i)
 	if value.Kind() != reflect.Ptr {
-		return errors.New("xsql: argument can only be pointer type")
+		return errors.New("xsql: argument must be a pointer")
 	}
+
+	// 检查是否传入了指向指针的指针（如 **Test）
+	if value.Elem().Kind() == reflect.Ptr {
+		value = value.Elem()
+		if value.IsNil() {
+			// 初始化内部指针
+			newInst := reflect.New(value.Type().Elem())
+			value.Set(newInst)
+		}
+	}
+
 	rootValue := value.Elem()
+	if !rootValue.IsValid() {
+		return errors.New("xsql: argument must be a pointer")
+	}
 	rootType := rootValue.Type()
 
 	rows, err := t.Rows()

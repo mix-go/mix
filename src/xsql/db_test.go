@@ -43,7 +43,7 @@ type JsonItem struct {
 	Foo string `xsql:"foo"`
 }
 
-func (t Test) TableName() string {
+func (t *Test) TableName() string {
 	return "xsql"
 }
 
@@ -338,7 +338,27 @@ func TestFirst(t *testing.T) {
 	DB := newDB()
 
 	var test Test
-	err := DB.First(&test, "SELECT * FROM xsql")
+	err := DB.First(&test, "SELECT * FROM ${TABLE}")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	b, _ := json.Marshal(test)
+	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48Z"}`)
+	// bool
+	a.Equal(test.Bool, true)
+	// enum
+	a.IsType(Enum(0), test.Enum)
+	a.Equal(Enum(1), test.Enum)
+}
+
+func TestFirstPtr(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	var test *Test
+	err := DB.First(&test, "SELECT * FROM ${TABLE}")
 	if err != nil {
 		log.Fatal(err)
 	}
