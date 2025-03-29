@@ -581,3 +581,24 @@ func TestFetchPbJson(t *testing.T) {
 	}
 	a.NotEmpty(test3.Json)
 }
+
+func TestInsertPbJson(t *testing.T) {
+	a := assert.New(t)
+	DB := newDB()
+
+	test1 := TestJsonStruct{
+		Test: Test{
+			Id:   0,
+			Foo:  "",
+			Bar:  time.Time{},
+			Bool: false,
+			Enum: 0,
+		},
+		Json: JsonItem{Foo: `bar`},
+	}
+	_, err := DB.Insert(&test1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.Empty(err)
+}

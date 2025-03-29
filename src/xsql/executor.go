@@ -2,11 +2,13 @@ package xsql
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	ora "github.com/sijms/go-ora/v2"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"reflect"
+	"slices"
 	"strings"
 	"time"
 )
@@ -22,6 +24,7 @@ type ModelExecutor struct {
 }
 
 func (t *executor) Insert(data interface{}, opts *sqlOptions) (sql.Result, error) {
+	var err error
 	fields := make([]string, 0)
 	vars := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
@@ -32,7 +35,10 @@ func (t *executor) Insert(data interface{}, opts *sqlOptions) (sql.Result, error
 	case reflect.Ptr:
 		return t.Insert(value.Elem().Interface(), opts)
 	case reflect.Struct:
-		fields, vars, bindArgs = t.foreachInsert(value, typ, opts)
+		fields, vars, bindArgs, err = t.foreachInsert(value, typ, opts)
+		if err != nil {
+			return nil, err
+		}
 		break
 	default:
 		return nil, errors.New("xsql: only support struct")
@@ -99,7 +105,10 @@ func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result,
 			switch value.Index(r).Kind() {
 			case reflect.Struct:
 				subValue := value.Index(r)
-				vars, b := t.foreachBatchInsertValues(0, subValue, subValue.Type(), opts)
+				vars, b, err := t.foreachBatchInsertValues(0, subValue, subValue.Type(), opts)
+				if err != nil {
+					return nil, err
+				}
 				bindArgs = append(bindArgs, b...)
 				valueSql = append(valueSql, fmt.Sprintf("(%s)", strings.Join(vars, `, `)))
 				break
@@ -146,6 +155,7 @@ func (t *executor) model(s interface{}, opts *sqlOptions) *ModelExecutor {
 }
 
 func (t *executor) Update(data interface{}, expr string, args []interface{}, opts *sqlOptions) (sql.Result, error) {
+	var err error
 	set := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
 
@@ -155,7 +165,10 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	case reflect.Ptr:
 		return t.Update(value.Elem().Interface(), expr, args, opts)
 	case reflect.Struct:
-		set, bindArgs = t.foreachUpdate(value, typ, opts)
+		set, bindArgs, err = t.foreachUpdate(value, typ, opts)
+		if err != nil {
+			return nil, err
+		}
 		break
 	default:
 		return nil, errors.New("xsql: only support struct")
@@ -311,19 +324,24 @@ func (t *executor) formatTime(typ string, v interface{}, opts *sqlOptions) strin
 	}
 }
 
-func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *sqlOptions) (fields, vars []string, bindArgs []interface{}) {
+func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *sqlOptions) (fields, vars []string, bindArgs []interface{}, err error) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
+
+		// Embedded Structs
 		if fieldStruct.Anonymous {
-			f, v, b := t.foreachInsert(fieldValue, fieldValue.Type(), opts)
+			f, v, b, e := t.foreachInsert(fieldValue, fieldValue.Type(), opts)
+			if e != nil {
+				return nil, nil, nil, e
+			}
 			fields = append(fields, f...)
 			vars = append(vars, v...)
 			bindArgs = append(bindArgs, b...)
 			continue
 		}
 
-		if !value.Field(n).CanInterface() {
+		if !fieldValue.CanInterface() {
 			continue
 		}
 
@@ -334,7 +352,7 @@ func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *sq
 
 		fields = append(fields, tag)
 
-		vTyp := value.Field(n).Type().String()
+		vTyp := fieldValue.Type().String()
 		var v string
 		if opts.Placeholder == "?" {
 			v = opts.Placeholder
@@ -349,9 +367,18 @@ func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *sq
 
 		var a interface{}
 		if isTime {
-			a = t.formatTime(vTyp, value.Field(n).Interface(), opts)
+			a = t.formatTime(vTyp, fieldValue.Interface(), opts)
 		} else {
-			a = value.Field(n).Interface()
+			// 非标量用JSON序列化处理
+			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array}, fieldValue.Kind()) {
+				b, e := json.Marshal(fieldValue.Interface())
+				if e != nil {
+					return nil, nil, nil, fmt.Errorf("json unmarshal error %s for field %s", e, tag)
+				}
+				a = string(b)
+			} else {
+				a = fieldValue.Interface()
+			}
 		}
 		bindArgs = append(bindArgs, a)
 	}
@@ -368,7 +395,7 @@ func (t *executor) foreachBatchInsertFields(value reflect.Value, typ reflect.Typ
 			continue
 		}
 
-		if !value.Field(n).CanInterface() {
+		if !fieldValue.CanInterface() {
 			continue
 		}
 
@@ -382,18 +409,23 @@ func (t *executor) foreachBatchInsertFields(value reflect.Value, typ reflect.Typ
 	return
 }
 
-func (t *executor) foreachBatchInsertValues(ai int, value reflect.Value, typ reflect.Type, opts *sqlOptions) (vars []string, bindArgs []interface{}) {
+func (t *executor) foreachBatchInsertValues(ai int, value reflect.Value, typ reflect.Type, opts *sqlOptions) (vars []string, bindArgs []interface{}, err error) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
+
+		// Embedded Structs
 		if fieldStruct.Anonymous {
-			v, b := t.foreachBatchInsertValues(ai+1000, fieldValue, fieldValue.Type(), opts)
+			v, b, e := t.foreachBatchInsertValues(ai+1000, fieldValue, fieldValue.Type(), opts)
+			if e != nil {
+				return nil, nil, e
+			}
 			vars = append(vars, v...)
 			bindArgs = append(bindArgs, b...)
 			continue
 		}
 
-		if !value.Field(n).CanInterface() {
+		if !fieldValue.CanInterface() {
 			continue
 		}
 
@@ -402,7 +434,7 @@ func (t *executor) foreachBatchInsertValues(ai int, value reflect.Value, typ ref
 			continue
 		}
 
-		vTyp := value.Field(n).Type().String()
+		vTyp := fieldValue.Type().String()
 		var v string
 		if opts.Placeholder == "?" {
 			v = opts.Placeholder
@@ -418,27 +450,41 @@ func (t *executor) foreachBatchInsertValues(ai int, value reflect.Value, typ ref
 
 		var a interface{}
 		if isTime {
-			a = t.formatTime(vTyp, value.Field(n).Interface(), opts)
+			a = t.formatTime(vTyp, fieldValue.Interface(), opts)
 		} else {
-			a = value.Field(n).Interface()
+			// 非标量用JSON序列化处理
+			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array}, fieldValue.Kind()) {
+				b, e := json.Marshal(fieldValue.Interface())
+				if e != nil {
+					return nil, nil, fmt.Errorf("json unmarshal error %s for field %s", e, tag)
+				}
+				a = string(b)
+			} else {
+				a = fieldValue.Interface()
+			}
 		}
 		bindArgs = append(bindArgs, a)
 	}
 	return
 }
 
-func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *sqlOptions) (set []string, bindArgs []interface{}) {
+func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *sqlOptions) (set []string, bindArgs []interface{}, err error) {
 	for n := 0; n < value.NumField(); n++ {
 		fieldValue := value.Field(n)
 		fieldStruct := typ.Field(n)
+
+		// Embedded Structs
 		if fieldStruct.Anonymous {
-			s, b := t.foreachUpdate(fieldValue, fieldValue.Type(), opts)
+			s, b, e := t.foreachUpdate(fieldValue, fieldValue.Type(), opts)
+			if e != nil {
+				return nil, nil, e
+			}
 			set = append(set, s...)
 			bindArgs = append(bindArgs, b...)
 			continue
 		}
 
-		if !value.Field(n).CanInterface() {
+		if !fieldValue.CanInterface() {
 			continue
 		}
 
@@ -447,7 +493,7 @@ func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *sq
 			continue
 		}
 
-		vTyp := value.Field(n).Type().String()
+		vTyp := fieldValue.Type().String()
 		var v string
 		if opts.Placeholder == "?" {
 			v = opts.Placeholder
@@ -462,9 +508,18 @@ func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *sq
 
 		var a interface{}
 		if isTime {
-			a = t.formatTime(vTyp, value.Field(n).Interface(), opts)
+			a = t.formatTime(vTyp, fieldValue.Interface(), opts)
 		} else {
-			a = value.Field(n).Interface()
+			// 非标量用JSON序列化处理
+			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array}, fieldValue.Kind()) {
+				b, e := json.Marshal(fieldValue.Interface())
+				if e != nil {
+					return nil, nil, fmt.Errorf("json unmarshal error %s for field %s", e, tag)
+				}
+				a = string(b)
+			} else {
+				a = fieldValue.Interface()
+			}
 		}
 		bindArgs = append(bindArgs, a)
 	}

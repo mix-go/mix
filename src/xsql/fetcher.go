@@ -8,6 +8,7 @@ import (
 	"github.com/sijms/go-ora/v2"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"reflect"
+	"slices"
 	"strconv"
 	"time"
 )
@@ -397,7 +398,7 @@ func (t *Fetcher) mapped(row *Row, tag string, value reflect.Value, typ reflect.
 						return fmt.Errorf("time parse fail for field %s: %v", tag, e)
 					}
 				}
-			} else if typ.Kind() == reflect.Ptr || typ.Kind() == reflect.Struct || typ.Kind() == reflect.Slice || typ.Kind() == reflect.Array { // 非标量用JSON反序列化处理
+			} else if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array}, typ.Kind()) { // 非标量用JSON反序列化处理
 				jsonString := res.String()
 				var newInstance reflect.Value
 				if typ.Kind() == reflect.Ptr {
@@ -406,7 +407,7 @@ func (t *Fetcher) mapped(row *Row, tag string, value reflect.Value, typ reflect.
 					newInstance = reflect.New(typ) // 创建的都是指针
 				}
 				if e := json.Unmarshal([]byte(jsonString), newInstance.Interface()); e != nil {
-					return fmt.Errorf("json unmarshal error for field %s: %v", tag, e)
+					return fmt.Errorf("json unmarshal error %s for field %s", e, tag)
 				}
 				if typ.Kind() == reflect.Ptr {
 					v = newInstance.Interface()
