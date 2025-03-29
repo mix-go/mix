@@ -601,4 +601,36 @@ func TestInsertPbJson(t *testing.T) {
 		log.Fatal(err)
 	}
 	a.Empty(err)
+
+	test2 := TestJsonStructPtr{
+		Test: Test{
+			Id:   0,
+			Foo:  "",
+			Bar:  time.Time{},
+			Bool: false,
+			Enum: 0,
+		},
+		Json: &JsonItem{Foo: `bar`},
+	}
+	_, err = DB.Insert(&test2)
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.Empty(err)
+
+	test3 := TestJsonSlice{
+		Test: Test{
+			Id:   0,
+			Foo:  "",
+			Bar:  time.Time{},
+			Bool: false,
+			Enum: 0,
+		},
+		Json: []int{1, 2, 3},
+	}
+	_, err = DB.Insert(&test3)
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.Empty(err)
 }
