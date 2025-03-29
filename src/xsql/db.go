@@ -2,7 +2,6 @@ package xsql
 
 import (
 	"database/sql"
-	"fmt"
 	"reflect"
 	"strings"
 )
@@ -100,7 +99,7 @@ func (t *DB) QueryFirst(query string, args ...interface{}) (*Row, error) {
 }
 
 func (t *DB) Find(i interface{}, query string, args ...interface{}) error {
-	query = t.tableComplete(i, query)
+	query = TableReplace(i, query, t.Options)
 	f, err := t.query.Fetch(query, args, t.Options)
 	if err != nil {
 		return err
@@ -112,7 +111,7 @@ func (t *DB) Find(i interface{}, query string, args ...interface{}) error {
 }
 
 func (t *DB) First(i interface{}, query string, args ...interface{}) error {
-	query = t.tableComplete(i, query)
+	query = TableReplace(i, query, t.Options)
 	f, err := t.query.Fetch(query, args, t.Options)
 	if err != nil {
 		return err
@@ -123,8 +122,8 @@ func (t *DB) First(i interface{}, query string, args ...interface{}) error {
 	return nil
 }
 
-// tableComplete determines the table name based on the passed struct, slice, or array.
-func (t *DB) tableComplete(i interface{}, query string) string {
+// TableReplace determines the table name based on the passed struct, slice, or array.
+func TableReplace(i interface{}, query string, opts *sqlOptions) string {
 	var table string
 
 	value := reflect.ValueOf(i)
@@ -133,7 +132,6 @@ func (t *DB) tableComplete(i interface{}, query string) string {
 		if value.Elem().IsValid() {
 			// *Test > Test
 			if value.Elem().Kind() == reflect.Struct {
-				fmt.Println(222, value.Type().String())
 				// 先尝试*Test能不能找到
 				if tab, ok := value.Interface().(Table); ok {
 					table = tab.TableName()
@@ -141,7 +139,7 @@ func (t *DB) tableComplete(i interface{}, query string) string {
 				}
 			}
 			// **Test > *Test
-			return t.tableComplete(value.Elem().Interface(), query)
+			return TableReplace(value.Elem().Interface(), query, opts)
 		}
 		if tab, ok := value.Interface().(Table); ok {
 			table = tab.TableName()
@@ -150,6 +148,12 @@ func (t *DB) tableComplete(i interface{}, query string) string {
 		table = getTypeName(i)
 	case reflect.Struct:
 		if tab, ok := value.Interface().(Table); ok {
+			table = tab.TableName()
+			break
+		}
+		// 也去尝试*Test能不能找到
+		valuePtr := reflect.New(value.Type())
+		if tab, ok := valuePtr.Interface().(Table); ok {
 			table = tab.TableName()
 			break
 		}
@@ -182,7 +186,7 @@ func (t *DB) tableComplete(i interface{}, query string) string {
 		return query // 如果不是结构体、数组或切片，返回原始查询
 	}
 
-	return strings.Replace(query, "${TABLE}", table, 1)
+	return strings.Replace(query, opts.TableKey, table, 1)
 }
 
 func getTypeName(i interface{}) string {

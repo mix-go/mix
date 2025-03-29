@@ -26,27 +26,20 @@ func (t *executor) Insert(data interface{}, opts *sqlOptions) (sql.Result, error
 	vars := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
 
-	table := ""
-
 	value := reflect.ValueOf(data)
 	typ := reflect.TypeOf(data)
 	switch value.Kind() {
 	case reflect.Ptr:
 		return t.Insert(value.Elem().Interface(), opts)
 	case reflect.Struct:
-		if tab, ok := data.(Table); ok {
-			table = tab.TableName()
-		} else {
-			table = value.Type().Name()
-		}
-
 		fields, vars, bindArgs = t.foreachInsert(value, typ, opts)
 		break
 	default:
 		return nil, errors.New("xsql: only support struct")
 	}
 
-	SQL := fmt.Sprintf(`%s %s (%s) VALUES (%s)`, opts.InsertKey, table, opts.ColumnQuotes+strings.Join(fields, opts.ColumnQuotes+", "+opts.ColumnQuotes)+opts.ColumnQuotes, strings.Join(vars, `, `))
+	SQL := fmt.Sprintf(`%s %s (%s) VALUES (%s)`, opts.InsertKey, opts.TableKey, opts.ColumnQuotes+strings.Join(fields, opts.ColumnQuotes+", "+opts.ColumnQuotes)+opts.ColumnQuotes, strings.Join(vars, `, `))
+	SQL = TableReplace(data, SQL, opts)
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(SQL, bindArgs...)
@@ -74,8 +67,6 @@ func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result,
 	valueSql := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
 
-	table := ""
-
 	// check
 	value := reflect.ValueOf(array)
 	switch value.Kind() {
@@ -95,13 +86,6 @@ func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result,
 	case reflect.Struct:
 		subValue := value.Index(0)
 		subType := subValue.Type()
-
-		if tab, ok := subValue.Interface().(Table); ok {
-			table = tab.TableName()
-		} else {
-			table = subValue.Type().Name()
-		}
-
 		fields = t.foreachBatchInsertFields(subValue, subType, opts)
 		break
 	default:
@@ -128,7 +112,8 @@ func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result,
 		return nil, errors.New("xsql: only support array, slice")
 	}
 
-	SQL := fmt.Sprintf(`%s %s (%s) VALUES %s`, opts.InsertKey, table, opts.ColumnQuotes+strings.Join(fields, opts.ColumnQuotes+", "+opts.ColumnQuotes)+opts.ColumnQuotes, strings.Join(valueSql, ", "))
+	SQL := fmt.Sprintf(`%s %s (%s) VALUES %s`, opts.InsertKey, opts.TableKey, opts.ColumnQuotes+strings.Join(fields, opts.ColumnQuotes+", "+opts.ColumnQuotes)+opts.ColumnQuotes, strings.Join(valueSql, ", "))
+	SQL = TableReplace(array, SQL, opts)
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(SQL, bindArgs...)
@@ -152,19 +137,7 @@ func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result,
 }
 
 func (t *executor) model(s interface{}, opts *sqlOptions) *ModelExecutor {
-	var table string
-	value := reflect.ValueOf(s)
-	switch value.Kind() {
-	case reflect.Ptr:
-		return t.model(value.Elem().Interface(), opts)
-	case reflect.Struct:
-		if tab, ok := s.(Table); ok {
-			table = tab.TableName()
-		} else {
-			table = value.Type().Name()
-		}
-		break
-	}
+	table := TableReplace(s, opts.TableKey, opts)
 	return &ModelExecutor{
 		Executor:  t.Executor,
 		Options:   opts,
@@ -176,20 +149,12 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	set := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
 
-	table := ""
-
 	value := reflect.ValueOf(data)
 	typ := reflect.TypeOf(data)
 	switch value.Kind() {
 	case reflect.Ptr:
 		return t.Update(value.Elem().Interface(), expr, args, opts)
 	case reflect.Struct:
-		if tab, ok := data.(Table); ok {
-			table = tab.TableName()
-		} else {
-			table = value.Type().Name()
-		}
-
 		set, bindArgs = t.foreachUpdate(value, typ, opts)
 		break
 	default:
@@ -202,7 +167,8 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 		bindArgs = append(bindArgs, args...)
 	}
 
-	SQL := fmt.Sprintf(`UPDATE %s SET %s%s`, table, strings.Join(set, ", "), where)
+	SQL := fmt.Sprintf(`UPDATE %s SET %s%s`, opts.TableKey, strings.Join(set, ", "), where)
+	SQL = TableReplace(data, SQL, opts)
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(SQL, bindArgs...)

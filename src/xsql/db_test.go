@@ -3,7 +3,6 @@ package xsql_test
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/mix-go/xsql"
 	"github.com/stretchr/testify/assert"
@@ -134,7 +133,7 @@ func TestQuery(t *testing.T) {
 		log.Fatal(err)
 	}
 	bar := rows[0].Get("bar").String()
-	fmt.Println(bar)
+	log.Println(bar)
 
 	a.Equal(bar, "2022-04-14 23:49:48")
 }

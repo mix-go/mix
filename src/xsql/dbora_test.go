@@ -46,7 +46,7 @@ func TestOracleQuery(t *testing.T) {
 		log.Fatal(err)
 	}
 	bar := rows[0].Get("BAR").Time().Format(xsql.DefaultOptions.TimeLayout)
-	fmt.Println(bar)
+	log.Println(bar)
 
 	a.Equal(bar, "2022-04-14 23:49:48")
 }
