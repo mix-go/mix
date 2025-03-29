@@ -135,7 +135,7 @@ func TestQuery(t *testing.T) {
 	bar := rows[0].Get("bar").String()
 	log.Println(bar)
 
-	a.Equal(bar, "2022-04-14 23:49:48")
+	a.Equal(bar, "2022-04-12 23:50:00")
 }
 
 func TestInsert(t *testing.T) {
@@ -343,7 +343,7 @@ func TestFirst(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(test)
-	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48Z"}`)
+	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-12T23:50:00Z"}`)
 	// bool
 	a.Equal(test.Bool, true)
 	// enum
@@ -363,7 +363,7 @@ func TestFirstPtr(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(test)
-	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48Z"}`)
+	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-12T23:50:00Z"}`)
 	// bool
 	a.Equal(test.Bool, true)
 	// enum
@@ -383,7 +383,7 @@ func TestFirstEmbedding(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(test)
-	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48Z"}`)
+	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-12T23:50:00Z"}`)
 }
 
 func TestFirstPart(t *testing.T) {
@@ -413,7 +413,7 @@ func TestFirstTableKey(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(test)
-	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48Z"}`)
+	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-12T23:50:00Z"}`)
 }
 
 func TestFind(t *testing.T) {
@@ -428,7 +428,7 @@ func TestFind(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(tests)
-	a.Equal(string(b), "[{\"Id\":1,\"Foo\":\"v\",\"Bar\":\"2022-04-14T23:49:48Z\"},{\"Id\":2,\"Foo\":\"v1\",\"Bar\":\"2022-04-14T23:50:00Z\"}]")
+	a.Equal(string(b), `[{"Id":1,"Foo":"v","Bar":"2022-04-12T23:50:00Z"},{"Id":2,"Foo":"v1","Bar":"2022-04-13T23:50:00Z"}]`)
 }
 
 func TestFindPtr(t *testing.T) {
@@ -443,7 +443,7 @@ func TestFindPtr(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(tests)
-	a.Equal(string(b), "[{\"Id\":1,\"Foo\":\"v\",\"Bar\":\"2022-04-14T23:49:48Z\"},{\"Id\":2,\"Foo\":\"v1\",\"Bar\":\"2022-04-14T23:50:00Z\"}]")
+	a.Equal(string(b), `[{"Id":1,"Foo":"v","Bar":"2022-04-12T23:50:00Z"},{"Id":2,"Foo":"v1","Bar":"2022-04-13T23:50:00Z"}]`)
 }
 
 func TestEmbeddingFind(t *testing.T) {
@@ -458,7 +458,7 @@ func TestEmbeddingFind(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(tests)
-	a.Equal(string(b), `[{"Id":1,"Foo":"v","Bar":"2022-04-14T23:49:48Z"},{"Id":2,"Foo":"v1","Bar":"2022-04-14T23:50:00Z"}]`)
+	a.Equal(string(b), `[{"Id":1,"Foo":"v","Bar":"2022-04-12T23:50:00Z"},{"Id":2,"Foo":"v1","Bar":"2022-04-13T23:50:00Z"}]`)
 }
 
 func TestFindPart(t *testing.T) {
@@ -488,7 +488,7 @@ func TestFindTableKey(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(tests)
-	a.Equal(string(b), "[{\"Id\":1,\"Foo\":\"v\",\"Bar\":\"2022-04-14T23:49:48Z\"},{\"Id\":2,\"Foo\":\"v1\",\"Bar\":\"2022-04-14T23:50:00Z\"}]")
+	a.Equal(string(b), `[{"Id":1,"Foo":"v","Bar":"2022-04-12T23:50:00Z"},{"Id":2,"Foo":"v1","Bar":"2022-04-13T23:50:00Z"}]`)
 }
 
 func TestTxCommit(t *testing.T) {
