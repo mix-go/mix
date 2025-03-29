@@ -423,7 +423,22 @@ func TestFind(t *testing.T) {
 	DB := newDB()
 
 	var tests []Test
-	err := DB.Find(&tests, "SELECT * FROM xsql LIMIT 2")
+	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 2")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	b, _ := json.Marshal(tests)
+	a.Equal(string(b), "[{\"Id\":1,\"Foo\":\"v\",\"Bar\":\"2022-04-14T23:49:48Z\"},{\"Id\":2,\"Foo\":\"v1\",\"Bar\":\"2022-04-14T23:50:00Z\"}]")
+}
+
+func TestFindPtr(t *testing.T) {
+	a := assert.New(t)
+
+	DB := newDB()
+
+	var tests []*Test
+	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 2")
 	if err != nil {
 		log.Fatal(err)
 	}

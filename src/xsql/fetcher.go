@@ -57,10 +57,13 @@ func (t *Fetcher) First(i interface{}) error {
 func (t *Fetcher) Find(i interface{}) error {
 	value := reflect.ValueOf(i)
 	if value.Kind() != reflect.Ptr {
-		return errors.New("xsql: argument can only be pointer type")
+		return errors.New("xsql: argument must be a pointer")
 	}
 	root := value.Elem()
-	itemType := root.Type().Elem()
+	if root.Kind() != reflect.Slice {
+		return errors.New("xsql: argument must be a pointer to a slice")
+	}
+	elemType := root.Type().Elem()
 
 	rows, err := t.Rows()
 	if err != nil {
@@ -68,14 +71,22 @@ func (t *Fetcher) Find(i interface{}) error {
 	}
 
 	for r := 0; r < len(rows); r++ {
-		itemValue := reflect.New(itemType)
-		if itemValue.Kind() == reflect.Ptr {
-			itemValue = itemValue.Elem()
+		var elemValue reflect.Value
+		if elemType.Kind() == reflect.Ptr {
+			// 元素类型为指针，创建指针指向的类型的实例，并直接获取指向的结构体
+			elemValue = reflect.New(elemType.Elem()).Elem()
+			if err := t.foreach(rows[r], elemValue, elemValue.Type()); err != nil {
+				return err
+			}
+			root.Set(reflect.Append(root, elemValue.Addr()))
+		} else {
+			// 元素类型为值类型，创建该类型的实例
+			elemValue = reflect.New(elemType).Elem()
+			if err := t.foreach(rows[r], elemValue, elemValue.Type()); err != nil {
+				return err
+			}
+			root.Set(reflect.Append(root, elemValue))
 		}
-		if err := t.foreach(rows[r], itemValue, itemValue.Type()); err != nil {
-			return err
-		}
-		root.Set(reflect.Append(root, itemValue))
 	}
 
 	return nil
