@@ -2,7 +2,6 @@ package xsql
 
 import (
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	ora "github.com/sijms/go-ora/v2"
@@ -45,7 +44,7 @@ func (t *executor) Insert(data interface{}, opts *sqlOptions) (sql.Result, error
 	}
 
 	SQL := fmt.Sprintf(`%s %s (%s) VALUES (%s)`, opts.InsertKey, opts.TableKey, opts.ColumnQuotes+strings.Join(fields, opts.ColumnQuotes+", "+opts.ColumnQuotes)+opts.ColumnQuotes, strings.Join(vars, `, `))
-	SQL = TableReplace(data, SQL, opts)
+	SQL = tableReplace(data, SQL, opts)
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(SQL, bindArgs...)
@@ -122,7 +121,7 @@ func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result,
 	}
 
 	SQL := fmt.Sprintf(`%s %s (%s) VALUES %s`, opts.InsertKey, opts.TableKey, opts.ColumnQuotes+strings.Join(fields, opts.ColumnQuotes+", "+opts.ColumnQuotes)+opts.ColumnQuotes, strings.Join(valueSql, ", "))
-	SQL = TableReplace(array, SQL, opts)
+	SQL = tableReplace(array, SQL, opts)
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(SQL, bindArgs...)
@@ -146,7 +145,7 @@ func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result,
 }
 
 func (t *executor) model(s interface{}, opts *sqlOptions) *ModelExecutor {
-	table := TableReplace(s, opts.TableKey, opts)
+	table := tableReplace(s, opts.TableKey, opts)
 	return &ModelExecutor{
 		Executor:  t.Executor,
 		Options:   opts,
@@ -181,7 +180,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	}
 
 	SQL := fmt.Sprintf(`UPDATE %s SET %s%s`, opts.TableKey, strings.Join(set, ", "), where)
-	SQL = TableReplace(data, SQL, opts)
+	SQL = tableReplace(data, SQL, opts)
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(SQL, bindArgs...)
@@ -371,7 +370,7 @@ func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *sq
 		} else {
 			// 非标量用JSON序列化处理
 			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array}, fieldValue.Kind()) {
-				b, e := json.Marshal(fieldValue.Interface())
+				b, e := marshal(fieldValue.Interface())
 				if e != nil {
 					return nil, nil, nil, fmt.Errorf("json unmarshal error %s for field %s", e, tag)
 				}
@@ -454,7 +453,7 @@ func (t *executor) foreachBatchInsertValues(ai int, value reflect.Value, typ ref
 		} else {
 			// 非标量用JSON序列化处理
 			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array}, fieldValue.Kind()) {
-				b, e := json.Marshal(fieldValue.Interface())
+				b, e := marshal(fieldValue.Interface())
 				if e != nil {
 					return nil, nil, fmt.Errorf("json unmarshal error %s for field %s", e, tag)
 				}
@@ -512,7 +511,7 @@ func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *sq
 		} else {
 			// 非标量用JSON序列化处理
 			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array}, fieldValue.Kind()) {
-				b, e := json.Marshal(fieldValue.Interface())
+				b, e := marshal(fieldValue.Interface())
 				if e != nil {
 					return nil, nil, fmt.Errorf("json unmarshal error %s for field %s", e, tag)
 				}

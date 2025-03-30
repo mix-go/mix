@@ -2,6 +2,9 @@ package xsql
 
 import (
 	"database/sql"
+	"encoding/json"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"reflect"
 	"strings"
 )
@@ -99,7 +102,7 @@ func (t *DB) QueryFirst(query string, args ...interface{}) (*Row, error) {
 }
 
 func (t *DB) Find(i interface{}, query string, args ...interface{}) error {
-	query = TableReplace(i, query, t.Options)
+	query = tableReplace(i, query, t.Options)
 	f, err := t.query.Fetch(query, args, t.Options)
 	if err != nil {
 		return err
@@ -111,7 +114,7 @@ func (t *DB) Find(i interface{}, query string, args ...interface{}) error {
 }
 
 func (t *DB) First(i interface{}, query string, args ...interface{}) error {
-	query = TableReplace(i, query, t.Options)
+	query = tableReplace(i, query, t.Options)
 	f, err := t.query.Fetch(query, args, t.Options)
 	if err != nil {
 		return err
@@ -122,8 +125,7 @@ func (t *DB) First(i interface{}, query string, args ...interface{}) error {
 	return nil
 }
 
-// TableReplace determines the table name based on the passed struct, slice, or array.
-func TableReplace(i interface{}, query string, opts *sqlOptions) string {
+func tableReplace(i interface{}, query string, opts *sqlOptions) string {
 	var table string
 
 	value := reflect.ValueOf(i)
@@ -139,7 +141,7 @@ func TableReplace(i interface{}, query string, opts *sqlOptions) string {
 				}
 			}
 			// **Test > *Test
-			return TableReplace(value.Elem().Interface(), query, opts)
+			return tableReplace(value.Elem().Interface(), query, opts)
 		}
 		if tab, ok := value.Interface().(Table); ok {
 			table = tab.TableName()
@@ -195,4 +197,29 @@ func getTypeName(i interface{}) string {
 		t = t.Elem()
 	}
 	return t.Name()
+}
+
+var ProtoMarshalOptions = protojson.MarshalOptions{
+	UseProtoNames:  true,
+	UseEnumNumbers: true,
+}
+
+func marshal(v any) ([]byte, error) {
+	if m, ok := v.(proto.Message); ok {
+		return ProtoMarshalOptions.Marshal(m)
+	} else {
+		return json.Marshal(v)
+	}
+}
+
+var ProtoUnmarshalOptions = protojson.UnmarshalOptions{
+	DiscardUnknown: true,
+}
+
+func unmarshal(b []byte, v any) error {
+	if m, ok := v.(proto.Message); ok {
+		return ProtoUnmarshalOptions.Unmarshal(b, m)
+	} else {
+		return json.Unmarshal(b, v)
+	}
 }

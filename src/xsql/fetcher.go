@@ -2,7 +2,6 @@ package xsql
 
 import (
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/sijms/go-ora/v2"
@@ -406,7 +405,7 @@ func (t *Fetcher) mapped(row *Row, tag string, value reflect.Value, typ reflect.
 				} else {
 					newInstance = reflect.New(typ) // 创建的都是指针
 				}
-				if e := json.Unmarshal([]byte(jsonString), newInstance.Interface()); e != nil {
+				if e := unmarshal([]byte(jsonString), newInstance.Interface()); e != nil {
 					return fmt.Errorf("json unmarshal error %s for field %s", e, tag)
 				}
 				if typ.Kind() == reflect.Ptr {
