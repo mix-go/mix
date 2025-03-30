@@ -83,7 +83,7 @@ type Test struct {
     Bar time.Time `xsql:"bar"` // oracle uses go_ora.TimeStamp
 }
 
-func (t Test) TableName() string {
+func (t *Test) TableName() string {
     return "tableName"
 }
 ```
@@ -107,7 +107,7 @@ if err != nil {
 Map all rows
 
 ```go
-var tests []Test
+var tests []*Test
 err := DB.Find(&tests, "SELECT * FROM ${TABLE}")
 if err != nil {
     log.Fatal(err)
