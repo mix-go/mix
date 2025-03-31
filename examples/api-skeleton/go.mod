@@ -7,7 +7,7 @@ require (
 	github.com/go-session/redis v3.0.1+incompatible
 	github.com/go-session/session v3.1.2+incompatible
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/golang-jwt/jwt/v4 v4.5.1
 	github.com/jinzhu/configor v1.2.1
 	github.com/mix-go/xcli v1.1.21
 	github.com/mix-go/xdi v1.1.17
