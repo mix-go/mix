@@ -1,13 +1,3 @@
-> OpenMix 出品：[https://openmix.org](https://openmix.org/mix-go)
-
-<p align="center">
-    <br>
-    <br>
-    <img src="https://openmix.org/static/image/logo_go.png" width="120" alt="MixPHP">
-    <br>
-    <br>
-</p>
-
 <h1 align="center">Mix Go</h1>
 
 [English](README.md) | 中文
@@ -29,7 +19,7 @@ MixGo 是一个 Go 快速开发标准工具包；内部模块高度解耦，整�
 
 ## 开发文档
 
-- `V1.1` https://openmix.org/mix-go/docs/1.1/
+- `V1.1` 1.[快速开始](#快速开始) 2.[示例](#示例) 3.[独立模块](#独立模块)
 - `V1.0` https://www.kancloud.cn/onanying/mixgo1/content
 
 ## 快速开始
@@ -60,7 +50,7 @@ go mod tidy
 
 - [MixGo 在 IDE Goland 中的如何使用](https://zhuanlan.zhihu.com/p/391857663)
 
-### Examples
+### 示例
 
 - [编写一个 CLI 程序](examples/cli-skeleton#readme)
     - [编写一个 Worker Pool 队列消费](examples/cli-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-worker-pool-%E9%98%9F%E5%88%97%E6%B6%88%E8%B4%B9)
@@ -68,13 +58,6 @@ go mod tidy
 - [编写一个 Web 服务](examples/web-skeleton#readme)
     - [编写一个 WebSocket 服务](examples/web-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-WebSocket-%E6%9C%8D%E5%8A%A1)
 - [编写一个 gRPC 服务、客户端](examples/grpc-skeleton#readme)
-
-## `AD` 混联网关
-
-[混联网关](https://connmix.com/) - 可编程分布式长连接网关
-
-- 可用于聊天室、直播弹幕、IM即时通讯、在线客服、网络游戏、硬件通讯、智能家居、物联网等领域的开发
-- 几行代码，免费搞定socket、websocket实时通讯
 
 ## 技术交流
 

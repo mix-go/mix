@@ -1,13 +1,3 @@
-> Produced by OpenMix: [https://openmix.org](https://openmix.org/mix-go)
-
-<p align="center">
-    <br>
-    <br>
-    <img src="https://openmix.org/static/image/logo_go.png" width="120" alt="MixPHP">
-    <br>
-    <br>
-</p>
-
 <h1 align="center">Mix Go</h1>
 
 English | [中文](README_CN.md)
@@ -29,7 +19,7 @@ All core modules can be used independently.
 
 ## Development Documentation
 
-- `V1.1` https://openmix.org/mix-go/docs/1.1/
+- `V1.1` 1.[Quick Start](#Quick-Start) 2.[Examples](#Examples) 3.[Independent Modules](#Independent-Modules)
 - `V1.0` https://www.kancloud.cn/onanying/mixgo1/content
 
 ## Quick Start
@@ -69,13 +59,6 @@ go mod tidy
   - [Write a WebSocket service](examples/web-skeleton#%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA-WebSocket-%E6%9C%8D%E5%8A%A1)
 - [Write a gRPC service, client](examples/grpc-skeleton#readme)
 
-## `AD` CONNMIX Gateway
-
-[CONNMIX Gateway](https://connmix.com/) - Programmable distributed long connection gateway
-
-- Can be used for chat rooms, live pop-ups, IM instant messaging, online customer service, online games, hardware communication, smart home, IoT and other areas of development
-- A few lines of code, free to get socket, websocket real-time communication
-
 ## Technical Discussion
 
 Zhihu: https://www.zhihu.com/people/onanying    
@@ -86,7 +69,6 @@ Official QQ Group: [284806582](https://shang.qq.com/wpa/qunwpa?idkey=b3a8618d397
 OpenMix also has PHP ecosystem frameworks:
 
 - https://github.com/mix-php/mix
-- https://gitee.com/mix-php/mix
 
 ## License
 
