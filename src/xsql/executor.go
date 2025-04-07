@@ -210,9 +210,41 @@ func (t *ModelExecutor) Update(data map[string]interface{}, expr string, args ..
 	table := t.TableName
 	opts := t.Options
 
-	for k, v := range data {
-		set = append(set, fmt.Sprintf("`%s` = ?", k))
-		bindArgs = append(bindArgs, v)
+	n := 0
+	for key, val := range data {
+		value := reflect.ValueOf(val)
+		vTyp := value.Type().String()
+		isTime := isTime(vTyp)
+
+		var v string
+		if opts.Placeholder == "?" {
+			v = opts.Placeholder
+		} else {
+			v = fmt.Sprintf(opts.Placeholder, n)
+			n++
+		}
+		if isTime {
+			v = opts.TimeFunc(v)
+		}
+
+		var a interface{}
+		if isTime {
+			a = formatTime(vTyp, value.Interface(), opts)
+		} else {
+			// 非标量用JSON序列化处理
+			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map}, value.Kind()) {
+				b, e := marshal(value.Interface())
+				if e != nil {
+					return nil, fmt.Errorf("json unmarshal error %s for field %s", e, key)
+				}
+				a = string(b)
+			} else {
+				a = value.Interface()
+			}
+		}
+
+		set = append(set, fmt.Sprintf("`%s` = %s", key, v))
+		bindArgs = append(bindArgs, a)
 	}
 
 	where := ""
@@ -301,7 +333,7 @@ func (t *executor) Exec(query string, args []interface{}, opts *sqlOptions) (sql
 	return res, err
 }
 
-func (t *executor) isTime(typ string) bool {
+func isTime(typ string) bool {
 	switch typ {
 	case "time.Time", "go_ora.TimeStamp", "*timestamppb.Timestamp":
 		return true
@@ -310,7 +342,7 @@ func (t *executor) isTime(typ string) bool {
 	}
 }
 
-func (t *executor) formatTime(typ string, v interface{}, opts *sqlOptions) string {
+func formatTime(typ string, v interface{}, opts *sqlOptions) string {
 	switch typ {
 	case "time.Time":
 		return v.(time.Time).Format(opts.TimeLayout)
@@ -352,13 +384,14 @@ func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *sq
 		fields = append(fields, tag)
 
 		vTyp := fieldValue.Type().String()
+		isTime := isTime(vTyp)
+
 		var v string
 		if opts.Placeholder == "?" {
 			v = opts.Placeholder
 		} else {
 			v = fmt.Sprintf(opts.Placeholder, n)
 		}
-		isTime := t.isTime(vTyp)
 		if isTime {
 			v = opts.TimeFunc(v)
 		}
@@ -366,7 +399,7 @@ func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *sq
 
 		var a interface{}
 		if isTime {
-			a = t.formatTime(vTyp, fieldValue.Interface(), opts)
+			a = formatTime(vTyp, fieldValue.Interface(), opts)
 		} else {
 			// 非标量用JSON序列化处理
 			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map}, fieldValue.Kind()) {
@@ -434,6 +467,8 @@ func (t *executor) foreachBatchInsertValues(ai int, value reflect.Value, typ ref
 		}
 
 		vTyp := fieldValue.Type().String()
+		isTime := isTime(vTyp)
+
 		var v string
 		if opts.Placeholder == "?" {
 			v = opts.Placeholder
@@ -441,7 +476,6 @@ func (t *executor) foreachBatchInsertValues(ai int, value reflect.Value, typ ref
 			v = fmt.Sprintf(opts.Placeholder, ai)
 			ai += 1
 		}
-		isTime := t.isTime(vTyp)
 		if isTime {
 			v = opts.TimeFunc(v)
 		}
@@ -449,7 +483,7 @@ func (t *executor) foreachBatchInsertValues(ai int, value reflect.Value, typ ref
 
 		var a interface{}
 		if isTime {
-			a = t.formatTime(vTyp, fieldValue.Interface(), opts)
+			a = formatTime(vTyp, fieldValue.Interface(), opts)
 		} else {
 			// 非标量用JSON序列化处理
 			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map}, fieldValue.Kind()) {
@@ -493,13 +527,14 @@ func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *sq
 		}
 
 		vTyp := fieldValue.Type().String()
+		isTime := isTime(vTyp)
+
 		var v string
 		if opts.Placeholder == "?" {
 			v = opts.Placeholder
 		} else {
 			v = fmt.Sprintf(opts.Placeholder, n)
 		}
-		isTime := t.isTime(vTyp)
 		if isTime {
 			v = opts.TimeFunc(v)
 		}
@@ -507,7 +542,7 @@ func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *sq
 
 		var a interface{}
 		if isTime {
-			a = t.formatTime(vTyp, fieldValue.Interface(), opts)
+			a = formatTime(vTyp, fieldValue.Interface(), opts)
 		} else {
 			// 非标量用JSON序列化处理
 			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map}, fieldValue.Kind()) {
