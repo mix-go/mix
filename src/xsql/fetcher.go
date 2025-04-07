@@ -397,7 +397,7 @@ func (t *Fetcher) mapped(row *Row, tag string, value reflect.Value, typ reflect.
 						return fmt.Errorf("time parse fail for field %s: %v", tag, e)
 					}
 				}
-			} else if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array}, typ.Kind()) { // 非标量用JSON反序列化处理
+			} else if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map}, typ.Kind()) { // 非标量用JSON反序列化处理
 				jsonString := res.String()
 				var newInstance reflect.Value
 				if typ.Kind() == reflect.Ptr {

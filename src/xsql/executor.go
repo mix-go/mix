@@ -369,7 +369,7 @@ func (t *executor) foreachInsert(value reflect.Value, typ reflect.Type, opts *sq
 			a = t.formatTime(vTyp, fieldValue.Interface(), opts)
 		} else {
 			// 非标量用JSON序列化处理
-			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array}, fieldValue.Kind()) {
+			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map}, fieldValue.Kind()) {
 				b, e := marshal(fieldValue.Interface())
 				if e != nil {
 					return nil, nil, nil, fmt.Errorf("json unmarshal error %s for field %s", e, tag)
@@ -452,7 +452,7 @@ func (t *executor) foreachBatchInsertValues(ai int, value reflect.Value, typ ref
 			a = t.formatTime(vTyp, fieldValue.Interface(), opts)
 		} else {
 			// 非标量用JSON序列化处理
-			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array}, fieldValue.Kind()) {
+			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map}, fieldValue.Kind()) {
 				b, e := marshal(fieldValue.Interface())
 				if e != nil {
 					return nil, nil, fmt.Errorf("json unmarshal error %s for field %s", e, tag)
@@ -510,7 +510,7 @@ func (t *executor) foreachUpdate(value reflect.Value, typ reflect.Type, opts *sq
 			a = t.formatTime(vTyp, fieldValue.Interface(), opts)
 		} else {
 			// 非标量用JSON序列化处理
-			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array}, fieldValue.Kind()) {
+			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map}, fieldValue.Kind()) {
 				b, e := marshal(fieldValue.Interface())
 				if e != nil {
 					return nil, nil, fmt.Errorf("json unmarshal error %s for field %s", e, tag)
