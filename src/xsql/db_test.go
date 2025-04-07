@@ -266,6 +266,12 @@ func TestUpdateColumns(t *testing.T) {
 		"foo": "test_update_2",
 	}
 	_, err := DB.Model(&Test{}).Update(data, "id = ?", 8)
+	a.Empty(err)
+
+	data = map[string]interface{}{
+		"foo": timestamppb.Now(),
+	}
+	_, err = DB.Model(&Test{}).Update(data, "id = ?", 8)
 
 	a.Empty(err)
 }
