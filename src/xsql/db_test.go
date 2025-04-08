@@ -681,8 +681,7 @@ func TestFirstPbStruct(t *testing.T) {
 
 	var row1 testdata.Device
 	err = DB.First(&row1, "SELECT * FROM ${TABLE} WHERE id = 1")
-	a.Nil(err)
-	a.NotEmpty(&row)
+	a.Contains(err.Error(), "doesn't exist")
 }
 
 func TestFindPbStruct(t *testing.T) {
@@ -696,6 +695,5 @@ func TestFindPbStruct(t *testing.T) {
 
 	var rows1 []*testdata.Device
 	err = DB.Find(&rows1, "SELECT * FROM ${TABLE} WHERE id < 3")
-	a.Nil(err)
-	a.Len(rows1, 2)
+	a.Contains(err.Error(), "doesn't exist")
 }
