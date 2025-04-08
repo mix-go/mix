@@ -429,7 +429,7 @@ func TestFirstPart(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(test)
-	a.Equal(string(b), "{\"Id\":0,\"Foo\":\"v\",\"Bar\":\"0001-01-01T00:00:00Z\"}")
+	a.Equal(string(b), `{"Id":0,"Foo":"v","Bar":"0001-01-01T00:00:00Z"}`)
 }
 
 func TestFirstTableKey(t *testing.T) {
@@ -504,7 +504,7 @@ func TestFindPart(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(tests)
-	a.Equal(string(b), "[{\"Id\":0,\"Foo\":\"v\",\"Bar\":\"0001-01-01T00:00:00Z\"},{\"Id\":0,\"Foo\":\"v1\",\"Bar\":\"0001-01-01T00:00:00Z\"}]")
+	a.Equal(string(b), `[{"Id":0,"Foo":"v","Bar":"0001-01-01T00:00:00Z"},{"Id":0,"Foo":"v1","Bar":"0001-01-01T00:00:00Z"}]`)
 }
 
 func TestFindTableKey(t *testing.T) {
