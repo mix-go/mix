@@ -53,6 +53,11 @@ type TestJsonSlice struct {
 	Json []int `xsql:"json"`
 }
 
+type TestJsonSlicePtr struct {
+	Test
+	Json []*JsonItem `xsql:"json"`
+}
+
 type JsonItem struct {
 	Foo string `xsql:"foo"`
 }
@@ -582,58 +587,6 @@ func TestPbTimestamp(t *testing.T) {
 	a.Equal(test2.Bar.Seconds, now.Seconds)
 }
 
-func TestFirstPbJson(t *testing.T) {
-	a := assert.New(t)
-	DB := newDB()
-
-	var test1 TestJsonStruct
-	err := DB.First(&test1, "SELECT * FROM ${TABLE} WHERE id = 1")
-	if err != nil {
-		log.Fatal(err)
-	}
-	a.NotEmpty(test1.Json)
-
-	var test2 TestJsonStructPtr
-	err = DB.First(&test2, "SELECT * FROM ${TABLE} WHERE id = 1")
-	if err != nil {
-		log.Fatal(err)
-	}
-	a.NotEmpty(test2.Json)
-
-	var test3 TestJsonSlice
-	err = DB.First(&test3, "SELECT * FROM ${TABLE} WHERE id = 2")
-	if err != nil {
-		log.Fatal(err)
-	}
-	a.NotEmpty(test3.Json)
-}
-
-func TestFindPbJson(t *testing.T) {
-	a := assert.New(t)
-	DB := newDB()
-
-	var test1 []*TestJsonStruct
-	err := DB.Find(&test1, "SELECT * FROM ${TABLE} WHERE id = 1")
-	if err != nil {
-		log.Fatal(err)
-	}
-	a.NotEmpty(test1)
-
-	var test2 []*TestJsonStructPtr
-	err = DB.Find(&test2, "SELECT * FROM ${TABLE} WHERE id = 1")
-	if err != nil {
-		log.Fatal(err)
-	}
-	a.NotEmpty(test2)
-
-	var test3 []*TestJsonSlice
-	err = DB.Find(&test3, "SELECT * FROM ${TABLE} WHERE id = 2")
-	if err != nil {
-		log.Fatal(err)
-	}
-	a.NotEmpty(test3)
-}
-
 func TestInsertPbJson(t *testing.T) {
 	a := assert.New(t)
 	DB := newDB()
@@ -685,4 +638,86 @@ func TestInsertPbJson(t *testing.T) {
 		log.Fatal(err)
 	}
 	a.Empty(err)
+
+	test4 := TestJsonSlicePtr{
+		Test: Test{
+			Id:   0,
+			Foo:  "",
+			Bar:  time.Time{},
+			Bool: false,
+			Enum: 0,
+		},
+		Json: []*JsonItem{{Foo: `bar1`}, {Foo: `bar2`}, {Foo: `bar3`}},
+	}
+	_, err = DB.Insert(&test4)
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.Empty(err)
+}
+
+func TestFirstPbJson(t *testing.T) {
+	a := assert.New(t)
+	DB := newDB()
+
+	var test1 TestJsonStruct
+	err := DB.First(&test1, "SELECT * FROM ${TABLE} WHERE id = 1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test1.Json)
+
+	var test2 TestJsonStructPtr
+	err = DB.First(&test2, "SELECT * FROM ${TABLE} WHERE id = 1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test2.Json)
+
+	var test3 TestJsonSlice
+	err = DB.First(&test3, "SELECT * FROM ${TABLE} WHERE id = 2")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test3.Json)
+
+	var test4 TestJsonSlicePtr
+	err = DB.First(&test4, "SELECT * FROM ${TABLE} WHERE id = 1006")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test4.Json)
+}
+
+func TestFindPbJson(t *testing.T) {
+	a := assert.New(t)
+	DB := newDB()
+
+	var test1 []*TestJsonStruct
+	err := DB.Find(&test1, "SELECT * FROM ${TABLE} WHERE id = 1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test1)
+
+	var test2 []*TestJsonStructPtr
+	err = DB.Find(&test2, "SELECT * FROM ${TABLE} WHERE id = 1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test2)
+
+	var test3 []*TestJsonSlice
+	err = DB.Find(&test3, "SELECT * FROM ${TABLE} WHERE id = 2")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test3)
+
+	var test4 []*TestJsonSlicePtr
+	err = DB.Find(&test4, "SELECT * FROM ${TABLE} WHERE id = 1006")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test4)
 }
