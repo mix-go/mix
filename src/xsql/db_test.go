@@ -23,6 +23,21 @@ type Test struct {
 	Enum Enum      `xsql:"enum" json:"-"`
 }
 
+type Test1 struct {
+	Id int `xsql:"id"`
+}
+
+type Test2 struct {
+	Foo string    `xsql:"foo"`
+	Bar time.Time `xsql:"bar"`
+}
+
+type Test3 struct {
+	Id  int                    `xsql:"id"`
+	Foo string                 `xsql:"foo"`
+	Bar *timestamppb.Timestamp `xsql:"bar"`
+}
+
 type TestJsonStruct struct {
 	Test
 	Json JsonItem `xsql:"json"`
@@ -42,35 +57,40 @@ type JsonItem struct {
 	Foo string `xsql:"foo"`
 }
 
-func (t *Test) TableName() string {
-	return "xsql"
-}
-
-type Test1 struct {
-	Id int `xsql:"id"`
-}
-
-func (t Test1) TableName() string {
-	return "xsql"
-}
-
-type Test2 struct {
-	Foo string    `xsql:"foo"`
-	Bar time.Time `xsql:"bar"`
-}
-
 type EmbeddingTest struct {
 	Test1
 	Test2
 }
 
-type Test3 struct {
-	Id  int                    `xsql:"id"`
-	Foo string                 `xsql:"foo"`
-	Bar *timestamppb.Timestamp `xsql:"bar"`
+func (t *Test) TableName() string {
+	return "xsql"
 }
 
-func (t Test3) TableName() string {
+func (t *Test1) TableName() string {
+	return "xsql"
+}
+
+func (t *Test2) TableName() string {
+	return "xsql"
+}
+
+func (t *Test3) TableName() string {
+	return "xsql"
+}
+
+func (t *EmbeddingTest) TableName() string {
+	return "xsql"
+}
+
+func (t *TestJsonStruct) TableName() string {
+	return "xsql"
+}
+
+func (t *TestJsonStructPtr) TableName() string {
+	return "xsql"
+}
+
+func (t *TestJsonSlice) TableName() string {
 	return "xsql"
 }
 
@@ -362,14 +382,14 @@ func TestFirstPtr(t *testing.T) {
 
 	DB := newDB()
 
-	var test *Test
+	var test *TestJsonStructPtr
 	err := DB.First(&test, "SELECT * FROM ${TABLE}")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	b, _ := json.Marshal(test)
-	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-12T23:50:00Z"}`)
+	a.Equal(string(b), `{"Id":1,"Foo":"v","Bar":"2022-04-12T23:50:00Z","Json":{"Foo":"bar"}}`)
 	// bool
 	a.Equal(test.Bool, true)
 	// enum
@@ -442,14 +462,14 @@ func TestFindPtr(t *testing.T) {
 
 	DB := newDB()
 
-	var tests []*Test
-	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 2")
+	var tests []*TestJsonStructPtr
+	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 1")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	b, _ := json.Marshal(tests)
-	a.Equal(string(b), `[{"Id":1,"Foo":"v","Bar":"2022-04-12T23:50:00Z"},{"Id":2,"Foo":"v1","Bar":"2022-04-13T23:50:00Z"}]`)
+	a.Equal(string(b), `[{"Id":1,"Foo":"v","Bar":"2022-04-12T23:50:00Z","Json":{"Foo":"bar"}}]`)
 }
 
 func TestEmbeddingFind(t *testing.T) {
@@ -562,7 +582,7 @@ func TestPbTimestamp(t *testing.T) {
 	a.Equal(test2.Bar.Seconds, now.Seconds)
 }
 
-func TestFetchPbJson(t *testing.T) {
+func TestFirstPbJson(t *testing.T) {
 	a := assert.New(t)
 	DB := newDB()
 
@@ -586,6 +606,32 @@ func TestFetchPbJson(t *testing.T) {
 		log.Fatal(err)
 	}
 	a.NotEmpty(test3.Json)
+}
+
+func TestFindPbJson(t *testing.T) {
+	a := assert.New(t)
+	DB := newDB()
+
+	var test1 []*TestJsonStruct
+	err := DB.Find(&test1, "SELECT * FROM xsql WHERE id = 1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test1)
+
+	var test2 []*TestJsonStructPtr
+	err = DB.Find(&test2, "SELECT * FROM xsql WHERE id = 1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test2)
+
+	var test3 []*TestJsonSlice
+	err = DB.Find(&test3, "SELECT * FROM xsql WHERE id = 2")
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.NotEmpty(test3)
 }
 
 func TestInsertPbJson(t *testing.T) {
