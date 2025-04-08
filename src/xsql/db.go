@@ -140,19 +140,23 @@ func tableReplace(i interface{}, query string, opts *sqlOptions) string {
 					break
 				}
 			}
+
 			// **Test > *Test
 			return tableReplace(value.Elem().Interface(), query, opts)
 		}
+
 		if tab, ok := value.Interface().(Table); ok {
 			table = tab.TableName()
 			break
 		}
+
 		table = getTypeName(i)
 	case reflect.Struct:
 		if tab, ok := value.Interface().(Table); ok {
 			table = tab.TableName()
 			break
 		}
+
 		// 也去尝试*Test能不能找到
 		valuePtr := reflect.New(value.Type())
 		if tab, ok := valuePtr.Interface().(Table); ok {
@@ -174,12 +178,16 @@ func tableReplace(i interface{}, query string, opts *sqlOptions) string {
 				table = tab.TableName()
 				break
 			}
+
 			// Test > *Test
-			elemPtrInstance := elemValue.Addr().Interface()
-			if tab, ok := elemPtrInstance.(Table); ok {
-				table = tab.TableName()
-				break
+			if elemValue.CanAddr() {
+				elemPtrInstance := elemValue.Addr().Interface()
+				if tab, ok := elemPtrInstance.(Table); ok {
+					table = tab.TableName()
+					break
+				}
 			}
+
 			table = getTypeName(elemInstance)
 		} else {
 			return query // 如果元素不是结构体或其指针，返回原始查询
