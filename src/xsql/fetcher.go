@@ -215,6 +215,12 @@ func (t *RowResult) String() string {
 	case reflect.Uint64:
 		i := t.v.(uint64)
 		return strconv.FormatInt(int64(i), 10)
+	case reflect.Float32:
+		i := t.v.(float32)
+		return strconv.FormatFloat(float64(i), 'g', -1, 32)
+	case reflect.Float64:
+		i := t.v.(float64)
+		return strconv.FormatFloat(i, 'g', -1, 64)
 	case reflect.String:
 		return t.v.(string)
 	default:
@@ -259,6 +265,12 @@ func (t *RowResult) Int() int64 {
 		return int64(i)
 	case reflect.Uint64:
 		i := t.v.(uint64)
+		return int64(i)
+	case reflect.Float32:
+		i := t.v.(float32)
+		return int64(i)
+	case reflect.Float64:
+		i := t.v.(float64)
 		return int64(i)
 	case reflect.String:
 		s := t.v.(string)
