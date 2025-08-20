@@ -157,7 +157,7 @@ func (t *RpcServer) Serve() error {
 		}
 		muxOpts = append(muxOpts, runtime.WithErrorHandler(customHTTPError))
 	}
-	if len(t.GrpcServer.ServerOptions) > 0 {
+	if len(t.GatewayServer.ServeMuxOptions) > 0 {
 		muxOpts = append(muxOpts, t.GatewayServer.ServeMuxOptions...)
 	}
 	mux := runtime.NewServeMux(muxOpts...)
