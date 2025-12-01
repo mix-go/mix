@@ -12,27 +12,42 @@ go get github.com/mix-go/xhttp
 
 | Function                                                                                            | Description                       |  
 |-----------------------------------------------------------------------------------------------------|-----------------------------------|
-| xhttp.Fetch(ctx context.Context, method string, u string, opts ...RequestOption) (*Response, error) | Execute an http request.          |
+| xhttp.Fetch(ctx context.Context, method string, u string, opts ...RequestOption) (*Response, error) | Send a http request.              |
 | xhttp.NewRequest(method string, u string, opts ...RequestOption) (*Request, error)                  | Create a request object.          |
-| xhttp.Do(ctx context.Context, req *Request, opts ...RequestOption) (*Response, error)               | Execute an http request.          |
-| xhttp.DoRequest(ctx context.Context, req *http.Request, opts ...RequestOption) (*Response, error)   | Execute an standard http request. |
-| xhttp.WithBody(body Body) RequestOption                                                             | Set configuration item.           |
-| xhttp.WithHeader(header http.Header) RequestOption                                                  | Set configuration item.           |
-| xhttp.WithContentType(contentType string) RequestOption                                             | Set configuration item.           |
-| xhttp.WithTimeout(timeout time.Duration) RequestOption                                              | Set configuration item.           |
-| xhttp.WithDebugFunc(f DebugFunc) RequestOption                                                      | Set configuration item.           |
-| xhttp.WithRetry(f RetryIfFunc, opts ...retry.Option) RequestOption                                  | Set configuration item.           |
-| xhttp.WithMiddleware(middlewares ...Middleware) RequestOption                                       | Set configuration item.           |
+| xhttp.Do(ctx context.Context, req *Request, opts ...RequestOption) (*Response, error)               | Send a http request.              |
+| xhttp.DoRequest(ctx context.Context, req *http.Request, opts ...RequestOption) (*Response, error)   | Send a standard http request.     |
+| xhttp.WithBody(body Body) RequestOption                                                             | Configure an option.              |
+| xhttp.WithHeader(header http.Header) RequestOption                                                  | Configure an option.              |
+| xhttp.WithContentType(contentType string) RequestOption                                             | Configure an option.              |
+| xhttp.WithTimeout(timeout time.Duration) RequestOption                                              | Configure an option.              |
+| xhttp.WithDebugFunc(f DebugFunc) RequestOption                                                      | Configure an option.              |
+| xhttp.WithRetry(f RetryIfFunc, opts ...retry.Option) RequestOption                                  | Configure an option.              |
+| xhttp.WithMiddleware(middlewares ...Middleware) RequestOption                                       | Configure an option.              |
 | xhttp.BuildJSON(v interface{}) Body                                                                 | Generate json string.             |
 | xhttp.BuildQuery(m map[string]string) Body                                                          | Generate urlencoded query string. |
 | xhttp.Shutdown(ctx context.Context)                                                                 | Do shutdown.                      |
 
 ## Send a request
 
+Send a simple request.
+
 ```go
 url := "https://github.com/"
 resp, err := xhttp.Fetch(context.Background(), http.MethodGet, url)
 ```
+
+Configure some options.
+
+```go
+url := "https://github.com/"
+header := make(http.Header)
+header.Set("Authorization", "Bearer ***")
+resp, err := xhttp.Fetch(context.Background(), http.MethodGet, url,
+    xhttp.WithContentType("application/json"),
+    xhttp.WithHeader(header))
+```
+
+Create a request object and send the request.
 
 ```go
 url := "https://github.com/"
@@ -42,6 +57,8 @@ if err != nil {
 }
 resp, err := xhttp.Do(context.Background(), req)
 ```
+
+Create a standard request object and send the request.
 
 ```go
 url := "https://github.com/"
