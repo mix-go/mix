@@ -2,6 +2,7 @@ package xhttp
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"github.com/mix-go/xutil/xconv"
 	"io"
@@ -20,11 +21,11 @@ var DefaultClient = NewClient(&http.Client{}, DefaultOptions)
 
 // NewRequest Deprecated: Use Fetch instead.
 func NewRequest(method string, u string, opts ...RequestOption) (*Response, error) {
-	return DefaultClient.Fetch(method, u, opts...)
+	return DefaultClient.NewRequest(method, u, opts...)
 }
 
-func Fetch(method string, u string, opts ...RequestOption) (*Response, error) {
-	return DefaultClient.Fetch(method, u, opts...)
+func Fetch(ctx context.Context, method string, u string, opts ...RequestOption) (*Response, error) {
+	return DefaultClient.Fetch(ctx, method, u, opts...)
 }
 
 type Request struct {
@@ -105,10 +106,10 @@ func newResponse(r *http.Response) *Response {
 
 // NewRequest Deprecated: Use Fetch instead.
 func (t *Client) NewRequest(method string, u string, opts ...RequestOption) (*Response, error) {
-	return t.Fetch(method, u, opts...)
+	return t.Fetch(nil, method, u, opts...)
 }
 
-func (t *Client) Fetch(method string, u string, opts ...RequestOption) (*Response, error) {
+func (t *Client) Fetch(ctx context.Context, method string, u string, opts ...RequestOption) (*Response, error) {
 	o := mergeOptions(t, opts)
 
 	URL, err := url.Parse(u)
@@ -123,50 +124,50 @@ func (t *Client) Fetch(method string, u string, opts ...RequestOption) (*Respons
 	if o.Body != nil {
 		req.Body = io.NopCloser(bytes.NewReader(o.Body))
 	}
+	xReq := newRequest(req)
 
 	if o.RetryOptions != nil {
-		xReq := newRequest(req)
 		return doRetry(o, func() (*Response, error) {
 			xReq.RetryAttempts++
-			return t.doXRequest(xReq, o)
+			return t.doXRequest(ctx, xReq, o)
 		})
 	}
-	return t.doXRequest(newRequest(req), o)
+	return t.doXRequest(ctx, xReq, o)
 }
 
-func (t *Client) Do(req *Request) (*Response, error) {
+func (t *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	o := mergeOptions(t, nil)
 
 	if o.RetryOptions != nil {
 		return doRetry(o, func() (*Response, error) {
 			req.RetryAttempts++
-			return t.doXRequest(req, o)
+			return t.doXRequest(ctx, req, o)
 		})
 	}
 
-	return t.doXRequest(req, o)
+	return t.doXRequest(ctx, req, o)
 }
 
 // SendRequest Deprecated: Use DoRequest instead.
 func (t *Client) SendRequest(req *http.Request, opts ...RequestOption) (*Response, error) {
-	return t.DoRequest(req, opts...)
+	return t.DoRequest(nil, req, opts...)
 }
 
-func (t *Client) DoRequest(req *http.Request, opts ...RequestOption) (*Response, error) {
+func (t *Client) DoRequest(ctx context.Context, req *http.Request, opts ...RequestOption) (*Response, error) {
 	o := mergeOptions(t, opts)
 	xReq := newRequest(req)
 
 	if o.RetryOptions != nil {
 		return doRetry(o, func() (*Response, error) {
 			xReq.RetryAttempts++
-			return t.doXRequest(xReq, o)
+			return t.doXRequest(ctx, xReq, o)
 		})
 	}
 
-	return t.doXRequest(xReq, o)
+	return t.doXRequest(ctx, xReq, o)
 }
 
-func (t *Client) doXRequest(xReq *Request, opts *RequestOptions) (*Response, error) {
+func (t *Client) doXRequest(ctx context.Context, xReq *Request, opts *RequestOptions) (*Response, error) {
 	var finalHandler HandlerFunc = func(xReq *Request, opts *RequestOptions) (*Response, error) {
 		if !shutdownController.BeginRequest() {
 			return nil, ErrShutdown
@@ -178,11 +179,11 @@ func (t *Client) doXRequest(xReq *Request, opts *RequestOptions) (*Response, err
 		startTime := time.Now()
 		r, err := cli.Client.Do(&xReq.Request)
 		if err != nil {
-			t.doDebug(opts, time.Now().Sub(startTime), xReq, nil, err)
+			t.doDebug(ctx, opts, time.Now().Sub(startTime), xReq, nil, err)
 			return nil, err
 		}
 		xResp := newResponse(r)
-		t.doDebug(opts, time.Now().Sub(startTime), xReq, xResp, nil)
+		t.doDebug(ctx, opts, time.Now().Sub(startTime), xReq, xResp, nil)
 		return xResp, nil
 	}
 
