@@ -16,7 +16,7 @@ var (
 	ErrShutdown = errors.New("xhttp: service is currently being shutdown and will no longer accept new requests")
 )
 
-var DefaultClient = &Client{}
+var DefaultClient = NewClient(&http.Client{}, DefaultOptions)
 
 func NewRequest(method string, u string, opts ...RequestOption) (*Response, error) {
 	return DefaultClient.NewRequest(method, u, opts...)
@@ -45,6 +45,14 @@ func (t Body) String() string {
 
 type Client struct {
 	http.Client
+	DefaultOptions RequestOptions
+}
+
+func NewClient(c *http.Client, options RequestOptions) *Client {
+	return &Client{
+		Client:         *c,
+		DefaultOptions: options,
+	}
 }
 
 func newRequest(r *http.Request) *Request {
@@ -91,7 +99,7 @@ func newResponse(r *http.Response) *Response {
 }
 
 func (t *Client) NewRequest(method string, u string, opts ...RequestOption) (*Response, error) {
-	o := mergeOptions(opts)
+	o := mergeOptions(t, opts)
 	URL, err := url.Parse(u)
 	if err != nil {
 		return nil, err
@@ -116,7 +124,7 @@ func (t *Client) NewRequest(method string, u string, opts ...RequestOption) (*Re
 }
 
 func (t *Client) SendRequest(req *http.Request, opts ...RequestOption) (*Response, error) {
-	o := mergeOptions(opts)
+	o := mergeOptions(t, opts)
 
 	if o.RetryOptions != nil {
 		xReq := newRequest(req)

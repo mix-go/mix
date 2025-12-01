@@ -33,8 +33,8 @@ type RequestOptions struct {
 	Middlewares []Middleware
 }
 
-func mergeOptions(opts []RequestOption) *RequestOptions {
-	cp := DefaultOptions // copy
+func mergeOptions(c *Client, opts []RequestOption) *RequestOptions {
+	cp := c.DefaultOptions // copy
 	for _, o := range opts {
 		o.apply(&cp)
 	}
