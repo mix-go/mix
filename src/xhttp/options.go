@@ -33,7 +33,12 @@ type RequestOptions struct {
 }
 
 func mergeOptions(c *Client, opts []RequestOption) *RequestOptions {
-	cp := c.DefaultOptions // copy
+	var cp RequestOptions
+	if c == DefaultClient {
+		cp = DefaultOptions // copy
+	} else {
+		cp = c.DefaultOptions // copy
+	}
 	for _, o := range opts {
 		o.apply(&cp)
 	}
