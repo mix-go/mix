@@ -8,18 +8,43 @@ import (
 	"github.com/mix-go/xhttp"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"net/http"
 	"sync"
 	"testing"
 )
 
-func TestNewRequest(t *testing.T) {
+func TestFetch(t *testing.T) {
 	a := assert.New(t)
 
 	url := "https://github.com/"
-	resp, err := xhttp.Fetch(context.Background(), "GET", url)
+	resp, err := xhttp.Fetch(context.Background(), http.MethodGet, url)
+
+	a.Nil(err)
+	a.Equal(resp.StatusCode, 200)
+}
+
+func TestDo(t *testing.T) {
+	a := assert.New(t)
+
+	url := "https://github.com/"
+	req, err := xhttp.NewRequest(http.MethodGet, url)
+	a.Nil(err)
+	resp, err := xhttp.Do(context.Background(), req)
+	a.Nil(err)
 
 	a.Equal(resp.StatusCode, 200)
+}
+
+func TestDoRequest(t *testing.T) {
+	a := assert.New(t)
+
+	url := "https://github.com/"
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	a.Nil(err)
+	resp, err := xhttp.DoRequest(context.Background(), req)
+	a.Nil(err)
+
+	a.Equal(resp.StatusCode, 200)
 }
 
 func TestRequestPOST(t *testing.T) {
@@ -28,8 +53,8 @@ func TestRequestPOST(t *testing.T) {
 	url := "https://github.com/"
 	resp, err := xhttp.Fetch(context.Background(), "POST", url, xhttp.WithBodyString("abc"), xhttp.WithContentType("application/json"))
 
-	a.Equal(resp.StatusCode, 404)
 	a.Nil(err)
+	a.Equal(resp.StatusCode, 404)
 }
 
 func TestRequestError(t *testing.T) {
@@ -38,8 +63,8 @@ func TestRequestError(t *testing.T) {
 	url := "https://aaaaa.com/"
 	resp, err := xhttp.Fetch(context.Background(), "GET", url)
 
-	a.Nil(resp)
 	a.NotNil(err)
+	a.Nil(resp)
 }
 
 func TestDebugAndRetryFail(t *testing.T) {
@@ -63,8 +88,8 @@ func TestDebugAndRetryFail(t *testing.T) {
 	}
 	resp, err := xhttp.Fetch(context.Background(), "GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
 
-	a.Nil(resp)
 	a.NotNil(err)
+	a.Nil(resp)
 	a.Contains(err.Error(), "attempts fail")
 	a.Equal(count, 2)
 }
@@ -115,8 +140,8 @@ func TestDebugAndRetryAbort(t *testing.T) {
 	}
 	resp, err := xhttp.Fetch(context.Background(), "GET", url, xhttp.WithRetry(retryIf, retry.Attempts(3)))
 
-	a.Nil(resp)
 	a.NotNil(err)
+	a.Nil(resp)
 	a.Contains(err.Error(), "xhttp: abort further retries")
 	a.Equal(count, 2)
 }
@@ -140,8 +165,8 @@ func TestMiddlewares(t *testing.T) {
 	}
 	resp, err := xhttp.Fetch(context.Background(), "GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
 
-	a.Equal(resp.StatusCode, 200)
 	a.Nil(err)
+	a.Equal(resp.StatusCode, 200)
 }
 
 func TestShutdown(t *testing.T) {

@@ -18,13 +18,20 @@ var (
 
 var DefaultClient = NewClient(&http.Client{}, DefaultOptions)
 
-// NewRequest Deprecated: Use Fetch instead.
-func NewRequest(method string, u string, opts ...RequestOption) (*Response, error) {
+func Fetch(ctx context.Context, method string, u string, opts ...RequestOption) (*Response, error) {
+	return DefaultClient.Fetch(ctx, method, u, opts...)
+}
+
+func NewRequest(method string, u string, opts ...RequestOption) (*Request, error) {
 	return DefaultClient.NewRequest(method, u, opts...)
 }
 
-func Fetch(ctx context.Context, method string, u string, opts ...RequestOption) (*Response, error) {
-	return DefaultClient.Fetch(ctx, method, u, opts...)
+func Do(ctx context.Context, req *Request) (*Response, error) {
+	return DefaultClient.Do(ctx, req)
+}
+
+func DoRequest(ctx context.Context, req *http.Request, opts ...RequestOption) (*Response, error) {
+	return DefaultClient.DoRequest(ctx, req, opts...)
 }
 
 type Request struct {
@@ -60,7 +67,7 @@ func NewClient(c *http.Client, options RequestOptions) *Client {
 	}
 }
 
-func newRequest(r *http.Request) *Request {
+func newRequest(r *http.Request, reloading bool) *Request {
 	if r == nil {
 		return nil
 	}
@@ -72,13 +79,17 @@ func newRequest(r *http.Request) *Request {
 		return req
 	}
 
-	defer r.Body.Close()
-	b, err := io.ReadAll(r.Body)
-	if err != nil {
-		return req
+	if reloading {
+		// std body > xhttp body
+		defer r.Body.Close()
+		b, err := io.ReadAll(r.Body)
+		if err != nil {
+			return req
+		}
+		req.Body = b
+		r.Body = io.NopCloser(bytes.NewReader(b))
 	}
-	req.Body = b
-	r.Body = io.NopCloser(bytes.NewReader(b))
+
 	return req
 }
 
@@ -103,11 +114,6 @@ func newResponse(r *http.Response) *Response {
 	return resp
 }
 
-// NewRequest Deprecated: Use Fetch instead.
-func (t *Client) NewRequest(method string, u string, opts ...RequestOption) (*Response, error) {
-	return t.Fetch(nil, method, u, opts...)
-}
-
 func (t *Client) Fetch(ctx context.Context, method string, u string, opts ...RequestOption) (*Response, error) {
 	o := mergeOptions(t, opts)
 
@@ -121,9 +127,10 @@ func (t *Client) Fetch(ctx context.Context, method string, u string, opts ...Req
 		Header: o.Header,
 	}
 	if o.Body != nil {
+		// xhttp body > std body
 		req.Body = io.NopCloser(bytes.NewReader(o.Body))
 	}
-	xReq := newRequest(req)
+	xReq := newRequest(req, false)
 
 	if o.RetryOptions != nil {
 		return doRetry(o, func() (*Response, error) {
@@ -132,6 +139,25 @@ func (t *Client) Fetch(ctx context.Context, method string, u string, opts ...Req
 		})
 	}
 	return t.doXRequest(ctx, xReq, o)
+}
+
+func (t *Client) NewRequest(method string, u string, opts ...RequestOption) (*Request, error) {
+	o := mergeOptions(t, opts)
+
+	URL, err := url.Parse(u)
+	if err != nil {
+		return nil, err
+	}
+	req := &http.Request{
+		Method: method,
+		URL:    URL,
+		Header: o.Header,
+	}
+	if o.Body != nil {
+		// xhttp body > std body
+		req.Body = io.NopCloser(bytes.NewReader(o.Body))
+	}
+	return newRequest(req, false), nil
 }
 
 func (t *Client) Do(ctx context.Context, req *Request) (*Response, error) {
@@ -147,14 +173,13 @@ func (t *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	return t.doXRequest(ctx, req, o)
 }
 
-// SendRequest Deprecated: Use DoRequest instead.
-func (t *Client) SendRequest(req *http.Request, opts ...RequestOption) (*Response, error) {
-	return t.DoRequest(nil, req, opts...)
-}
-
 func (t *Client) DoRequest(ctx context.Context, req *http.Request, opts ...RequestOption) (*Response, error) {
 	o := mergeOptions(t, opts)
-	xReq := newRequest(req)
+	xReq := newRequest(req, true)
+
+	if o.Header != nil {
+		xReq.Header = o.Header
+	}
 
 	if o.RetryOptions != nil {
 		return doRetry(o, func() (*Response, error) {

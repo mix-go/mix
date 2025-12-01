@@ -13,6 +13,7 @@ go get github.com/mix-go/xhttp
 | Function                                                                                            | Description                       |  
 |-----------------------------------------------------------------------------------------------------|-----------------------------------|
 | xhttp.Fetch(ctx context.Context, method string, u string, opts ...RequestOption) (*Response, error) | Execute an http request.          |
+| xhttp.NewRequest(method string, u string, opts ...RequestOption) (*Request, error)                  | Create a request object.          |
 | xhttp.Do(ctx context.Context, req *Request, opts ...RequestOption) (*Response, error)               | Execute an http request.          |
 | xhttp.DoRequest(ctx context.Context, req *http.Request, opts ...RequestOption) (*Response, error)   | Execute an standard http request. |
 | xhttp.WithBody(body Body) RequestOption                                                             | Set configuration item.           |
@@ -25,6 +26,31 @@ go get github.com/mix-go/xhttp
 | xhttp.BuildJSON(v interface{}) Body                                                                 | Generate json string.             |
 | xhttp.BuildQuery(m map[string]string) Body                                                          | Generate urlencoded query string. |
 | xhttp.Shutdown(ctx context.Context)                                                                 | Do shutdown.                      |
+
+## Send a request
+
+```go
+url := "https://github.com/"
+resp, err := xhttp.Fetch(context.Background(), http.MethodGet, url)
+```
+
+```go
+url := "https://github.com/"
+req, err := xhttp.NewRequest(http.MethodGet, url)
+if err != nil {
+    log.Fatal(err)
+}
+resp, err := xhttp.Do(context.Background(), req)
+```
+
+```go
+url := "https://github.com/"
+req, err := http.NewRequest(http.MethodGet, url, nil)
+if err != nil {
+    log.Fatal(err)
+}
+resp, err := xhttp.DoRequest(context.Background(), req)
+```
 
 ## Debug Log
 
@@ -44,7 +70,7 @@ xhttp.DefaultOptions.DebugFunc = func(l *Log) {
 f := func(l *Log) {
     log.Println(l)
 }
-xhttp.Fetch(context.Background(), "POST", url, xhttp.WithDebugFunc(f))
+xhttp.Fetch(context.Background(), http.MethodPost, url, xhttp.WithDebugFunc(f))
 ```
 
 The log object contains the following fields
@@ -74,7 +100,7 @@ retryIf := func(resp *xhttp.Response, err error) error {
     }
     return nil
 }
-resp, err := xhttp.Fetch(context.Background(), "GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+resp, err := xhttp.Fetch(context.Background(), http.MethodGet, url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
 ```
 
 Network error, no retry.
@@ -90,7 +116,7 @@ retryIf := func(resp *xhttp.Response, err error) error {
     }
     return nil
 }
-resp, err := xhttp.Fetch(context.Background(), "GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+resp, err := xhttp.Fetch(context.Background(), http.MethodGet, url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
 ```
 
 ## Middleware
@@ -112,7 +138,7 @@ logicMiddleware := func(next xhttp.HandlerFunc) xhttp.HandlerFunc {
         return resp, err
     }
 }
-resp, err := xhttp.Fetch(context.Background(), "GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
+resp, err := xhttp.Fetch(context.Background(), http.MethodGet, "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
 ```
 
 ## Shutdown
