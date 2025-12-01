@@ -44,7 +44,7 @@ xhttp.DefaultOptions.DebugFunc = func(l *Log) {
 f := func(l *Log) {
     log.Println(l)
 }
-xhttp.NewRequest("POST", url, xhttp.WithDebugFunc(f))
+xhttp.Fetch(context.Background(), "POST", url, xhttp.WithDebugFunc(f))
 ```
 
 The log object contains the following fields
@@ -74,7 +74,7 @@ retryIf := func(resp *xhttp.Response, err error) error {
     }
     return nil
 }
-resp, err := xhttp.Fetch("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+resp, err := xhttp.Fetch(context.Background(), "GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
 ```
 
 Network error, no retry.
@@ -90,7 +90,7 @@ retryIf := func(resp *xhttp.Response, err error) error {
     }
     return nil
 }
-resp, err := xhttp.Fetch("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+resp, err := xhttp.Fetch(context.Background(), "GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
 ```
 
 ## Middleware
@@ -112,7 +112,7 @@ logicMiddleware := func(next xhttp.HandlerFunc) xhttp.HandlerFunc {
         return resp, err
     }
 }
-resp, err := xhttp.Fetch("GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
+resp, err := xhttp.Fetch(context.Background(), "GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
 ```
 
 ## Shutdown
