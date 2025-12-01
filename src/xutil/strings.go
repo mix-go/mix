@@ -1,4 +1,4 @@
-package xstrings
+package xutil
 
 import (
 	"strconv"

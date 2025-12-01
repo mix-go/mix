@@ -1,4 +1,4 @@
-package xcrypt
+package xutil
 
 import (
 	"bytes"
