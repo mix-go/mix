@@ -96,7 +96,7 @@ Map the first row
 
 ```go
 var test Test
-err := DB.First(&test, "SELECT * FROM ${TABLE} WHERE id = ?", 1)
+err := DB.First(&test, "SELECT * FROM ${TABLE} WHERE id = ?", 1).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -108,7 +108,7 @@ Map all rows
 
 ```go
 var tests []*Test
-err := DB.Find(&tests, "SELECT * FROM ${TABLE}")
+err := DB.Find(&tests, "SELECT * FROM ${TABLE}").Error
 if err != nil {
     log.Fatal(err)
 }
@@ -122,7 +122,7 @@ test := Test{
     Foo: "test",
     Bar: time.Now(),
 }
-res, err := DB.Insert(&test)
+err := DB.Insert(&test).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -143,7 +143,7 @@ tests := []Test{
         Bar: time.Now(),
     },
 }
-res, err := DB.BatchInsert(&tests)
+err := DB.BatchInsert(&tests).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -161,7 +161,7 @@ test := Test{
     Foo: "test",
     Bar: time.Now(),
 }
-res, err := DB.Update(&test, "id = ?", test.Id)
+err := DB.Update(&test, "id = ?", test.Id).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -173,7 +173,7 @@ Update specific columns by map
 data := map[string]interface{}{
     "foo": "test",
 }
-res, err := DB.Model(&Test{}).Update(data, "id = ?", 8)
+err := DB.Model(&Test{}).Update(data, "id = ?", 8).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -191,7 +191,7 @@ data, err := xsql.TagValuesMap(DB.Options.Tag, &test,
 if err != nil {
     log.Fatal(err)
 }
-res, err := DB.Model(&test).Update(data, "id = ?", 8)
+err = DB.Model(&test).Update(data, "id = ?", 8).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -207,14 +207,14 @@ test := Test{
     Foo: "test",
     Bar: time.Now(),
 }
-res, err := DB.Model(&test).Delete("id = ?", test.Id)
+err := DB.Model(&test).Delete("id = ?", test.Id).Error
 if err != nil {
     log.Fatal(err)
 }
 ```
 
 ```go
-res, err := DB.Model(&Test{}).Delete("id = ?", 8)
+err := DB.Model(&Test{}).Delete("id = ?", 8).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -227,7 +227,7 @@ Use `Exec()` to manually execute the delete, you can also manually execute the u
 > Oracle placeholder needs to be modified to :id
 
 ```go
-res, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 8)
+err := DB.Exec("DELETE FROM xsql WHERE id = ?", 8).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -245,7 +245,7 @@ test := Test{
     Foo: "test",
     Bar: time.Now(),
 }
-res, err := tx.Insert(&test)
+err = tx.Insert(&test).Error
 if err != nil {
     tx.Rollback()
     log.Fatal(err)

@@ -16,12 +16,6 @@ type executor struct {
 	Executor
 }
 
-type ModelExecutor struct {
-	Executor
-	Options   *sqlOptions
-	TableName string
-}
-
 func (t *executor) Insert(data interface{}, opts *sqlOptions) (sql.Result, error) {
 	var err error
 	fields := make([]string, 0)
@@ -181,114 +175,6 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 
 	SQL := fmt.Sprintf(`UPDATE %s SET %s%s`, opts.TableKey, strings.Join(set, ", "), where)
 	SQL = tableReplace(data, SQL, opts)
-
-	startTime := time.Now()
-	res, err := t.Executor.Exec(SQL, bindArgs...)
-	var rowsAffected int64
-	if res != nil {
-		rowsAffected, _ = res.RowsAffected()
-	}
-	l := &Log{
-		Duration:     time.Now().Sub(startTime),
-		SQL:          SQL,
-		Bindings:     bindArgs,
-		RowsAffected: rowsAffected,
-		Error:        err,
-	}
-	opts.doDebug(l)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-func (t *ModelExecutor) Update(data map[string]interface{}, expr string, args ...interface{}) (sql.Result, error) {
-	set := make([]string, 0)
-	bindArgs := make([]interface{}, 0)
-
-	table := t.TableName
-	opts := t.Options
-
-	n := 0
-	for key, val := range data {
-		value := reflect.ValueOf(val)
-		vTyp := value.Type().String()
-		isTime := isTime(vTyp)
-
-		var v string
-		if opts.Placeholder == "?" {
-			v = opts.Placeholder
-		} else {
-			v = fmt.Sprintf(opts.Placeholder, n)
-			n++
-		}
-		if isTime {
-			v = opts.TimeFunc(v)
-		}
-
-		var a interface{}
-		if isTime {
-			a = formatTime(vTyp, value.Interface(), opts)
-		} else {
-			// 非标量用JSON序列化处理
-			if slices.Contains([]reflect.Kind{reflect.Ptr, reflect.Struct, reflect.Slice, reflect.Array, reflect.Map}, value.Kind()) {
-				b, e := marshal(value.Interface())
-				if e != nil {
-					return nil, fmt.Errorf("json unmarshal error %s for field %s", e, key)
-				}
-				a = string(b)
-			} else {
-				a = value.Interface()
-			}
-		}
-
-		set = append(set, fmt.Sprintf("`%s` = %s", key, v))
-		bindArgs = append(bindArgs, a)
-	}
-
-	where := ""
-	if expr != "" {
-		where = fmt.Sprintf(` WHERE %s`, expr)
-		bindArgs = append(bindArgs, args...)
-	}
-
-	SQL := fmt.Sprintf(`UPDATE %s SET %s%s`, table, strings.Join(set, ", "), where)
-
-	startTime := time.Now()
-	res, err := t.Executor.Exec(SQL, bindArgs...)
-	var rowsAffected int64
-	if res != nil {
-		rowsAffected, _ = res.RowsAffected()
-	}
-	l := &Log{
-		Duration:     time.Now().Sub(startTime),
-		SQL:          SQL,
-		Bindings:     bindArgs,
-		RowsAffected: rowsAffected,
-		Error:        err,
-	}
-	opts.doDebug(l)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-func (t *ModelExecutor) Delete(expr string, args ...interface{}) (sql.Result, error) {
-	bindArgs := make([]interface{}, 0)
-
-	table := t.TableName
-	opts := t.Options
-
-	where := ""
-	if expr != "" {
-		where = fmt.Sprintf(` WHERE %s`, expr)
-		bindArgs = append(bindArgs, args...)
-	}
-
-	SQL := fmt.Sprintf(`DELETE FROM %s%s`, table, where)
 
 	startTime := time.Now()
 	res, err := t.Executor.Exec(SQL, bindArgs...)

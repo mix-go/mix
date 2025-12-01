@@ -12,16 +12,21 @@ import (
 type TimeFunc func(placeholder string) string
 
 type DB struct {
-	Options  *sqlOptions
-	raw      *sql.DB
+	*sql.DB
+	Options *sqlOptions
+
+	Error        error
+	RowsAffected int64
+	LastInsertId int64
+
 	executor executor
 	query    query
 }
 
 func New(db *sql.DB, opts ...SqlOption) *DB {
 	return &DB{
+		DB:      db,
 		Options: mergeOptions(opts),
-		raw:     db,
 		executor: executor{
 			Executor: db,
 		},
@@ -39,28 +44,73 @@ func (t *DB) mergeOptions(opts []SqlOption) *sqlOptions {
 	return &cp
 }
 
-func (t *DB) Insert(data interface{}, opts ...SqlOption) (sql.Result, error) {
-	return t.executor.Insert(data, t.mergeOptions(opts))
+func (t *DB) getExecResult(r sql.Result, err error, getLastInsertId bool) *DB {
+	if err != nil {
+		t.Error = err
+		return t
+	} else {
+		t.Error = nil
+	}
+
+	if getLastInsertId {
+		lastInsertId, err := r.LastInsertId()
+		if err != nil {
+			t.Error = err
+			return t
+		} else {
+			t.Error = nil
+		}
+		t.RowsAffected = lastInsertId
+	} else {
+		rowsAffected, err := r.RowsAffected()
+		if err != nil {
+			t.Error = err
+			return t
+		} else {
+			t.Error = nil
+		}
+		t.RowsAffected = rowsAffected
+	}
+
+	return t
 }
 
-func (t *DB) BatchInsert(data interface{}, opts ...SqlOption) (sql.Result, error) {
-	return t.executor.BatchInsert(data, t.mergeOptions(opts))
+func (t *DB) getFetcherResult(err error) *DB {
+	if err != nil {
+		t.Error = err
+		return t
+	} else {
+		t.Error = nil
+	}
+	return t
 }
 
-func (t *DB) Update(data interface{}, expr string, args ...interface{}) (sql.Result, error) {
-	return t.executor.Update(data, expr, args, t.Options)
+func (t *DB) Insert(data interface{}, opts ...SqlOption) *DB {
+	r, err := t.executor.Insert(data, t.mergeOptions(opts))
+	return t.getExecResult(r, err, true)
+}
+
+func (t *DB) BatchInsert(data interface{}, opts ...SqlOption) *DB {
+	r, err := t.executor.BatchInsert(data, t.mergeOptions(opts))
+	return t.getExecResult(r, err, false)
+}
+
+func (t *DB) Update(data interface{}, expr string, args ...interface{}) *DB {
+	r, err := t.executor.Update(data, expr, args, t.Options)
+	return t.getExecResult(r, err, false)
 }
 
 func (t *DB) Model(s interface{}) *ModelExecutor {
 	return t.executor.model(s, t.Options)
 }
 
-func (t *DB) Exec(query string, args ...interface{}) (sql.Result, error) {
-	return t.executor.Exec(query, args, t.Options)
+func (t *DB) Exec(query string, args ...interface{}) *DB {
+	r, err := t.executor.Exec(query, args, t.Options)
+	return t.getExecResult(r, err, false)
 }
 
 func (t *DB) Begin() (*Tx, error) {
-	tx, err := t.raw.Begin()
+	tx, err := t.DB.Begin()
 	if err != nil {
 		return nil, err
 	}
@@ -101,28 +151,28 @@ func (t *DB) QueryFirst(query string, args ...interface{}) (*Row, error) {
 	return rows[0], nil
 }
 
-func (t *DB) Find(i interface{}, query string, args ...interface{}) error {
+func (t *DB) Find(i interface{}, query string, args ...interface{}) *DB {
 	query = tableReplace(i, query, t.Options)
 	f, err := t.query.Fetch(query, args, t.Options)
 	if err != nil {
-		return err
+		return t.getFetcherResult(err)
 	}
 	if err := f.Find(i); err != nil {
-		return err
+		return t.getFetcherResult(err)
 	}
-	return nil
+	return t.getFetcherResult(nil)
 }
 
-func (t *DB) First(i interface{}, query string, args ...interface{}) error {
+func (t *DB) First(i interface{}, query string, args ...interface{}) *DB {
 	query = tableReplace(i, query, t.Options)
 	f, err := t.query.Fetch(query, args, t.Options)
 	if err != nil {
-		return err
+		return t.getFetcherResult(err)
 	}
 	if err := f.First(i); err != nil {
-		return err
+		return t.getFetcherResult(err)
 	}
-	return nil
+	return t.getFetcherResult(nil)
 }
 
 func tableReplace(i interface{}, query string, opts *sqlOptions) string {

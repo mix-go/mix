@@ -128,7 +128,7 @@ func TestCreateTable(t *testing.T) {
 
 	b, err := os.ReadFile("./xsql.sql")
 	a.Nil(err)
-	_, err = DB.Exec(string(b))
+	err = DB.Exec(string(b)).Error
 	a.Nil(err)
 }
 
@@ -137,7 +137,7 @@ func TestClear(t *testing.T) {
 
 	DB := newDB()
 
-	_, err := DB.Exec("DELETE FROM xsql WHERE id > 2")
+	err := DB.Exec("DELETE FROM xsql WHERE id > 2").Error
 	a.Nil(err)
 }
 
@@ -151,7 +151,7 @@ func TestDebugFunc(t *testing.T) {
 		Foo: "test",
 		Bar: time.Now(),
 	}
-	_, err := DB.Update(&test, "id = ?", 0)
+	err := DB.Update(&test, "id = ?", 0).Error
 	a.Nil(err)
 }
 
@@ -177,7 +177,7 @@ func TestInsert(t *testing.T) {
 		Foo: "test",
 		Bar: time.Now(),
 	}
-	_, err := DB.Insert(&test)
+	err := DB.Insert(&test).Error
 	a.Nil(err)
 }
 
@@ -195,7 +195,7 @@ func TestEmbeddingInsert(t *testing.T) {
 			Bar: time.Now(),
 		},
 	}
-	_, err := DB.Insert(&test)
+	err := DB.Insert(&test).Error
 	a.Nil(err)
 }
 
@@ -216,7 +216,7 @@ func TestBatchInsert(t *testing.T) {
 			Bar: time.Now(),
 		},
 	}
-	_, err := DB.BatchInsert(&tests)
+	err := DB.BatchInsert(&tests).Error
 	a.Nil(err)
 }
 
@@ -245,7 +245,7 @@ func TestEmbeddingBatchInsert(t *testing.T) {
 			},
 		},
 	}
-	_, err := DB.BatchInsert(&tests)
+	err := DB.BatchInsert(&tests).Error
 	a.Nil(err)
 }
 
@@ -262,7 +262,7 @@ func TestEmbeddingUpdate(t *testing.T) {
 			Bar: time.Now(),
 		},
 	}
-	_, err := DB.Update(&test, "id = ?", 8)
+	err := DB.Update(&test, "id = ?", 8).Error
 	a.Nil(err)
 }
 
@@ -276,7 +276,7 @@ func TestUpdate(t *testing.T) {
 		Foo: "test_update_1",
 		Bar: time.Now(),
 	}
-	_, err := DB.Update(&test, "id = ?", 999)
+	err := DB.Update(&test, "id = ?", 999).Error
 	a.Nil(err)
 }
 
@@ -288,13 +288,13 @@ func TestUpdateColumns(t *testing.T) {
 	data := map[string]interface{}{
 		"foo": "test_update_2",
 	}
-	_, err := DB.Model(&Test{}).Update(data, "id = ?", 8)
+	err := DB.Model(&Test{}).Update(data, "id = ?", 8).Error
 	a.Nil(err)
 
 	data = map[string]interface{}{
 		"foo": timestamppb.Now(),
 	}
-	_, err = DB.Model(&Test{}).Update(data, "id = ?", 8)
+	err = DB.Model(&Test{}).Update(data, "id = ?", 8).Error
 
 	a.Nil(err)
 }
@@ -312,7 +312,7 @@ func TestUpdateTagValuesMap(t *testing.T) {
 	)
 	a.Nil(err)
 
-	_, err = DB.Model(&test).Update(data, "id = ?", 8)
+	err = DB.Model(&test).Update(data, "id = ?", 8).Error
 	a.Nil(err)
 }
 
@@ -329,7 +329,7 @@ func TestEmbeddingUpdateTagValuesMap(t *testing.T) {
 	)
 	a.Nil(err)
 
-	_, err = DB.Model(&test).Update(data, "id = ?", 8)
+	err = DB.Model(&test).Update(data, "id = ?", 8).Error
 	a.Nil(err)
 }
 
@@ -343,10 +343,10 @@ func TestDelete(t *testing.T) {
 		Foo: "test",
 		Bar: time.Now(),
 	}
-	_, err := DB.Model(&test).Delete("id = ?", test.Id)
+	err := DB.Model(&test).Delete("id = ?", test.Id).Error
 	a.Nil(err)
 
-	_, err = DB.Model(&Test{}).Delete("id = ?", 8)
+	err = DB.Model(&Test{}).Delete("id = ?", 8).Error
 	a.Nil(err)
 }
 
@@ -355,7 +355,7 @@ func TestExec(t *testing.T) {
 
 	DB := newDB()
 
-	_, err := DB.Exec("DELETE FROM xsql WHERE id = ?", 7)
+	err := DB.Exec("DELETE FROM xsql WHERE id = ?", 7).Error
 
 	a.Nil(err)
 }
@@ -366,7 +366,7 @@ func TestFirst(t *testing.T) {
 	DB := newDB()
 
 	var test Test
-	err := DB.First(&test, "SELECT * FROM ${TABLE}")
+	err := DB.First(&test, "SELECT * FROM ${TABLE}").Error
 	a.Nil(err)
 
 	b, _ := json.Marshal(test)
@@ -384,7 +384,7 @@ func TestFirstPtr(t *testing.T) {
 	DB := newDB()
 
 	var test *TestJsonStructPtr
-	err := DB.First(&test, "SELECT * FROM ${TABLE}")
+	err := DB.First(&test, "SELECT * FROM ${TABLE}").Error
 	a.Nil(err)
 
 	b, _ := json.Marshal(test)
@@ -402,7 +402,7 @@ func TestFirstEmbedding(t *testing.T) {
 	DB := newDB()
 
 	var test TestEmbedding
-	err := DB.First(&test, "SELECT * FROM ${TABLE}")
+	err := DB.First(&test, "SELECT * FROM ${TABLE}").Error
 	a.Nil(err)
 
 	b, _ := json.Marshal(test)
@@ -415,7 +415,7 @@ func TestFirstPart(t *testing.T) {
 	DB := newDB()
 
 	var test Test
-	err := DB.First(&test, "SELECT foo FROM ${TABLE}")
+	err := DB.First(&test, "SELECT foo FROM ${TABLE}").Error
 	a.Nil(err)
 
 	b, _ := json.Marshal(test)
@@ -428,7 +428,7 @@ func TestFirstTableKey(t *testing.T) {
 	DB := newDB()
 
 	var test Test
-	err := DB.First(&test, "SELECT * FROM ${TABLE}")
+	err := DB.First(&test, "SELECT * FROM ${TABLE}").Error
 	a.Nil(err)
 
 	b, _ := json.Marshal(test)
@@ -441,7 +441,7 @@ func TestFind(t *testing.T) {
 	DB := newDB()
 
 	var tests []Test
-	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 2")
+	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 2").Error
 	a.Nil(err)
 
 	b, _ := json.Marshal(tests)
@@ -454,7 +454,7 @@ func TestFindPtr(t *testing.T) {
 	DB := newDB()
 
 	var tests []*TestJsonStructPtr
-	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 1")
+	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 1").Error
 	a.Nil(err)
 
 	b, _ := json.Marshal(tests)
@@ -467,7 +467,7 @@ func TestEmbeddingFind(t *testing.T) {
 	DB := newDB()
 
 	var tests []TestEmbedding
-	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 2")
+	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 2").Error
 	a.Nil(err)
 
 	b, _ := json.Marshal(tests)
@@ -480,7 +480,7 @@ func TestFindPart(t *testing.T) {
 	DB := newDB()
 
 	var tests []Test
-	err := DB.Find(&tests, "SELECT foo FROM ${TABLE} LIMIT 2")
+	err := DB.Find(&tests, "SELECT foo FROM ${TABLE} LIMIT 2").Error
 	a.Nil(err)
 
 	b, _ := json.Marshal(tests)
@@ -493,7 +493,7 @@ func TestFindTableKey(t *testing.T) {
 	DB := newDB()
 
 	var tests []Test
-	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 2")
+	err := DB.Find(&tests, "SELECT * FROM ${TABLE} LIMIT 2").Error
 	a.Nil(err)
 
 	b, _ := json.Marshal(tests)
@@ -512,7 +512,7 @@ func TestTxCommit(t *testing.T) {
 		Foo: "test",
 		Bar: time.Now(),
 	}
-	_, err := tx.Insert(&test)
+	err := tx.Insert(&test).Error
 	a.Nil(err)
 
 	err = tx.Commit()
@@ -531,7 +531,7 @@ func TestTxRollback(t *testing.T) {
 		Foo: "test",
 		Bar: time.Now(),
 	}
-	_, err := tx.Insert(&test)
+	err := tx.Insert(&test).Error
 	a.Nil(err)
 
 	err = tx.Rollback()
@@ -550,13 +550,14 @@ func TestPbTimestamp(t *testing.T) {
 		Foo: "test_pb_timestamp",
 		Bar: now,
 	}
-	res, err := DB.Insert(&test)
+	res := DB.Insert(&test)
+	err := res.Error
 	a.Nil(err)
-	insertId, _ := res.LastInsertId()
+	insertId := res.LastInsertId
 
 	// First
 	var test2 Test3
-	err = DB.First(&test2, "SELECT * FROM ${TABLE} WHERE id = ?", insertId)
+	err = DB.First(&test2, "SELECT * FROM ${TABLE} WHERE id = ?", insertId).Error
 	a.Nil(err)
 	// Timestamp
 	a.IsType(&timestamppb.Timestamp{}, test2.Bar)
@@ -577,7 +578,7 @@ func TestInsertPbJson(t *testing.T) {
 		},
 		Json: JsonItem{Foo: `bar`},
 	}
-	_, err := DB.Insert(&test1)
+	err := DB.Insert(&test1).Error
 	a.Nil(err)
 
 	test2 := TestJsonStructPtr{
@@ -590,7 +591,7 @@ func TestInsertPbJson(t *testing.T) {
 		},
 		Json: &JsonItem{Foo: `bar`},
 	}
-	_, err = DB.Insert(&test2)
+	err = DB.Insert(&test2).Error
 	a.Nil(err)
 
 	test3 := TestJsonSlice{
@@ -603,7 +604,7 @@ func TestInsertPbJson(t *testing.T) {
 		},
 		Json: []int{1, 2, 3},
 	}
-	_, err = DB.Insert(&test3)
+	err = DB.Insert(&test3).Error
 	a.Nil(err)
 
 	test4 := TestJsonSlicePtr{
@@ -616,7 +617,7 @@ func TestInsertPbJson(t *testing.T) {
 		},
 		Json: []*JsonItem{{Foo: `bar1`}, {Foo: `bar2`}, {Foo: `bar3`}},
 	}
-	_, err = DB.Insert(&test4)
+	err = DB.Insert(&test4).Error
 	a.Nil(err)
 }
 
@@ -625,22 +626,22 @@ func TestFirstPbJsonField(t *testing.T) {
 	DB := newDB()
 
 	var test1 TestJsonStruct
-	err := DB.First(&test1, "SELECT * FROM ${TABLE} WHERE id = 1")
+	err := DB.First(&test1, "SELECT * FROM ${TABLE} WHERE id = 1").Error
 	a.Nil(err)
 	a.NotEmpty(test1.Json)
 
 	var test2 TestJsonStructPtr
-	err = DB.First(&test2, "SELECT * FROM ${TABLE} WHERE id = 1")
+	err = DB.First(&test2, "SELECT * FROM ${TABLE} WHERE id = 1").Error
 	a.Nil(err)
 	a.NotEmpty(test2.Json)
 
 	var test3 TestJsonSlice
-	err = DB.First(&test3, "SELECT * FROM ${TABLE} WHERE id = 2")
+	err = DB.First(&test3, "SELECT * FROM ${TABLE} WHERE id = 2").Error
 	a.Nil(err)
 	a.NotEmpty(test3.Json)
 
 	var test4 TestJsonSlicePtr
-	err = DB.First(&test4, "SELECT * FROM ${TABLE} WHERE id = 1006")
+	err = DB.First(&test4, "SELECT * FROM ${TABLE} WHERE id = 1006").Error
 	a.Nil(err)
 	a.NotEmpty(test4.Json)
 }
@@ -650,22 +651,22 @@ func TestFindPbJsonField(t *testing.T) {
 	DB := newDB()
 
 	var test1 []*TestJsonStruct
-	err := DB.Find(&test1, "SELECT * FROM ${TABLE} WHERE id = 1")
+	err := DB.Find(&test1, "SELECT * FROM ${TABLE} WHERE id = 1").Error
 	a.Nil(err)
 	a.NotEmpty(test1)
 
 	var test2 []*TestJsonStructPtr
-	err = DB.Find(&test2, "SELECT * FROM ${TABLE} WHERE id = 1")
+	err = DB.Find(&test2, "SELECT * FROM ${TABLE} WHERE id = 1").Error
 	a.Nil(err)
 	a.NotEmpty(test2)
 
 	var test3 []*TestJsonSlice
-	err = DB.Find(&test3, "SELECT * FROM ${TABLE} WHERE id = 2")
+	err = DB.Find(&test3, "SELECT * FROM ${TABLE} WHERE id = 2").Error
 	a.Nil(err)
 	a.NotEmpty(test3)
 
 	var test4 []*TestJsonSlicePtr
-	err = DB.Find(&test4, "SELECT * FROM ${TABLE} WHERE id = 1006")
+	err = DB.Find(&test4, "SELECT * FROM ${TABLE} WHERE id = 1006").Error
 	a.Nil(err)
 	a.NotEmpty(test4)
 }
@@ -675,12 +676,12 @@ func TestFirstPbStruct(t *testing.T) {
 	DB := newDB()
 
 	var row TestPbStruct
-	err := DB.First(&row, "SELECT * FROM ${TABLE} WHERE id = 1")
+	err := DB.First(&row, "SELECT * FROM ${TABLE} WHERE id = 1").Error
 	a.Nil(err)
 	a.NotEmpty(&row)
 
 	var row1 testdata.Device
-	err = DB.First(&row1, "SELECT * FROM ${TABLE} WHERE id = 1")
+	err = DB.First(&row1, "SELECT * FROM ${TABLE} WHERE id = 1").Error
 	a.Contains(err.Error(), "doesn't exist")
 }
 
@@ -689,11 +690,11 @@ func TestFindPbStruct(t *testing.T) {
 	DB := newDB()
 
 	var rows []*TestPbStruct
-	err := DB.Find(&rows, "SELECT * FROM ${TABLE} WHERE id < 3")
+	err := DB.Find(&rows, "SELECT * FROM ${TABLE} WHERE id < 3").Error
 	a.Nil(err)
 	a.Len(rows, 2)
 
 	var rows1 []*testdata.Device
-	err = DB.Find(&rows1, "SELECT * FROM ${TABLE} WHERE id < 3")
+	err = DB.Find(&rows1, "SELECT * FROM ${TABLE} WHERE id < 3").Error
 	a.Contains(err.Error(), "doesn't exist")
 }

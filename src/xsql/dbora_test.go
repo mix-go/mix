@@ -31,7 +31,7 @@ func TestOracleClear(t *testing.T) {
 
 	DB := newOracleDB()
 
-	_, err := DB.Exec("DELETE FROM XSQL WHERE ID > 2")
+	err := DB.Exec("DELETE FROM XSQL WHERE ID > 2").Error
 
 	a.Empty(err)
 }
@@ -71,7 +71,7 @@ func TestOracleInsert(t *testing.T) {
 		Foo: "test",
 		Bar: go_ora.TimeStamp(time.Now()),
 	}
-	_, err := DB.Insert(&test)
+	err := DB.Insert(&test).Error
 
 	a.Empty(err)
 }
@@ -94,7 +94,7 @@ func __TestOracleBatchInsert(t *testing.T) {
 			Bar: go_ora.TimeStamp(time.Now()),
 		},
 	}
-	_, err := DB.BatchInsert(&tests)
+	err := DB.BatchInsert(&tests).Error
 
 	a.Empty(err)
 }
@@ -109,7 +109,7 @@ func TestOracleUpdate(t *testing.T) {
 		Foo: "test update",
 		Bar: go_ora.TimeStamp(time.Now()),
 	}
-	_, err := DB.Update(&test, "id = :id", 3)
+	err := DB.Update(&test, "id = :id", 3).Error
 
 	a.Empty(err)
 }
@@ -119,7 +119,7 @@ func TestOracleExec(t *testing.T) {
 
 	DB := newOracleDB()
 
-	_, err := DB.Exec("DELETE FROM XSQL WHERE ID = :id", 999)
+	err := DB.Exec("DELETE FROM XSQL WHERE ID = :id", 999).Error
 
 	a.Empty(err)
 }
@@ -130,7 +130,7 @@ func TestOracleFirst(t *testing.T) {
 	DB := newOracleDB()
 
 	var test TestOracle
-	err := DB.First(&test, "SELECT * FROM XSQL")
+	err := DB.First(&test, "SELECT * FROM XSQL").Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -144,7 +144,7 @@ func TestOracleFirstPart(t *testing.T) {
 	DB := newOracleDB()
 
 	var test TestOracle
-	err := DB.First(&test, "SELECT foo FROM XSQL")
+	err := DB.First(&test, "SELECT foo FROM XSQL").Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -158,7 +158,7 @@ func TestOracleFind(t *testing.T) {
 	DB := newOracleDB()
 
 	var tests []TestOracle
-	err := DB.Find(&tests, "SELECT * FROM XSQL WHERE ROWNUM <= 2")
+	err := DB.Find(&tests, "SELECT * FROM XSQL WHERE ROWNUM <= 2").Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -172,7 +172,7 @@ func TestOracleFindPart(t *testing.T) {
 	DB := newOracleDB()
 
 	var tests []TestOracle
-	err := DB.Find(&tests, "SELECT foo FROM XSQL WHERE ROWNUM <= 2")
+	err := DB.Find(&tests, "SELECT foo FROM XSQL WHERE ROWNUM <= 2").Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -192,7 +192,7 @@ func TestOracleTxCommit(t *testing.T) {
 		Foo: "test",
 		Bar: go_ora.TimeStamp(time.Now()),
 	}
-	_, err := tx.Insert(&test)
+	err := tx.Insert(&test).Error
 	a.Empty(err)
 
 	err = tx.Commit()
@@ -211,7 +211,7 @@ func TestOracleTxRollback(t *testing.T) {
 		Foo: "test",
 		Bar: go_ora.TimeStamp(time.Now()),
 	}
-	_, err := tx.Insert(&test)
+	err := tx.Insert(&test).Error
 	a.Empty(err)
 
 	err = tx.Rollback()
