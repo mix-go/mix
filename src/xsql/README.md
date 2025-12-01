@@ -1,5 +1,3 @@
-> Produced by OpenMix: [https://openmix.org](https://openmix.org/mix-go)
-
 ## Mix XSQL
 
 A lightweight database based on database/sql, feature complete and supports any database driver.
