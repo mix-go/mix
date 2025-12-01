@@ -47,7 +47,7 @@ You can use it like a scripting language, not binding the struct, directly and f
 > Oracle field, table name needs to be uppercase
 
 ```go
-rows, err := DB.Query("SELECT * FROM xsql")
+rows, err := DB.Query(context.Background(), "SELECT * FROM xsql")
 if err != nil {
     log.Fatal(err)
 }
@@ -59,7 +59,7 @@ val := rows[0].Get("bar").Value() // interface{}
 ```
 
 ```go
-row, err := DB.QueryFirst("SELECT * FROM xsql WHERE id = ?", 1)
+row, err := DB.QueryFirst(context.Background(), "SELECT * FROM xsql WHERE id = ?", 1)
 if err != nil {
     log.Fatal(err)
 }
@@ -96,7 +96,7 @@ Map the first row
 
 ```go
 var test Test
-err := DB.First(&test, "SELECT * FROM ${TABLE} WHERE id = ?", 1).Error
+err := DB.First(context.Background(), &test, "SELECT * FROM ${TABLE} WHERE id = ?", 1).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -108,7 +108,7 @@ Map all rows
 
 ```go
 var tests []*Test
-err := DB.Find(&tests, "SELECT * FROM ${TABLE}").Error
+err := DB.Find(context.Background(), &tests, "SELECT * FROM ${TABLE}").Error
 if err != nil {
     log.Fatal(err)
 }
@@ -122,7 +122,7 @@ test := Test{
     Foo: "test",
     Bar: time.Now(),
 }
-err := DB.Insert(&test).Error
+err := DB.Insert(context.Background(), &test).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -143,7 +143,7 @@ tests := []Test{
         Bar: time.Now(),
     },
 }
-err := DB.BatchInsert(&tests).Error
+err := DB.BatchInsert(context.Background(), &tests).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -161,7 +161,7 @@ test := Test{
     Foo: "test",
     Bar: time.Now(),
 }
-err := DB.Update(&test, "id = ?", test.Id).Error
+err := DB.Update(context.Background(), &test, "id = ?", test.Id).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -173,7 +173,7 @@ Update specific columns by map
 data := map[string]interface{}{
     "foo": "test",
 }
-err := DB.Model(&Test{}).Update(data, "id = ?", 8).Error
+err := DB.Model(context.Background(), &Test{}).Update(data, "id = ?", 8).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -191,7 +191,7 @@ data, err := xsql.TagValuesMap(DB.Options.Tag, &test,
 if err != nil {
     log.Fatal(err)
 }
-err = DB.Model(&test).Update(data, "id = ?", 8).Error
+err = DB.Model(&test).Update(context.Background(), data, "id = ?", 8).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -207,14 +207,14 @@ test := Test{
     Foo: "test",
     Bar: time.Now(),
 }
-err := DB.Model(&test).Delete("id = ?", test.Id).Error
+err := DB.Model(&test).Delete(context.Background(), "id = ?", test.Id).Error
 if err != nil {
     log.Fatal(err)
 }
 ```
 
 ```go
-err := DB.Model(&Test{}).Delete("id = ?", 8).Error
+err := DB.Model(&Test{}).Delete(context.Background(), "id = ?", 8).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -227,7 +227,7 @@ Use `Exec()` to manually execute the delete, you can also manually execute the u
 > Oracle placeholder needs to be modified to :id
 
 ```go
-err := DB.Exec("DELETE FROM xsql WHERE id = ?", 8).Error
+err := DB.Exec(context.Background(), "DELETE FROM xsql WHERE id = ?", 8).Error
 if err != nil {
     log.Fatal(err)
 }
@@ -245,7 +245,7 @@ test := Test{
     Foo: "test",
     Bar: time.Now(),
 }
-err = tx.Insert(&test).Error
+err = tx.Insert(context.Background(), &test).Error
 if err != nil {
     tx.Rollback()
     log.Fatal(err)
@@ -311,11 +311,12 @@ The log object contains the following fields
 
 ```go
 type Log struct {
-	Duration     time.Duration `json:"duration"`
-	SQL          string        `json:"sql"`
-	Bindings     []interface{} `json:"bindings"`
-	RowsAffected int64         `json:"rowsAffected"`
-	Error        error         `json:"error"`
+	Context      context.Context `json:"context"`
+	Duration     time.Duration   `json:"duration"`
+	SQL          string          `json:"sql"`
+	Bindings     []interface{}   `json:"bindings"`
+	RowsAffected int64           `json:"rowsAffected"`
+	Error        error           `json:"error"`
 }
 ```
 

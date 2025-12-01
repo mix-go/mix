@@ -1,6 +1,7 @@
 package xsql
 
 import (
+	"context"
 	"time"
 )
 
@@ -8,10 +9,11 @@ type query struct {
 	Query
 }
 
-func (t *query) Fetch(query string, args []interface{}, opts *sqlOptions) (*Fetcher, error) {
+func (t *query) Fetch(ctx context.Context, query string, args []interface{}, opts *sqlOptions) (*Fetcher, error) {
 	startTime := time.Now()
 	r, err := t.Query.Query(query, args...)
 	l := &Log{
+		Context:      ctx,
 		Duration:     time.Now().Sub(startTime),
 		SQL:          query,
 		Bindings:     args,

@@ -1,6 +1,7 @@
 package xsql
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -16,7 +17,7 @@ type executor struct {
 	Executor
 }
 
-func (t *executor) Insert(data interface{}, opts *sqlOptions) (sql.Result, error) {
+func (t *executor) Insert(ctx context.Context, data interface{}, opts *sqlOptions) (sql.Result, error) {
 	var err error
 	fields := make([]string, 0)
 	vars := make([]string, 0)
@@ -26,7 +27,7 @@ func (t *executor) Insert(data interface{}, opts *sqlOptions) (sql.Result, error
 	typ := reflect.TypeOf(data)
 	switch value.Kind() {
 	case reflect.Ptr:
-		return t.Insert(value.Elem().Interface(), opts)
+		return t.Insert(ctx, value.Elem().Interface(), opts)
 	case reflect.Struct:
 		fields, vars, bindArgs, err = t.foreachInsert(value, typ, opts)
 		if err != nil {
@@ -47,6 +48,7 @@ func (t *executor) Insert(data interface{}, opts *sqlOptions) (sql.Result, error
 		rowsAffected, _ = res.RowsAffected()
 	}
 	l := &Log{
+		Context:      ctx,
 		Duration:     time.Now().Sub(startTime),
 		SQL:          SQL,
 		Bindings:     bindArgs,
@@ -61,7 +63,7 @@ func (t *executor) Insert(data interface{}, opts *sqlOptions) (sql.Result, error
 	return res, nil
 }
 
-func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result, error) {
+func (t *executor) BatchInsert(ctx context.Context, array interface{}, opts *sqlOptions) (sql.Result, error) {
 	fields := make([]string, 0)
 	valueSql := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
@@ -70,7 +72,7 @@ func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result,
 	value := reflect.ValueOf(array)
 	switch value.Kind() {
 	case reflect.Ptr:
-		return t.BatchInsert(value.Elem().Interface(), opts)
+		return t.BatchInsert(ctx, value.Elem().Interface(), opts)
 	case reflect.Array, reflect.Slice:
 		break
 	default:
@@ -124,6 +126,7 @@ func (t *executor) BatchInsert(array interface{}, opts *sqlOptions) (sql.Result,
 		rowsAffected, _ = res.RowsAffected()
 	}
 	l := &Log{
+		Context:      ctx,
 		Duration:     time.Now().Sub(startTime),
 		SQL:          SQL,
 		Bindings:     bindArgs,
@@ -147,7 +150,7 @@ func (t *executor) model(s interface{}, opts *sqlOptions) *ModelExecutor {
 	}
 }
 
-func (t *executor) Update(data interface{}, expr string, args []interface{}, opts *sqlOptions) (sql.Result, error) {
+func (t *executor) Update(ctx context.Context, data interface{}, expr string, args []interface{}, opts *sqlOptions) (sql.Result, error) {
 	var err error
 	set := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
@@ -156,7 +159,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	typ := reflect.TypeOf(data)
 	switch value.Kind() {
 	case reflect.Ptr:
-		return t.Update(value.Elem().Interface(), expr, args, opts)
+		return t.Update(ctx, value.Elem().Interface(), expr, args, opts)
 	case reflect.Struct:
 		set, bindArgs, err = t.foreachUpdate(value, typ, opts)
 		if err != nil {
@@ -183,6 +186,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 		rowsAffected, _ = res.RowsAffected()
 	}
 	l := &Log{
+		Context:      ctx,
 		Duration:     time.Now().Sub(startTime),
 		SQL:          SQL,
 		Bindings:     bindArgs,
@@ -197,7 +201,7 @@ func (t *executor) Update(data interface{}, expr string, args []interface{}, opt
 	return res, nil
 }
 
-func (t *executor) Exec(query string, args []interface{}, opts *sqlOptions) (sql.Result, error) {
+func (t *executor) Exec(ctx context.Context, query string, args []interface{}, opts *sqlOptions) (sql.Result, error) {
 	startTime := time.Now()
 	res, err := t.Executor.Exec(query, args...)
 	var rowsAffected int64
@@ -205,6 +209,7 @@ func (t *executor) Exec(query string, args []interface{}, opts *sqlOptions) (sql
 		rowsAffected, _ = res.RowsAffected()
 	}
 	l := &Log{
+		Context:      ctx,
 		Duration:     time.Now().Sub(startTime),
 		SQL:          query,
 		Bindings:     args,

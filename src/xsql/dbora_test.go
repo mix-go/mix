@@ -1,6 +1,7 @@
 package xsql_test
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"github.com/mix-go/xsql"
@@ -31,7 +32,7 @@ func TestOracleClear(t *testing.T) {
 
 	DB := newOracleDB()
 
-	err := DB.Exec("DELETE FROM XSQL WHERE ID > 2").Error
+	err := DB.Exec(context.Background(), "DELETE FROM XSQL WHERE ID > 2").Error
 
 	a.Empty(err)
 }
@@ -41,7 +42,7 @@ func TestOracleQuery(t *testing.T) {
 
 	DB := newOracleDB()
 
-	rows, err := DB.Query("SELECT * FROM XSQL WHERE ROWNUM <= 2")
+	rows, err := DB.Query(context.Background(), "SELECT * FROM XSQL WHERE ROWNUM <= 2")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -71,7 +72,7 @@ func TestOracleInsert(t *testing.T) {
 		Foo: "test",
 		Bar: go_ora.TimeStamp(time.Now()),
 	}
-	err := DB.Insert(&test).Error
+	err := DB.Insert(context.Background(), &test).Error
 
 	a.Empty(err)
 }
@@ -94,7 +95,7 @@ func __TestOracleBatchInsert(t *testing.T) {
 			Bar: go_ora.TimeStamp(time.Now()),
 		},
 	}
-	err := DB.BatchInsert(&tests).Error
+	err := DB.BatchInsert(context.Background(), &tests).Error
 
 	a.Empty(err)
 }
@@ -109,7 +110,7 @@ func TestOracleUpdate(t *testing.T) {
 		Foo: "test update",
 		Bar: go_ora.TimeStamp(time.Now()),
 	}
-	err := DB.Update(&test, "id = :id", 3).Error
+	err := DB.Update(context.Background(), &test, "id = :id", 3).Error
 
 	a.Empty(err)
 }
@@ -119,7 +120,7 @@ func TestOracleExec(t *testing.T) {
 
 	DB := newOracleDB()
 
-	err := DB.Exec("DELETE FROM XSQL WHERE ID = :id", 999).Error
+	err := DB.Exec(context.Background(), "DELETE FROM XSQL WHERE ID = :id", 999).Error
 
 	a.Empty(err)
 }
@@ -130,7 +131,7 @@ func TestOracleFirst(t *testing.T) {
 	DB := newOracleDB()
 
 	var test TestOracle
-	err := DB.First(&test, "SELECT * FROM XSQL").Error
+	err := DB.First(context.Background(), &test, "SELECT * FROM XSQL").Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -144,7 +145,7 @@ func TestOracleFirstPart(t *testing.T) {
 	DB := newOracleDB()
 
 	var test TestOracle
-	err := DB.First(&test, "SELECT foo FROM XSQL").Error
+	err := DB.First(context.Background(), &test, "SELECT foo FROM XSQL").Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -158,7 +159,7 @@ func TestOracleFind(t *testing.T) {
 	DB := newOracleDB()
 
 	var tests []TestOracle
-	err := DB.Find(&tests, "SELECT * FROM XSQL WHERE ROWNUM <= 2").Error
+	err := DB.Find(context.Background(), &tests, "SELECT * FROM XSQL WHERE ROWNUM <= 2").Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -172,7 +173,7 @@ func TestOracleFindPart(t *testing.T) {
 	DB := newOracleDB()
 
 	var tests []TestOracle
-	err := DB.Find(&tests, "SELECT foo FROM XSQL WHERE ROWNUM <= 2").Error
+	err := DB.Find(context.Background(), &tests, "SELECT foo FROM XSQL WHERE ROWNUM <= 2").Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -192,7 +193,7 @@ func TestOracleTxCommit(t *testing.T) {
 		Foo: "test",
 		Bar: go_ora.TimeStamp(time.Now()),
 	}
-	err := tx.Insert(&test).Error
+	err := tx.Insert(context.Background(), &test).Error
 	a.Empty(err)
 
 	err = tx.Commit()
@@ -211,7 +212,7 @@ func TestOracleTxRollback(t *testing.T) {
 		Foo: "test",
 		Bar: go_ora.TimeStamp(time.Now()),
 	}
-	err := tx.Insert(&test).Error
+	err := tx.Insert(context.Background(), &test).Error
 	a.Empty(err)
 
 	err = tx.Rollback()

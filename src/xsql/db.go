@@ -1,6 +1,7 @@
 package xsql
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -85,18 +86,18 @@ func (t *DB) getFetcherResult(err error) *DB {
 	return t
 }
 
-func (t *DB) Insert(data interface{}, opts ...SqlOption) *DB {
-	r, err := t.executor.Insert(data, t.mergeOptions(opts))
+func (t *DB) Insert(ctx context.Context, data interface{}, opts ...SqlOption) *DB {
+	r, err := t.executor.Insert(ctx, data, t.mergeOptions(opts))
 	return t.getExecResult(r, err, true)
 }
 
-func (t *DB) BatchInsert(data interface{}, opts ...SqlOption) *DB {
-	r, err := t.executor.BatchInsert(data, t.mergeOptions(opts))
+func (t *DB) BatchInsert(ctx context.Context, data interface{}, opts ...SqlOption) *DB {
+	r, err := t.executor.BatchInsert(ctx, data, t.mergeOptions(opts))
 	return t.getExecResult(r, err, false)
 }
 
-func (t *DB) Update(data interface{}, expr string, args ...interface{}) *DB {
-	r, err := t.executor.Update(data, expr, args, t.Options)
+func (t *DB) Update(ctx context.Context, data interface{}, expr string, args ...interface{}) *DB {
+	r, err := t.executor.Update(ctx, data, expr, args, t.Options)
 	return t.getExecResult(r, err, false)
 }
 
@@ -104,8 +105,8 @@ func (t *DB) Model(s interface{}) *ModelExecutor {
 	return t.executor.model(s, t.Options)
 }
 
-func (t *DB) Exec(query string, args ...interface{}) *DB {
-	r, err := t.executor.Exec(query, args, t.Options)
+func (t *DB) Exec(ctx context.Context, query string, args ...interface{}) *DB {
+	r, err := t.executor.Exec(ctx, query, args, t.Options)
 	return t.getExecResult(r, err, false)
 }
 
@@ -128,8 +129,8 @@ func (t *DB) Begin() (*Tx, error) {
 	}, nil
 }
 
-func (t *DB) Query(query string, args ...interface{}) ([]*Row, error) {
-	f, err := t.query.Fetch(query, args, t.Options)
+func (t *DB) Query(ctx context.Context, query string, args ...interface{}) ([]*Row, error) {
+	f, err := t.query.Fetch(ctx, query, args, t.Options)
 	if err != nil {
 		return nil, err
 	}
@@ -140,8 +141,8 @@ func (t *DB) Query(query string, args ...interface{}) ([]*Row, error) {
 	return r, nil
 }
 
-func (t *DB) QueryFirst(query string, args ...interface{}) (*Row, error) {
-	rows, err := t.Query(query, args...)
+func (t *DB) QueryFirst(ctx context.Context, query string, args ...interface{}) (*Row, error) {
+	rows, err := t.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -151,9 +152,9 @@ func (t *DB) QueryFirst(query string, args ...interface{}) (*Row, error) {
 	return rows[0], nil
 }
 
-func (t *DB) Find(i interface{}, query string, args ...interface{}) *DB {
+func (t *DB) Find(ctx context.Context, i interface{}, query string, args ...interface{}) *DB {
 	query = tableReplace(i, query, t.Options)
-	f, err := t.query.Fetch(query, args, t.Options)
+	f, err := t.query.Fetch(ctx, query, args, t.Options)
 	if err != nil {
 		return t.getFetcherResult(err)
 	}
@@ -163,9 +164,9 @@ func (t *DB) Find(i interface{}, query string, args ...interface{}) *DB {
 	return t.getFetcherResult(nil)
 }
 
-func (t *DB) First(i interface{}, query string, args ...interface{}) *DB {
+func (t *DB) First(ctx context.Context, i interface{}, query string, args ...interface{}) *DB {
 	query = tableReplace(i, query, t.Options)
-	f, err := t.query.Fetch(query, args, t.Options)
+	f, err := t.query.Fetch(ctx, query, args, t.Options)
 	if err != nil {
 		return t.getFetcherResult(err)
 	}

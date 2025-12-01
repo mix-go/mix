@@ -1,6 +1,7 @@
 package xsql
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"reflect"
@@ -19,8 +20,8 @@ type ModelExecutor struct {
 	RowsAffected int64
 }
 
-func (t *ModelExecutor) Update(data map[string]interface{}, expr string, args ...interface{}) *ModelExecutor {
-	return t.getExecResult(t.update(data, expr, args...))
+func (t *ModelExecutor) Update(ctx context.Context, data map[string]interface{}, expr string, args ...interface{}) *ModelExecutor {
+	return t.getExecResult(t.update(ctx, data, expr, args...))
 }
 
 func (t *ModelExecutor) getExecResult(r sql.Result, err error) *ModelExecutor {
@@ -42,7 +43,7 @@ func (t *ModelExecutor) getExecResult(r sql.Result, err error) *ModelExecutor {
 	return t
 }
 
-func (t *ModelExecutor) update(data map[string]interface{}, expr string, args ...interface{}) (sql.Result, error) {
+func (t *ModelExecutor) update(ctx context.Context, data map[string]interface{}, expr string, args ...interface{}) (sql.Result, error) {
 	set := make([]string, 0)
 	bindArgs := make([]interface{}, 0)
 
@@ -101,6 +102,7 @@ func (t *ModelExecutor) update(data map[string]interface{}, expr string, args ..
 		rowsAffected, _ = res.RowsAffected()
 	}
 	l := &Log{
+		Context:      ctx,
 		Duration:     time.Now().Sub(startTime),
 		SQL:          SQL,
 		Bindings:     bindArgs,
@@ -115,11 +117,11 @@ func (t *ModelExecutor) update(data map[string]interface{}, expr string, args ..
 	return res, nil
 }
 
-func (t *ModelExecutor) Delete(expr string, args ...interface{}) *ModelExecutor {
-	return t.getExecResult(t.delete(expr, args...))
+func (t *ModelExecutor) Delete(ctx context.Context, expr string, args ...interface{}) *ModelExecutor {
+	return t.getExecResult(t.delete(ctx, expr, args...))
 }
 
-func (t *ModelExecutor) delete(expr string, args ...interface{}) (sql.Result, error) {
+func (t *ModelExecutor) delete(ctx context.Context, expr string, args ...interface{}) (sql.Result, error) {
 	bindArgs := make([]interface{}, 0)
 
 	table := t.TableName
@@ -140,6 +142,7 @@ func (t *ModelExecutor) delete(expr string, args ...interface{}) (sql.Result, er
 		rowsAffected, _ = res.RowsAffected()
 	}
 	l := &Log{
+		Context:      ctx,
 		Duration:     time.Now().Sub(startTime),
 		SQL:          SQL,
 		Bindings:     bindArgs,
