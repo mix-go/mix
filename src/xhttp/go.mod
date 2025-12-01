@@ -1,6 +1,6 @@
 module github.com/mix-go/xhttp
 
-go 1.22.1
+go 1.24
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
