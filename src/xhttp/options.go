@@ -2,7 +2,6 @@ package xhttp
 
 import (
 	"github.com/avast/retry-go"
-	"github.com/mix-go/xutil/xconv"
 	"net/http"
 	"time"
 )
@@ -85,7 +84,7 @@ func WithBodyBytes(body []byte) RequestOption {
 
 func WithBodyString(body string) RequestOption {
 	return &funcRequestOption{func(opts *RequestOptions) {
-		opts.Body = xconv.StringToBytes(body)
+		opts.Body = StringToBytes(body)
 	}}
 }
 

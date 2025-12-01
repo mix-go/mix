@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"github.com/mix-go/xutil/xconv"
 	"io"
 	"net/http"
 	"net/url"
@@ -46,7 +45,7 @@ type Response struct {
 type Body []byte
 
 func (t Body) String() string {
-	return xconv.BytesToString(t)
+	return BytesToString(t)
 }
 
 type Client struct {

@@ -4,7 +4,6 @@ go 1.22.1
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
-	github.com/mix-go/xutil v1.1.18
 	github.com/stretchr/testify v1.9.0
 )
 
