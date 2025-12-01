@@ -18,12 +18,17 @@ var (
 
 var DefaultClient = NewClient(&http.Client{}, DefaultOptions)
 
+// NewRequest Deprecated: Use Fetch instead.
 func NewRequest(method string, u string, opts ...RequestOption) (*Response, error) {
-	return DefaultClient.NewRequest(method, u, opts...)
+	return DefaultClient.Fetch(method, u, opts...)
+}
+
+func Fetch(method string, u string, opts ...RequestOption) (*Response, error) {
+	return DefaultClient.Fetch(method, u, opts...)
 }
 
 type Request struct {
-	*http.Request
+	http.Request
 
 	Body Body
 
@@ -32,7 +37,7 @@ type Request struct {
 }
 
 type Response struct {
-	*http.Response
+	http.Response
 
 	Body Body
 }
@@ -60,7 +65,7 @@ func newRequest(r *http.Request) *Request {
 		return nil
 	}
 	req := &Request{
-		Request: r,
+		Request: *r,
 	}
 
 	if r.Body == nil {
@@ -82,7 +87,7 @@ func newResponse(r *http.Response) *Response {
 		return nil
 	}
 	resp := &Response{
-		Response: r,
+		Response: *r,
 	}
 
 	if r.Body == nil {
@@ -98,8 +103,14 @@ func newResponse(r *http.Response) *Response {
 	return resp
 }
 
+// NewRequest Deprecated: Use Fetch instead.
 func (t *Client) NewRequest(method string, u string, opts ...RequestOption) (*Response, error) {
+	return t.Fetch(method, u, opts...)
+}
+
+func (t *Client) Fetch(method string, u string, opts ...RequestOption) (*Response, error) {
 	o := mergeOptions(t, opts)
+
 	URL, err := url.Parse(u)
 	if err != nil {
 		return nil, err
@@ -117,26 +128,45 @@ func (t *Client) NewRequest(method string, u string, opts ...RequestOption) (*Re
 		xReq := newRequest(req)
 		return doRetry(o, func() (*Response, error) {
 			xReq.RetryAttempts++
-			return t.doRequest(xReq, o)
+			return t.doXRequest(xReq, o)
 		})
 	}
-	return t.doRequest(newRequest(req), o)
+	return t.doXRequest(newRequest(req), o)
 }
 
-func (t *Client) SendRequest(req *http.Request, opts ...RequestOption) (*Response, error) {
-	o := mergeOptions(t, opts)
+func (t *Client) Do(req *Request) (*Response, error) {
+	o := mergeOptions(t, nil)
 
 	if o.RetryOptions != nil {
-		xReq := newRequest(req)
 		return doRetry(o, func() (*Response, error) {
-			xReq.RetryAttempts++
-			return t.doRequest(xReq, o)
+			req.RetryAttempts++
+			return t.doXRequest(req, o)
 		})
 	}
-	return t.doRequest(newRequest(req), o)
+
+	return t.doXRequest(req, o)
 }
 
-func (t *Client) doRequest(xReq *Request, opts *RequestOptions) (*Response, error) {
+// SendRequest Deprecated: Use DoRequest instead.
+func (t *Client) SendRequest(req *http.Request, opts ...RequestOption) (*Response, error) {
+	return t.DoRequest(req, opts...)
+}
+
+func (t *Client) DoRequest(req *http.Request, opts ...RequestOption) (*Response, error) {
+	o := mergeOptions(t, opts)
+	xReq := newRequest(req)
+
+	if o.RetryOptions != nil {
+		return doRetry(o, func() (*Response, error) {
+			xReq.RetryAttempts++
+			return t.doXRequest(xReq, o)
+		})
+	}
+
+	return t.doXRequest(xReq, o)
+}
+
+func (t *Client) doXRequest(xReq *Request, opts *RequestOptions) (*Response, error) {
 	var finalHandler HandlerFunc = func(xReq *Request, opts *RequestOptions) (*Response, error) {
 		if !shutdownController.BeginRequest() {
 			return nil, ErrShutdown
@@ -146,7 +176,7 @@ func (t *Client) doRequest(xReq *Request, opts *RequestOptions) (*Response, erro
 		cli := t
 		cli.Timeout = opts.Timeout
 		startTime := time.Now()
-		r, err := cli.Do(xReq.Request)
+		r, err := cli.Client.Do(&xReq.Request)
 		if err != nil {
 			t.doDebug(opts, time.Now().Sub(startTime), xReq, nil, err)
 			return nil, err
