@@ -16,7 +16,7 @@ func TestNewRequest(t *testing.T) {
 	a := assert.New(t)
 
 	url := "https://github.com/"
-	resp, err := xhttp.NewRequest("GET", url)
+	resp, err := xhttp.Fetch(context.Background(), "GET", url)
 
 	a.Equal(resp.StatusCode, 200)
 	a.Nil(err)
@@ -26,7 +26,7 @@ func TestRequestPOST(t *testing.T) {
 	a := assert.New(t)
 
 	url := "https://github.com/"
-	resp, err := xhttp.NewRequest("POST", url, xhttp.WithBodyString("abc"), xhttp.WithContentType("application/json"))
+	resp, err := xhttp.Fetch(context.Background(), "POST", url, xhttp.WithBodyString("abc"), xhttp.WithContentType("application/json"))
 
 	a.Equal(resp.StatusCode, 404)
 	a.Nil(err)
@@ -36,7 +36,7 @@ func TestRequestError(t *testing.T) {
 	a := assert.New(t)
 
 	url := "https://aaaaa.com/"
-	resp, err := xhttp.NewRequest("GET", url)
+	resp, err := xhttp.Fetch(context.Background(), "GET", url)
 
 	a.Nil(resp)
 	a.NotNil(err)
@@ -61,7 +61,7 @@ func TestDebugAndRetryFail(t *testing.T) {
 		}
 		return nil
 	}
-	resp, err := xhttp.NewRequest("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
+	resp, err := xhttp.Fetch(context.Background(), "GET", url, xhttp.WithRetry(retryIf, retry.Attempts(2)))
 
 	a.Nil(resp)
 	a.NotNil(err)
@@ -85,7 +85,7 @@ func TestDebugAndRetrySuccess(t *testing.T) {
 		}
 		return nil
 	}
-	_, err := xhttp.NewRequest("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(3)))
+	_, err := xhttp.Fetch(context.Background(), "GET", url, xhttp.WithRetry(retryIf, retry.Attempts(3)))
 
 	a.Nil(err)
 	a.Equal(count, 2)
@@ -113,7 +113,7 @@ func TestDebugAndRetryAbort(t *testing.T) {
 		}
 		return nil
 	}
-	resp, err := xhttp.NewRequest("GET", url, xhttp.WithRetry(retryIf, retry.Attempts(3)))
+	resp, err := xhttp.Fetch(context.Background(), "GET", url, xhttp.WithRetry(retryIf, retry.Attempts(3)))
 
 	a.Nil(resp)
 	a.NotNil(err)
@@ -138,7 +138,7 @@ func TestMiddlewares(t *testing.T) {
 			return resp, err
 		}
 	}
-	resp, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
+	resp, err := xhttp.Fetch(context.Background(), "GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
 
 	a.Equal(resp.StatusCode, 200)
 	a.Nil(err)
@@ -160,14 +160,14 @@ func TestShutdown(t *testing.T) {
 			return resp, err
 		}
 	}
-	_, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
+	_, err := xhttp.Fetch(context.Background(), "GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
 	a.Nil(err)
 	wg := sync.WaitGroup{}
 	wg.Add(3)
 	for i := 0; i < 3; i++ {
 		go func(i int, wg *sync.WaitGroup) {
 			defer wg.Done()
-			_, err := xhttp.NewRequest("GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
+			_, err := xhttp.Fetch(context.Background(), "GET", "https://github.com/", xhttp.WithMiddleware(logicMiddleware))
 			a.Equal(err, xhttp.ErrShutdown)
 		}(i, &wg)
 	}
