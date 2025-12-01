@@ -142,12 +142,12 @@ Middleware configuration before or after.
 
 ```go
 logicMiddleware := func(next xhttp.HandlerFunc) xhttp.HandlerFunc {
-    return func(req *xhttp.Request, opts *xhttp.RequestOptions) (*xhttp.Response, error) {
+    return func(req *xhttp.Request) (*xhttp.Response, error) {
         // Before-logic
         fmt.Printf("Before: %s %s\n", req.Method, req.URL)
 
         // Call the next handler
-        resp, err := next(req, opts)
+        resp, err := next(req)
 
         // After-logic
         fmt.Printf("After: %s %s\n", req.Method, req.URL)

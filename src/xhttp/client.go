@@ -37,6 +37,8 @@ func DoRequest(ctx context.Context, req *http.Request, opts ...RequestOption) (*
 type Request struct {
 	http.Request
 
+	Options *RequestOptions
+
 	Body Body
 
 	// Number of retries
@@ -115,7 +117,7 @@ func newResponse(r *http.Response) *Response {
 }
 
 func (t *Client) Fetch(ctx context.Context, method string, u string, opts ...RequestOption) (*Response, error) {
-	o := mergeOptions(t, opts)
+	mergedOptions := mergeOptions(t, opts)
 
 	URL, err := url.Parse(u)
 	if err != nil {
@@ -124,25 +126,25 @@ func (t *Client) Fetch(ctx context.Context, method string, u string, opts ...Req
 	req := &http.Request{
 		Method: method,
 		URL:    URL,
-		Header: o.Header,
+		Header: mergedOptions.Header,
 	}
-	if o.Body != nil {
+	if mergedOptions.Body != nil {
 		// xhttp body > std body
-		req.Body = io.NopCloser(bytes.NewReader(o.Body))
+		req.Body = io.NopCloser(bytes.NewReader(mergedOptions.Body))
 	}
 	xReq := newRequest(req, false)
 
-	if o.RetryOptions != nil {
-		return doRetry(o, func() (*Response, error) {
+	if mergedOptions.RetryOptions != nil {
+		return doRetry(mergedOptions, func() (*Response, error) {
 			xReq.RetryAttempts++
-			return t.doXRequest(ctx, xReq, o)
+			return t.doXRequest(ctx, xReq, mergedOptions)
 		})
 	}
-	return t.doXRequest(ctx, xReq, o)
+	return t.doXRequest(ctx, xReq, mergedOptions)
 }
 
 func (t *Client) NewRequest(method string, u string, opts ...RequestOption) (*Request, error) {
-	o := mergeOptions(t, opts)
+	mergedOptions := mergeOptions(t, opts)
 
 	URL, err := url.Parse(u)
 	if err != nil {
@@ -151,48 +153,50 @@ func (t *Client) NewRequest(method string, u string, opts ...RequestOption) (*Re
 	req := &http.Request{
 		Method: method,
 		URL:    URL,
-		Header: o.Header,
+		Header: mergedOptions.Header,
 	}
-	if o.Body != nil {
+	if mergedOptions.Body != nil {
 		// xhttp body > std body
-		req.Body = io.NopCloser(bytes.NewReader(o.Body))
+		req.Body = io.NopCloser(bytes.NewReader(mergedOptions.Body))
 	}
 	return newRequest(req, false), nil
 }
 
 func (t *Client) Do(ctx context.Context, req *Request) (*Response, error) {
-	o := mergeOptions(t, nil)
+	mergedOptions := mergeOptions(t, nil)
 
-	if o.RetryOptions != nil {
-		return doRetry(o, func() (*Response, error) {
+	if mergedOptions.RetryOptions != nil {
+		return doRetry(mergedOptions, func() (*Response, error) {
 			req.RetryAttempts++
-			return t.doXRequest(ctx, req, o)
+			return t.doXRequest(ctx, req, mergedOptions)
 		})
 	}
 
-	return t.doXRequest(ctx, req, o)
+	return t.doXRequest(ctx, req, mergedOptions)
 }
 
 func (t *Client) DoRequest(ctx context.Context, req *http.Request, opts ...RequestOption) (*Response, error) {
-	o := mergeOptions(t, opts)
+	mergedOptions := mergeOptions(t, opts)
 	xReq := newRequest(req, true)
 
-	if o.Header != nil {
-		xReq.Header = o.Header
+	if mergedOptions.Header != nil {
+		xReq.Header = mergedOptions.Header
 	}
 
-	if o.RetryOptions != nil {
-		return doRetry(o, func() (*Response, error) {
+	if mergedOptions.RetryOptions != nil {
+		return doRetry(mergedOptions, func() (*Response, error) {
 			xReq.RetryAttempts++
-			return t.doXRequest(ctx, xReq, o)
+			return t.doXRequest(ctx, xReq, mergedOptions)
 		})
 	}
 
-	return t.doXRequest(ctx, xReq, o)
+	return t.doXRequest(ctx, xReq, mergedOptions)
 }
 
 func (t *Client) doXRequest(ctx context.Context, xReq *Request, opts *RequestOptions) (*Response, error) {
-	var finalHandler HandlerFunc = func(xReq *Request, opts *RequestOptions) (*Response, error) {
+	xReq.Options = opts
+
+	var finalHandler HandlerFunc = func(xReq *Request) (*Response, error) {
 		if !shutdownController.BeginRequest() {
 			return nil, ErrShutdown
 		}
@@ -215,5 +219,5 @@ func (t *Client) doXRequest(ctx context.Context, xReq *Request, opts *RequestOpt
 		finalHandler = opts.Middlewares[i](finalHandler)
 	}
 
-	return finalHandler(xReq, opts)
+	return finalHandler(xReq)
 }
