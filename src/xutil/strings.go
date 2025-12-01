@@ -5,11 +5,6 @@ import (
 	"strings"
 )
 
-func IsNumeric(s string) bool {
-	_, err := strconv.ParseFloat(s, 64)
-	return err == nil
-}
-
 func SubString(s string, start int, length int) string {
 	runes := []rune(s)
 	end := start + length
@@ -31,4 +26,9 @@ func Capitalize(s string) string {
 		return first + s[1:]
 	}
 	return s
+}
+
+func IsNumeric(s string) bool {
+	_, err := strconv.ParseFloat(s, 64)
+	return err == nil
 }

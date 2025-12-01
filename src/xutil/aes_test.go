@@ -15,18 +15,18 @@ func TestAESEncryptCBC(t *testing.T) {
 	key256 := "abcdefghijklmnopabcdefghijklmnop" // 32 bytes = 256 bits
 	ivInfo := "abcdefghijklmnop"
 
-	cipherText128, _ := AESEncrypt(plain, ModeCBC, key128, ivInfo)
+	cipherText128, _ := AESEncrypt(plain, AESModeCBC, key128, ivInfo)
 	fmt.Printf("Cipher text for AES-128-CBC: %s\n", cipherText128)
-	cipherText192, _ := AESEncrypt(plain, ModeCBC, key192, ivInfo)
+	cipherText192, _ := AESEncrypt(plain, AESModeCBC, key192, ivInfo)
 	fmt.Printf("Cipher text for AES-192-CBC: %s\n", cipherText192)
-	cipherText256, _ := AESEncrypt(plain, ModeCBC, key256, ivInfo)
+	cipherText256, _ := AESEncrypt(plain, AESModeCBC, key256, ivInfo)
 	fmt.Printf("Cipher text for AES-256-CBC: %s\n", cipherText256)
 
-	decryptedText128, _ := AESDecrypt(cipherText128, ModeCBC, key128, ivInfo)
+	decryptedText128, _ := AESDecrypt(cipherText128, AESModeCBC, key128, ivInfo)
 	fmt.Printf("Decrypted text for AES-128-CBC: %s\n", decryptedText128)
-	decryptedText192, _ := AESDecrypt(cipherText192, ModeCBC, key192, ivInfo)
+	decryptedText192, _ := AESDecrypt(cipherText192, AESModeCBC, key192, ivInfo)
 	fmt.Printf("Decrypted text for AES-192-CBC: %s\n", decryptedText192)
-	decryptedText256, _ := AESDecrypt(cipherText256, ModeCBC, key256, ivInfo)
+	decryptedText256, _ := AESDecrypt(cipherText256, AESModeCBC, key256, ivInfo)
 	fmt.Printf("Decrypted text for AES-256-CBC: %s\n", decryptedText256)
 
 	a.Equal(plain, decryptedText128)
@@ -43,18 +43,18 @@ func TestAESEncryptCFB(t *testing.T) {
 	key256 := "abcdefghijklmnopabcdefghijklmnop" // 32 bytes = 256 bits
 	ivInfo := "abcdefghijklmnop"
 
-	cipherText128, _ := AESEncrypt(plain, ModeCFB, key128, ivInfo)
+	cipherText128, _ := AESEncrypt(plain, AESModeCFB, key128, ivInfo)
 	fmt.Printf("Cipher text for AES-128-CBC: %s\n", cipherText128)
-	cipherText192, _ := AESEncrypt(plain, ModeCFB, key192, ivInfo)
+	cipherText192, _ := AESEncrypt(plain, AESModeCFB, key192, ivInfo)
 	fmt.Printf("Cipher text for AES-192-CBC: %s\n", cipherText192)
-	cipherText256, _ := AESEncrypt(plain, ModeCFB, key256, ivInfo)
+	cipherText256, _ := AESEncrypt(plain, AESModeCFB, key256, ivInfo)
 	fmt.Printf("Cipher text for AES-256-CBC: %s\n", cipherText256)
 
-	decryptedText128, _ := AESDecrypt(cipherText128, ModeCFB, key128, ivInfo)
+	decryptedText128, _ := AESDecrypt(cipherText128, AESModeCFB, key128, ivInfo)
 	fmt.Printf("Decrypted text for AES-128-CBC: %s\n", decryptedText128)
-	decryptedText192, _ := AESDecrypt(cipherText192, ModeCFB, key192, ivInfo)
+	decryptedText192, _ := AESDecrypt(cipherText192, AESModeCFB, key192, ivInfo)
 	fmt.Printf("Decrypted text for AES-192-CBC: %s\n", decryptedText192)
-	decryptedText256, _ := AESDecrypt(cipherText256, ModeCFB, key256, ivInfo)
+	decryptedText256, _ := AESDecrypt(cipherText256, AESModeCFB, key256, ivInfo)
 	fmt.Printf("Decrypted text for AES-256-CBC: %s\n", decryptedText256)
 
 	a.Equal(plain, decryptedText128)
@@ -71,18 +71,18 @@ func TestAESEncryptOFB(t *testing.T) {
 	key256 := "abcdefghijklmnopabcdefghijklmnop" // 32 bytes = 256 bits
 	ivInfo := "abcdefghijklmnop"
 
-	cipherText128, _ := AESEncrypt(plain, ModeOFB, key128, ivInfo)
+	cipherText128, _ := AESEncrypt(plain, AESModeOFB, key128, ivInfo)
 	fmt.Printf("Cipher text for AES-128-CBC: %s\n", cipherText128)
-	cipherText192, _ := AESEncrypt(plain, ModeOFB, key192, ivInfo)
+	cipherText192, _ := AESEncrypt(plain, AESModeOFB, key192, ivInfo)
 	fmt.Printf("Cipher text for AES-192-CBC: %s\n", cipherText192)
-	cipherText256, _ := AESEncrypt(plain, ModeOFB, key256, ivInfo)
+	cipherText256, _ := AESEncrypt(plain, AESModeOFB, key256, ivInfo)
 	fmt.Printf("Cipher text for AES-256-CBC: %s\n", cipherText256)
 
-	decryptedText128, _ := AESDecrypt(cipherText128, ModeOFB, key128, ivInfo)
+	decryptedText128, _ := AESDecrypt(cipherText128, AESModeOFB, key128, ivInfo)
 	fmt.Printf("Decrypted text for AES-128-CBC: %s\n", decryptedText128)
-	decryptedText192, _ := AESDecrypt(cipherText192, ModeOFB, key192, ivInfo)
+	decryptedText192, _ := AESDecrypt(cipherText192, AESModeOFB, key192, ivInfo)
 	fmt.Printf("Decrypted text for AES-192-CBC: %s\n", decryptedText192)
-	decryptedText256, _ := AESDecrypt(cipherText256, ModeOFB, key256, ivInfo)
+	decryptedText256, _ := AESDecrypt(cipherText256, AESModeOFB, key256, ivInfo)
 	fmt.Printf("Decrypted text for AES-256-CBC: %s\n", decryptedText256)
 
 	a.Equal(plain, decryptedText128)

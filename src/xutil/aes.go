@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	ModeCBC = "CBC"
-	ModeCFB = "CFB"
-	ModeOFB = "OFB"
+	AESModeCBC = "CBC"
+	AESModeCFB = "CFB"
+	AESModeOFB = "OFB"
 )
 
 var ErrUnknownMode = errors.New("unknown mode")
@@ -30,13 +30,13 @@ func AESEncrypt(plainText, mode, key, iv string) (string, error) {
 	cipherText := make([]byte, len(plainTextBytes))
 
 	switch mode {
-	case ModeCBC:
+	case AESModeCBC:
 		cbc := cipher.NewCBCEncrypter(block, []byte(iv))
 		cbc.CryptBlocks(cipherText, plainTextBytes)
-	case ModeCFB:
+	case AESModeCFB:
 		cfb := cipher.NewCFBEncrypter(block, []byte(iv))
 		cfb.XORKeyStream(cipherText, plainTextBytes)
-	case ModeOFB:
+	case AESModeOFB:
 		ofb := cipher.NewOFB(block, []byte(iv))
 		ofb.XORKeyStream(cipherText, plainTextBytes)
 	default:
@@ -60,13 +60,13 @@ func AESDecrypt(cipherText, mode, key, iv string) (string, error) {
 	decryptedText := make([]byte, len(cipherTextBytes))
 
 	switch mode {
-	case ModeCBC:
+	case AESModeCBC:
 		cbc := cipher.NewCBCDecrypter(block, []byte(iv))
 		cbc.CryptBlocks(decryptedText, cipherTextBytes)
-	case ModeCFB:
+	case AESModeCFB:
 		cfb := cipher.NewCFBDecrypter(block, []byte(iv))
 		cfb.XORKeyStream(decryptedText, cipherTextBytes)
-	case ModeOFB:
+	case AESModeOFB:
 		ofb := cipher.NewOFB(block, []byte(iv))
 		ofb.XORKeyStream(decryptedText, cipherTextBytes)
 	default:
