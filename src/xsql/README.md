@@ -171,7 +171,7 @@ Update specific columns by map
 data := map[string]interface{}{
     "foo": "test",
 }
-err := DB.Model(context.Background(), &Test{}).Update(data, "id = ?", 8).Error
+err := DB.Model(&Test{}).Update(context.Background(), data, "id = ?", 8).Error
 if err != nil {
     log.Fatal(err)
 }
