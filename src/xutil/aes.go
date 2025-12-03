@@ -8,10 +8,12 @@ import (
 	"errors"
 )
 
+type AESMode string
+
 const (
-	AESModeCBC = "CBC"
-	AESModeCFB = "CFB"
-	AESModeOFB = "OFB"
+	AESModeCBC = AESMode("CBC")
+	AESModeCFB = AESMode("CFB")
+	AESModeOFB = AESMode("OFB")
 )
 
 var ErrUnknownMode = errors.New("unknown mode")
@@ -20,7 +22,7 @@ var ErrUnknownMode = errors.New("unknown mode")
 // key128 := "abcdefghijklmnop"                 // 16 bytes = 128 bits
 // key192 := "abcdefghijklmnopqrstuvwx"         // 24 bytes = 192 bits
 // key256 := "abcdefghijklmnopabcdefghijklmnop" // 32 bytes = 256 bits
-func AESEncrypt(plainText, mode, key, iv string) (string, error) {
+func AESEncrypt(plainText string, mode AESMode, key, iv string) (string, error) {
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		return "", err
@@ -46,7 +48,7 @@ func AESEncrypt(plainText, mode, key, iv string) (string, error) {
 	return base64.StdEncoding.EncodeToString(cipherText), nil
 }
 
-func AESDecrypt(cipherText, mode, key, iv string) (string, error) {
+func AESDecrypt(cipherText string, mode AESMode, key, iv string) (string, error) {
 	cipherTextBytes, err := base64.StdEncoding.DecodeString(cipherText)
 	if err != nil {
 		return "", err

@@ -25,8 +25,8 @@ go get github.com/mix-go/xutil
 | xutil.StructToMap(i interface{}) map[string]interface{}                                                                                  | Convert struct to map.                                                   |
 | xutil.StringToBytes(s string) []byte                                                                                                     | Convert string to bytes (0 copy).                                        |
 | xutil.BytesToString(b []byte) string                                                                                                     | Convert bytes to bytes (0 copy).                                         |
-| xutil.AESEncrypt(plainText, mode, key, iv string) (string, error)                                                                        | AES encryption.                                                          |
-| xutil.AESDecrypt(cipherText, mode, key, iv string) (string, error)                                                                       | AES decryption.                                                          |
+| xutil.AESEncrypt(plainText string, mode AESMode, key, iv string) (string, error)                                                         | AES encryption.                                                          |
+| xutil.AESDecrypt(cipherText string, mode AESMode, key, iv string) (string, error)                                                        | AES decryption.                                                          |
 | xutil.MD5Hash(b []byte) string                                                                                                           | MD5 encryption.                                                          |
 
 ## License
