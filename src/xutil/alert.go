@@ -54,7 +54,7 @@ func NewAlert(ntype NotifierType, credential, titlePrefix string, rateLimitInter
 			}
 
 			if err := a.Notifier.SendAlert(msg.Context, msg.Title, msg.Content, msg.MentionAll); err != nil {
-				a.Logger.Errorw("alert: send alert msg fail", "uuid", msg.UUID)
+				a.Logger.Errorw("alert: send alert msg fail", "uuid", msg.UUID, TraceIDKey, msg.Context.Value(TraceIDKey))
 			}
 
 			if msg.UUID != "" {
