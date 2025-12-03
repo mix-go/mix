@@ -15,7 +15,7 @@ go get github.com/mix-go/xutil
 | xutil.StartAlerter(ntype NotifierType, credential, titlePrefix string, rateLimitInterval time.Duration, mqSize int, logger Logger) error | Launch an Alerter.                                                       |
 | xutil.PushAlert(ctx context.Context, title, content, uuid string, mentionAll bool) error                                                 | Use Alerter to push alerts via a queue, and limit frequency.             |
 | xutil.SendAlert(ctx context.Context, title, content string, mentionAll bool) error                                                       | Use Alerter to send alerts directly.                                     |
-| xutil.ErrorAlert(err error)                                                                                                              | Use Alerter to push error alerts via a queue, and limit frequency.       |
+| xutil.ErrorAlert(err error, needStack bool)                                                                                              | Use Alerter to push error alerts via a queue, and limit frequency.       |
 | xutil.StartGrpcMonitoring(interval time.Duration, logger Logger)                                                                         | Launch a gRPC monitor.                                                   |
 | xutil.StatsServerOptions(logger Logger) []grpc.ServerOption                                                                              | Track the daily request count for the FullMethod of the gRPC server.     |
 | xutil.StartPerformanceMonitoring(interval time.Duration, logger Logger, handler func(*PerformanceStats))                                 | Launch a Go performance monitor.                                         |
