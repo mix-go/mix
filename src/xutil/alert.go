@@ -110,16 +110,21 @@ func SendAlert(ctx context.Context, title, content string, mentionAll bool) erro
 }
 
 // ErrorAlert 错误警报
-func ErrorAlert(err error) {
+func ErrorAlert(err error, needStack bool) {
 	if err == nil {
 		return
 	}
 
 	_, file, line, _ := runtime.Caller(1)
-	uuid := fmt.Sprintf("%s:%d", file, line)
+	fileLine := fmt.Sprintf("%s:%d", file, line)
 
 	title := fmt.Sprintf("ERROR: %s", err)
-	content := fmt.Sprintf("%s:%d\n%s", file, line, string(debug.Stack()))
+	content := fileLine
+	if needStack {
+		content = fmt.Sprintf("%s\n%s", content, string(debug.Stack()))
+	}
+
+	uuid := fileLine
 
 	_ = PushAlert(context.Background(), title, content, uuid, true)
 }
