@@ -16,7 +16,7 @@ const (
 	AESModeOFB = AESMode("OFB")
 )
 
-var ErrUnknownMode = errors.New("unknown mode")
+var ErrUnknownAESMode = errors.New("unknown AES mode")
 
 // AESEncrypt AES encryption, supports CBC,CFB,OFB mode, PKCS7Padding padding.
 // key128 := "abcdefghijklmnop"                 // 16 bytes = 128 bits
@@ -42,7 +42,7 @@ func AESEncrypt(plainText string, mode AESMode, key, iv string) (string, error) 
 		ofb := cipher.NewOFB(block, []byte(iv))
 		ofb.XORKeyStream(cipherText, plainTextBytes)
 	default:
-		return "", ErrUnknownMode
+		return "", ErrUnknownAESMode
 	}
 
 	return base64.StdEncoding.EncodeToString(cipherText), nil
@@ -72,7 +72,7 @@ func AESDecrypt(cipherText string, mode AESMode, key, iv string) (string, error)
 		ofb := cipher.NewOFB(block, []byte(iv))
 		ofb.XORKeyStream(decryptedText, cipherTextBytes)
 	default:
-		return "", ErrUnknownMode
+		return "", ErrUnknownAESMode
 	}
 
 	decryptedText = PKCS7UnPadding(decryptedText)
