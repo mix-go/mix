@@ -10,7 +10,7 @@ require (
 	github.com/mix-go/xsql v1.1.11
 	github.com/mix-go/xutil v1.1.6
 	github.com/redis/go-redis/v9 v9.0.4
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.1
 	github.com/spf13/viper v1.15.0
 	go.uber.org/zap v1.24.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
